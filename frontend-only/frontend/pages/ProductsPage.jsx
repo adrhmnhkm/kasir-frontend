@@ -21,7 +21,10 @@ const ProductsPage = ({ showNotification }) => {
 
   const loadCategories = async () => {
     try {
-      const data = await api.categories.getAll();
+      const response = await fetch('/api/categories');
+      if (!response.ok) throw new Error('Failed to fetch categories');
+      
+      const data = await response.json();
       setCategories(data);
     } catch (error) {
       showNotification('Error loading categories', 'error');
@@ -37,7 +40,14 @@ const ProductsPage = ({ showNotification }) => {
   const handleDeleteProduct = async (id) => {
     if (confirm('Yakin ingin menghapus produk ini?')) {
       try {
-        await api.delete(`/products/${id}`);
+        const response = await fetch(`/api/products/${id}`, {
+          method: 'DELETE'
+        });
+
+        if (!response.ok) {
+          const errorData = await response.json();
+          throw new Error(errorData.error || 'Failed to delete product');
+        }
 
         showNotification('Produk berhasil dihapus');
         loadProducts();
@@ -67,7 +77,14 @@ const ProductsPage = ({ showNotification }) => {
   const handleDeleteCategory = async (id) => {
     if (confirm('Yakin ingin menghapus kategori ini?')) {
       try {
-        await api.delete(`/categories/${id}`);
+        const response = await fetch(`/api/categories/${id}`, {
+          method: 'DELETE'
+        });
+
+        if (!response.ok) {
+          const errorData = await response.json();
+          throw new Error(errorData.error || 'Failed to delete category');
+        }
 
         showNotification('Kategori berhasil dihapus');
         loadCategories();

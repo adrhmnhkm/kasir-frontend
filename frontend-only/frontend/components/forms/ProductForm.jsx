@@ -123,10 +123,21 @@ const ProductForm = ({
 
     try {
       setGeneratingCode(true);
-      const result = await api.post('/products/generate-code', {
-        category_id: formData.category_id,
-        type: 'sequential'
+      const response = await fetch('/api/products/generate-code', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          category_id: formData.category_id,
+          type: 'sequential'
+        })
       });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Failed to generate code');
+      }
+
+      const result = await response.json();
       handleChange('code', result.code);
       showNotification('Kode produk berhasil digenerate');
     } catch (error) {
@@ -139,9 +150,20 @@ const ProductForm = ({
   const handleGenerateBarcode = async () => {
     try {
       setGeneratingBarcode(true);
-      const result = await api.post('/products/generate-barcode', {
-        format: 'EAN13'
+      const response = await fetch('/api/products/generate-barcode', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          format: 'EAN13'
+        })
       });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Failed to generate barcode');
+      }
+
+      const result = await response.json();
       handleChange('barcode', result.barcode);
       showNotification('Barcode berhasil digenerate');
     } catch (error) {

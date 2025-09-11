@@ -28,7 +28,14 @@ const ProductGrid = ({
   const loadProducts = async () => {
     try {
       setLoading(true);
-      const data = await api.products.getAll({ search: searchTerm, category: selectedCategory });
+      const params = new URLSearchParams();
+      if (searchTerm) params.append('search', searchTerm);
+      if (selectedCategory) params.append('category', selectedCategory);
+      
+      const response = await fetch(`/api/products?${params}`);
+      if (!response.ok) throw new Error('Failed to fetch products');
+      
+      const data = await response.json();
       setProducts(data);
     } catch (error) {
       showNotification('Error loading products', 'error');
@@ -40,7 +47,10 @@ const ProductGrid = ({
 
   const loadCategories = async () => {
     try {
-      const data = await api.categories.getAll();
+      const response = await fetch('/api/categories');
+      if (!response.ok) throw new Error('Failed to fetch categories');
+      
+      const data = await response.json();
       setCategories(data);
     } catch (error) {
       showNotification('Error loading categories', 'error');
