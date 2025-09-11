@@ -140,10 +140,20 @@ const dashboardApi = {
   },
 };
 
+// Inventory API
+const inventoryApi = {
+  adjustStock: (data) => api.post('/inventory/penyesuaian-stok', data),
+  getMovements: (params = {}) => {
+    const queryString = new URLSearchParams(params).toString();
+    return api.get(`/inventory/movements${queryString ? `?${queryString}` : ''}`);
+  },
+};
+
 // Assign all API objects to window for global access
 api.products = productApi;
 api.sales = salesApi;
 api.categories = categoryApi;
 api.expenses = expenseApi;
 api.settings = settingsApi;
-api.dashboard = dashboardApi; 
+api.dashboard = dashboardApi;
+api.inventory = inventoryApi; 
