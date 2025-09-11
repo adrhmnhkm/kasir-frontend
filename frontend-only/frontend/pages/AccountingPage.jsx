@@ -40,23 +40,14 @@ const AccountingPage = ({ showNotification }) => {
       setLoading(true);
       
       // Load financial data using proper APIs
-      const [todayReports, selectedPeriodReports, expensesResponse] = await Promise.all([
-        fetch(`/api/reports/financial?range=today`),
-        fetch(`/api/reports/financial?range=${dateRange}`),
-        fetch('/api/expenses/summary')
+      const [todayData, selectedData, expenses] = await Promise.all([
+        api.get(`/reports/financial?range=today`),
+        api.get(`/reports/financial?range=${dateRange}`),
+        api.expenses.getSummary()
       ]);
 
-      if (!todayReports.ok || !selectedPeriodReports.ok || !expensesResponse.ok) {
-        throw new Error('Failed to fetch dashboard data');
-      }
-
-      const todayData = await todayReports.json();
-      const selectedData = await selectedPeriodReports.json();
-      const expenses = await expensesResponse.json();
-
       // Get counts from sales API for transaction numbers
-      const salesResponse = await fetch('/api/sales');
-      const allSales = salesResponse.ok ? await salesResponse.json() : [];
+      const allSales = await api.sales.getAll();
       
       // Calculate transaction counts
       const today = new Date();
@@ -438,7 +429,7 @@ const AccountingPage = ({ showNotification }) => {
                   </button>
                   
                   <button
-                    onClick={() => window.open('/api/reports/financial?range=month&format=pdf', '_blank')}
+                    onClick={() => window.open(window.API_BASE_URL + '/reports/financial?range=month&format=pdf', '_blank')}
                     className="flex items-center p-4 border-2 border-dashed border-gray-300 rounded-lg hover:border-orange-500 hover:bg-orange-50 transition-colors"
                   >
                     <i className="fas fa-download text-orange-500 mr-3"></i>

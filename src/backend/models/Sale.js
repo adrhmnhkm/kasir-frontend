@@ -402,23 +402,6 @@ class Sale {
     });
   }
 
-  static getDrafts() {
-    return new Promise((resolve, reject) => {
-      const query = `
-        SELECT * FROM sales 
-        WHERE is_active = 1 AND is_draft = 1
-        ORDER BY created_at DESC
-      `;
-      
-      db.all(query, [], (err, rows) => {
-        if (err) {
-          reject(err);
-        } else {
-          resolve(rows);
-        }
-      });
-    });
-  }
 
   // Initialize sales and sale_items tables
   static async initialize() {
