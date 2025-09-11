@@ -73,13 +73,36 @@ router.get('/dashboard', async (req, res) => {
     const startOfDay = new Date(today.getFullYear(), today.getMonth(), today.getDate()).toISOString();
     const endOfDay = new Date(today.getFullYear(), today.getMonth(), today.getDate(), 23, 59, 59).toISOString();
     
-    // Get data
-    const [todaySales, todayExpenses, lowStockProducts, draftSales] = await Promise.all([
-      Sale.getByDateRange(startOfDay, endOfDay),
-      Expense.getByDateRange(startOfDay, endOfDay),
-      Product.getLowStock(),
-      Sale.getDrafts()
-    ]);
+    // Get data with individual error handling for debugging
+    let todaySales, todayExpenses, lowStockProducts, draftSales;
+    
+    try {
+      todaySales = await Sale.getByDateRange(startOfDay, endOfDay);
+    } catch (error) {
+      console.error('Error in Sale.getByDateRange:', error);
+      throw error;
+    }
+    
+    try {
+      todayExpenses = await Expense.getByDateRange(startOfDay, endOfDay);
+    } catch (error) {
+      console.error('Error in Expense.getByDateRange:', error);
+      throw error;
+    }
+    
+    try {
+      lowStockProducts = await Product.getLowStock();
+    } catch (error) {
+      console.error('Error in Product.getLowStock:', error);
+      throw error;
+    }
+    
+    try {
+      draftSales = await Sale.getDrafts();
+    } catch (error) {
+      console.error('Error in Sale.getDrafts:', error);
+      throw error;
+    }
     
     const todaySalesTotal = todaySales.reduce((sum, sale) => sum + sale.total, 0);
     const todayExpensesTotal = todayExpenses.reduce((sum, expense) => sum + expense.amount, 0);
