@@ -40,23 +40,12 @@ const AccountingPage = ({ showNotification }) => {
       setLoading(true);
       
       // Load financial data using proper APIs
-      const [todayReports, selectedPeriodReports, expensesResponse] = await Promise.all([
-        fetch(`/api/reports/financial?range=today`),
-        fetch(`/api/reports/financial?range=${dateRange}`),
-        fetch('/api/expenses/summary')
+      const [todayData, selectedData, expenses, allSales] = await Promise.all([
+        api.reports.getFinancial({ range: 'today' }),
+        api.reports.getFinancial({ range: dateRange }),
+        api.expenses.getSummary(),
+        api.sales.getAll()
       ]);
-
-      if (!todayReports.ok || !selectedPeriodReports.ok || !expensesResponse.ok) {
-        throw new Error('Failed to fetch dashboard data');
-      }
-
-      const todayData = await todayReports.json();
-      const selectedData = await selectedPeriodReports.json();
-      const expenses = await expensesResponse.json();
-
-      // Get counts from sales API for transaction numbers
-      const salesResponse = await fetch('/api/sales');
-      const allSales = salesResponse.ok ? await salesResponse.json() : [];
       
       // Calculate transaction counts
       const today = new Date();

@@ -149,6 +149,22 @@ const inventoryApi = {
   },
 };
 
+// Reports API
+const reportsApi = {
+  getFinancial: (params = {}) => {
+    const queryString = new URLSearchParams(params).toString();
+    return api.get(`/reports/financial${queryString ? `?${queryString}` : ''}`);
+  },
+  getSales: (params = {}) => {
+    const queryString = new URLSearchParams(params).toString();
+    return api.get(`/reports/sales${queryString ? `?${queryString}` : ''}`);
+  },
+  getProducts: (params = {}) => {
+    const queryString = new URLSearchParams(params).toString();
+    return api.get(`/reports/products${queryString ? `?${queryString}` : ''}`);
+  },
+};
+
 // Assign all API objects to window for global access
 api.products = productApi;
 api.sales = salesApi;
@@ -156,4 +172,5 @@ api.categories = categoryApi;
 api.expenses = expenseApi;
 api.settings = settingsApi;
 api.dashboard = dashboardApi;
-api.inventory = inventoryApi; 
+api.inventory = inventoryApi;
+api.reports = reportsApi; 
