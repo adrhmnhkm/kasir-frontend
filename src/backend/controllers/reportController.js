@@ -40,6 +40,7 @@ class ReportController {
       }
 
       console.log(`🔍 [getSalesReport] Filter: ${range}, Start: ${startDate.toISOString()}, End: ${endDate.toISOString()}`);
+      console.log(`🕐 [getSalesReport] Server Time: ${new Date().toISOString()}, Local: ${new Date().toString()}`);
 
       // Get sales data
       const sales = await Sale.getByDateRange(startDate, endDate);
