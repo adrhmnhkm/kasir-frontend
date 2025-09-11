@@ -19,6 +19,24 @@ const POSPage = ({ showNotification }) => {
     showNotification(`${product.name} ditambahkan ke keranjang`);
   };
 
+  const triggerDataUpdates = () => {
+    // Trigger events untuk update real-time di laporan dan halaman lain
+    
+    // For same tab
+    window.dispatchEvent(new CustomEvent('salesUpdated'));
+    window.dispatchEvent(new CustomEvent('inventoryUpdated'));
+    
+    // For different tabs (localStorage events)
+    localStorage.setItem('sales_updated', Date.now().toString());
+    localStorage.setItem('inventory_updated', Date.now().toString());
+    
+    // Remove items immediately to trigger storage events
+    setTimeout(() => {
+      localStorage.removeItem('sales_updated');
+      localStorage.removeItem('inventory_updated');
+    }, 100);
+  };
+
   const handleSaveDraft = async () => {
     if (cart.length === 0) {
       showNotification('Keranjang kosong', 'error');
