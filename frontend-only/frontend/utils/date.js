@@ -1,5 +1,5 @@
 // Format date to Indonesian locale
-export const formatDate = (dateString, options = {}) => {
+const formatDate = (dateString, options = {}) => {
   const defaultOptions = {
     year: 'numeric',
     month: 'short',
@@ -14,7 +14,7 @@ export const formatDate = (dateString, options = {}) => {
 };
 
 // Format date only (no time)
-export const formatDateOnly = (dateString) => {
+const formatDateOnly = (dateString) => {
   return formatDate(dateString, {
     year: 'numeric',
     month: 'short',
@@ -23,7 +23,7 @@ export const formatDateOnly = (dateString) => {
 };
 
 // Format time only
-export const formatTimeOnly = (dateString) => {
+const formatTimeOnly = (dateString) => {
   return new Date(dateString).toLocaleTimeString('id-ID', {
     hour: '2-digit',
     minute: '2-digit'
@@ -31,18 +31,18 @@ export const formatTimeOnly = (dateString) => {
 };
 
 // Format date for input fields (YYYY-MM-DD)
-export const formatDateForInput = (dateString) => {
+const formatDateForInput = (dateString) => {
   const date = new Date(dateString);
   return date.toISOString().split('T')[0];
 };
 
 // Get today's date in YYYY-MM-DD format
-export const getTodayString = () => {
+const getTodayString = () => {
   return new Date().toISOString().split('T')[0];
 };
 
 // Get start of week
-export const getStartOfWeek = () => {
+const getStartOfWeek = () => {
   const today = new Date();
   const day = today.getDay();
   const diff = today.getDate() - day + (day === 0 ? -6 : 1); // Monday as start
@@ -51,13 +51,13 @@ export const getStartOfWeek = () => {
 };
 
 // Get start of month
-export const getStartOfMonth = () => {
+const getStartOfMonth = () => {
   const today = new Date();
   return new Date(today.getFullYear(), today.getMonth(), 1).toISOString().split('T')[0];
 };
 
 // Get relative time (e.g., "2 hours ago")
-export const getRelativeTime = (dateString) => {
+const getRelativeTime = (dateString) => {
   const date = new Date(dateString);
   const now = new Date();
   const diffInMilliseconds = now - date;
@@ -74,14 +74,14 @@ export const getRelativeTime = (dateString) => {
 };
 
 // Check if date is today
-export const isToday = (dateString) => {
+const isToday = (dateString) => {
   const date = new Date(dateString);
   const today = new Date();
   return date.toDateString() === today.toDateString();
 };
 
 // Check if date is this week
-export const isThisWeek = (dateString) => {
+const isThisWeek = (dateString) => {
   const date = new Date(dateString);
   const today = new Date();
   const startOfWeek = new Date(getStartOfWeek());
@@ -89,4 +89,16 @@ export const isThisWeek = (dateString) => {
   endOfWeek.setDate(endOfWeek.getDate() + 6);
   
   return date >= startOfWeek && date <= endOfWeek;
-}; 
+};
+
+// Make functions available globally
+window.formatDate = formatDate;
+window.formatDateOnly = formatDateOnly;
+window.formatTimeOnly = formatTimeOnly;
+window.formatDateForInput = formatDateForInput;
+window.getTodayString = getTodayString;
+window.getStartOfWeek = getStartOfWeek;
+window.getStartOfMonth = getStartOfMonth;
+window.getRelativeTime = getRelativeTime;
+window.isToday = isToday;
+window.isThisWeek = isThisWeek; 

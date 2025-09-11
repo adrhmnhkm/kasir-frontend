@@ -37,7 +37,9 @@ class SalesController {
         }
 
         if (startDate && endDate) {
-          sales = await Sale.getByDateRange(startDate.toISOString(), endDate.toISOString());
+          const start = typeof startDate === 'string' ? startDate : startDate.toISOString();
+          const end = typeof endDate === 'string' ? endDate : endDate.toISOString();
+          sales = await Sale.getByDateRange(start, end);
         } else {
           sales = await Sale.getAll();
         }

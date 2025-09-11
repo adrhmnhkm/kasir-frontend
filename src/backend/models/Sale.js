@@ -389,7 +389,10 @@ class Sale {
         LIMIT ?
       `;
       
-      db.all(query, [startDate.toISOString(), endDate.toISOString(), limit], (err, rows) => {
+      const start = typeof startDate === 'string' ? startDate : startDate.toISOString();
+      const end = typeof endDate === 'string' ? endDate : endDate.toISOString();
+      
+      db.all(query, [start, end, limit], (err, rows) => {
         if (err) {
           reject(err);
         } else {

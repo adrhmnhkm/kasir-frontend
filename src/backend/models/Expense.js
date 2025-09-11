@@ -290,7 +290,10 @@ class Expense {
         ORDER BY created_at DESC
       `;
       
-      db.all(query, [startDate.toISOString(), endDate.toISOString()], (err, rows) => {
+      const start = typeof startDate === 'string' ? startDate : startDate.toISOString();
+      const end = typeof endDate === 'string' ? endDate : endDate.toISOString();
+      
+      db.all(query, [start, end], (err, rows) => {
         if (err) {
           reject(err);
         } else {

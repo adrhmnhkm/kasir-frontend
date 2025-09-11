@@ -1,8 +1,13 @@
-const API_BASE_URL = window.API_BASE_URL || '/api';
+// Dynamic API URL getter to ensure we always get the latest value
+const getAPIBaseURL = () => {
+  const url = window.API_BASE_URL || '/api';
+  console.log('🌐 Using API Base URL:', url);
+  return url;
+};
 
 class ApiClient {
   async request(endpoint, options = {}) {
-    const url = `${API_BASE_URL}${endpoint}`;
+    const url = `${getAPIBaseURL()}${endpoint}`;
     const config = {
       headers: {
         'Content-Type': 'application/json',
@@ -55,10 +60,11 @@ class ApiClient {
   }
 }
 
-export const api = new ApiClient();
+const api = new ApiClient();
+window.api = api;
 
 // Product API
-export const productApi = {
+const productApi = {
   getAll: (params = {}) => {
     const queryString = new URLSearchParams(params).toString();
     return api.get(`/products${queryString ? `?${queryString}` : ''}`);
@@ -72,7 +78,7 @@ export const productApi = {
 };
 
 // Sales API
-export const salesApi = {
+const salesApi = {
   getAll: (params = {}) => {
     const queryString = new URLSearchParams(params).toString();
     return api.get(`/sales${queryString ? `?${queryString}` : ''}`);
@@ -91,7 +97,7 @@ export const salesApi = {
 };
 
 // Categories API
-export const categoryApi = {
+const categoryApi = {
   getAll: () => api.get('/categories'),
   getById: (id) => api.get(`/categories/${id}`),
   create: (data) => api.post('/categories', data),
@@ -100,7 +106,7 @@ export const categoryApi = {
 };
 
 // Expenses API
-export const expenseApi = {
+const expenseApi = {
   getAll: (params = {}) => {
     const queryString = new URLSearchParams(params).toString();
     return api.get(`/expenses${queryString ? `?${queryString}` : ''}`);
@@ -118,16 +124,24 @@ export const expenseApi = {
 };
 
 // Settings API
-export const settingsApi = {
+const settingsApi = {
   get: () => api.get('/settings'),
   update: (data) => api.put('/settings', data),
 };
 
 // Dashboard API
-export const dashboardApi = {
+const dashboardApi = {
   getSummary: () => api.get('/dashboard'),
   getCashFlow: (params = {}) => {
     const queryString = new URLSearchParams(params).toString();
     return api.get(`/cash-flow${queryString ? `?${queryString}` : ''}`);
   },
-}; 
+};
+
+// Assign all API objects to window for global access
+api.products = productApi;
+api.sales = salesApi;
+api.categories = categoryApi;
+api.expenses = expenseApi;
+api.settings = settingsApi;
+api.dashboard = dashboardApi; 

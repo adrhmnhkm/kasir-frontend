@@ -20,31 +20,30 @@ const SalesPage = ({ showNotification }) => {
   const loadSales = async () => {
     try {
       setLoading(true);
-      const params = new URLSearchParams();
+
+      // Create API parameters object
+      const apiParams = {};
       
-      // Date/period filter
+      if (searchTerm) apiParams.search = searchTerm;
+      
       if (filter === 'today') {
-        params.append('period', 'today');
+        apiParams.period = 'today';
       } else if (filter === 'week') {
-        params.append('period', 'week');
+        apiParams.period = 'week';
       } else if (filter === 'month') {
-        params.append('period', 'month');
+        apiParams.period = 'month';
       } else if (filter === 'range' && dateRange.start && dateRange.end) {
-        params.append('start_date', dateRange.start);
-        params.append('end_date', dateRange.end);
+        apiParams.start_date = dateRange.start;
+        apiParams.end_date = dateRange.end;
       }
-
-      // Status filter
-      if (statusFilter === 'draft') {
-        params.append('draft', 'true');
-      } else if (statusFilter === 'completed') {
-        params.append('status', 'completed');
-      }
-
-      const response = await fetch(`/api/sales?${params}`);
-      if (!response.ok) throw new Error('Failed to fetch sales');
       
-      const data = await response.json();
+      if (statusFilter === 'draft') {
+        apiParams.draft = 'true';
+      } else if (statusFilter === 'completed') {
+        apiParams.status = 'completed';
+      }
+
+      const data = await api.sales.getAll(apiParams);
       setSales(data);
     } catch (error) {
       showNotification('Error loading sales', 'error');
@@ -61,14 +60,7 @@ const SalesPage = ({ showNotification }) => {
   const handleFinalizeDraft = async (saleId) => {
     if (confirm('Yakin ingin finalisasi draft ini?')) {
       try {
-        const response = await fetch(`/api/sales/${saleId}/finalize`, {
-          method: 'POST'
-        });
-
-        if (!response.ok) {
-          const errorData = await response.json();
-          throw new Error(errorData.error || 'Failed to finalize draft');
-        }
+        await api.post(`/sales/${saleId}/finalize`);
 
         showNotification('Draft berhasil difinalisasi');
         loadSales();
@@ -81,14 +73,7 @@ const SalesPage = ({ showNotification }) => {
   const handleDeleteDraft = async (saleId) => {
     if (confirm('Yakin ingin menghapus draft ini?')) {
       try {
-        const response = await fetch(`/api/sales/${saleId}`, {
-          method: 'DELETE'
-        });
-
-        if (!response.ok) {
-          const errorData = await response.json();
-          throw new Error(errorData.error || 'Failed to delete draft');
-        }
+        await api.delete(`/sales/${saleId}`);
 
         showNotification('Draft berhasil dihapus');
         loadSales();

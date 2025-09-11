@@ -26,14 +26,10 @@ const InventoryPage = ({ showNotification }) => {
   const loadInventory = async () => {
     try {
       setLoading(true);
-      const params = new URLSearchParams();
-      if (searchTerm) params.append('search', searchTerm);
-      if (selectedCategory) params.append('category', selectedCategory);
-      
-      const response = await fetch(`/api/products?${params}`);
-      if (!response.ok) throw new Error('Failed to fetch inventory');
-      
-      const data = await response.json();
+      const data = await api.products.getAll({ 
+        search: searchTerm, 
+        category: selectedCategory 
+      });
       setProducts(data);
       
       // Filter low stock and out of stock products
@@ -52,10 +48,7 @@ const InventoryPage = ({ showNotification }) => {
 
   const loadCategories = async () => {
     try {
-      const response = await fetch('/api/categories');
-      if (!response.ok) throw new Error('Failed to fetch categories');
-      
-      const data = await response.json();
+      const data = await api.categories.getAll();
       setCategories(data);
     } catch (error) {
       showNotification('Error loading categories', 'error');
@@ -83,24 +76,14 @@ const InventoryPage = ({ showNotification }) => {
     }
 
     try {
-      const response = await fetch('/api/inventory/penyesuaian-stok', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          product_id: parseInt(selectedProduct.id),
-          new_stock: parseFloat(newStock),
-          reason: adjustmentReason,
-          notes: `Penyesuaian melalui inventory management`,
-          user: 'Admin'
-        })
+      const result = await api.post('/inventory/penyesuaian-stok', {
+        product_id: parseInt(selectedProduct.id),
+        new_stock: parseFloat(newStock),
+        reason: adjustmentReason,
+        notes: `Penyesuaian melalui inventory management`,
+        user: 'Admin'
       });
 
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.error || 'Failed to adjust stock');
-      }
-
-      const result = await response.json();
       showNotification(result.message || 'Stock berhasil disesuaikan');
       closeStockModal();
       loadInventory();
