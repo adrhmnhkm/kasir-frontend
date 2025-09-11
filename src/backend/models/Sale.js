@@ -322,10 +322,23 @@ class Sale {
       const start = typeof startDate === 'string' ? startDate : startDate.toISOString();
       const end = typeof endDate === 'string' ? endDate : endDate.toISOString();
       
+      console.log(`📊 [Sale.getByDateRange] Searching between ${start} and ${end}`);
+      
       db.all(query, [start, end], (err, rows) => {
         if (err) {
+          console.error('❌ [Sale.getByDateRange] Error:', err);
           reject(err);
         } else {
+          console.log(`✅ [Sale.getByDateRange] Found ${rows.length} sales`);
+          if (rows.length > 0) {
+            console.log(`📈 Sample data:`, rows.slice(0, 2).map(r => ({
+              id: r.id,
+              invoice: r.invoice_number,
+              total: r.total,
+              created_at: r.created_at,
+              is_draft: r.is_draft
+            })));
+          }
           resolve(rows);
         }
       });

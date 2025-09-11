@@ -12,8 +12,8 @@ class ReportController {
       let startDate, endDate;
       
       if (range === 'custom') {
-        startDate = new Date(start_date);
-        endDate = new Date(end_date);
+        startDate = new Date(start_date + 'T00:00:00');
+        endDate = new Date(end_date + 'T23:59:59');
       } else {
         const today = new Date();
         switch (range) {
@@ -38,6 +38,8 @@ class ReportController {
             endDate = new Date(today.getFullYear(), today.getMonth(), today.getDate(), 23, 59, 59);
         }
       }
+
+      console.log(`🔍 [getSalesReport] Filter: ${range}, Start: ${startDate.toISOString()}, End: ${endDate.toISOString()}`);
 
       // Get sales data
       const sales = await Sale.getByDateRange(startDate, endDate);
@@ -67,7 +69,7 @@ class ReportController {
         status: sale.is_draft ? 'draft' : 'completed'
       }));
 
-      res.json({
+      const responseData = {
         summary: {
           totalSales,
           totalRevenue,
@@ -76,7 +78,16 @@ class ReportController {
         },
         topProducts,
         recentSales
+      };
+
+      console.log(`📊 [getSalesReport] Response Summary:`, {
+        totalSales: responseData.summary.totalSales,
+        totalRevenue: responseData.summary.totalRevenue,
+        topProductsCount: responseData.topProducts.length,
+        recentSalesCount: responseData.recentSales.length
       });
+
+      res.json(responseData);
     } catch (error) {
       console.error('Error in getSalesReport:', error);
       res.status(500).json({ error: error.message });
@@ -178,8 +189,8 @@ class ReportController {
       let startDate, endDate;
       
       if (range === 'custom') {
-        startDate = new Date(start_date);
-        endDate = new Date(end_date);
+        startDate = new Date(start_date + 'T00:00:00');
+        endDate = new Date(end_date + 'T23:59:59');
       } else {
         const today = new Date();
         switch (range) {
@@ -204,6 +215,8 @@ class ReportController {
             endDate = new Date(today.getFullYear(), today.getMonth(), today.getDate(), 23, 59, 59);
         }
       }
+
+      console.log(`🔍 [getFinancialReport] Filter: ${range}, Start: ${startDate.toISOString()}, End: ${endDate.toISOString()}`);
 
       // Get sales and expenses
       const sales = await Sale.getByDateRange(startDate, endDate);
