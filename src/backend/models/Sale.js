@@ -1,5 +1,64 @@
-// Use database adapter (PostgreSQL in production, SQLite in development)
-const db = require('../database/adapter');
+// Direct database connection based on environment
+const isProduction = process.env.NODE_ENV === 'production';
+const hasPostgres = process.env.POSTGRES_URL || process.env.DATABASE_URL;
+
+let db;
+
+if (isProduction && hasPostgres) {
+  // Use PostgreSQL directly in production
+  console.log('🐘 Sale model using PostgreSQL for production');
+  const { Pool } = require('pg');
+  const pool = new Pool({
+    connectionString: process.env.POSTGRES_URL || process.env.DATABASE_URL,
+    ssl: isProduction ? { rejectUnauthorized: false } : false,
+  });
+  
+  db = {
+    query: async (sql, params = []) => {
+      const client = await pool.connect();
+      try {
+        const result = await client.query(sql, params);
+        return result;
+      } finally {
+        client.release();
+      }
+    }
+  };
+} else {
+  // Use SQLite for development
+  console.log('📱 Sale model using SQLite for development');
+  const sqlite3 = require('sqlite3').verbose();
+  const path = require('path');
+  
+  const dbPath = path.join(__dirname, '../../kasir.db');
+  const sqliteDb = new sqlite3.Database(dbPath);
+  
+  db = {
+    query: (sql, params = []) => {
+      return new Promise((resolve, reject) => {
+        // Convert PostgreSQL syntax to SQLite
+        let sqliteQuery = sql
+          .replace(/\$(\d+)/g, '?')  // Replace $1, $2, etc. with ?
+          .replace(/::date/g, '')    // Remove ::date casting
+          .replace(/STRING_AGG\((.*?),\s*',\s*'\)/g, 'GROUP_CONCAT($1)'); // Convert STRING_AGG to GROUP_CONCAT
+        
+        const sqlLower = sqliteQuery.toLowerCase().trim();
+        
+        if (sqlLower.startsWith('select')) {
+          sqliteDb.all(sqliteQuery, params, (err, rows) => {
+            if (err) reject(err);
+            else resolve({ rows });
+          });
+        } else {
+          sqliteDb.run(sqliteQuery, params, function(err) {
+            if (err) reject(err);
+            else resolve({ rows: [], changes: this.changes });
+          });
+        }
+      });
+    }
+  };
+}
 
 class Sale {
   static async getAll() {
@@ -300,26 +359,58 @@ class Sale {
     try {
       console.log(`📊 [Sale.getByDateRange] Starting date range query`);
       
-      // Simplified query for testing
-      const debugQuery = "SELECT id, invoice_number, created_at, total, is_active FROM sales WHERE is_active = 1 ORDER BY created_at DESC LIMIT 10";
+      // Ensure startDate and endDate are strings
+      const start = typeof startDate === 'string' ? startDate : startDate.toISOString().split('T')[0];
+      const end = typeof endDate === 'string' ? endDate : endDate.toISOString().split('T')[0];
       
-      try {
-        const debugResult = await db.query(debugQuery, []);
-        console.log(`🔍 [Sale.getByDateRange] Recent sales in DB:`, debugResult.rows);
-        
-        // For now, return all recent sales to test
-        return debugResult.rows.map(row => ({
-          ...row,
-          item_count: 1,
-          items_summary: 'Test Item x1'
-        }));
-      } catch (debugErr) {
-        console.error('❌ Debug query failed:', debugErr);
-        return [];
+      console.log(`📅 [Sale.getByDateRange] Searching between ${start} and ${end}`);
+      
+      // Simplified query for both PostgreSQL and SQLite
+      const query = `
+        SELECT s.*, 
+               COUNT(si.id) as item_count,
+               STRING_AGG(si.product_name || ' x' || si.quantity, ', ') as items_summary
+        FROM sales s 
+        LEFT JOIN sale_items si ON s.id = si.sale_id 
+        WHERE s.is_active = 1 
+          AND DATE(s.created_at) >= $1 
+          AND DATE(s.created_at) <= $2
+        GROUP BY s.id, s.invoice_number, s.customer_id, s.subtotal, s.discount, s.tax, s.total, s.paid, s.change_amount, s.payment_method, s.notes, s.cashier, s.is_draft, s.is_active, s.created_at, s.updated_at
+        ORDER BY s.created_at DESC
+      `;
+      
+      const result = await db.query(query, [start, end]);
+      console.log(`✅ [Sale.getByDateRange] Found ${result.rows.length} sales`);
+      
+      if (result.rows.length > 0) {
+        console.log(`📈 Sample data:`, result.rows.slice(0, 2).map(r => ({
+          id: r.id,
+          invoice: r.invoice_number,
+          total: r.total,
+          created_at: r.created_at,
+          is_draft: r.is_draft
+        })));
       }
+      
+      return result.rows;
     } catch (error) {
       console.error('❌ [Sale.getByDateRange] Error:', error);
-      return [];
+      
+      // Fallback: try to get recent sales without date filtering
+      try {
+        console.log('🔄 [Sale.getByDateRange] Fallback to recent sales');
+        const fallbackQuery = "SELECT * FROM sales WHERE is_active = 1 ORDER BY created_at DESC LIMIT 10";
+        const fallbackResult = await db.query(fallbackQuery, []);
+        
+        return fallbackResult.rows.map(row => ({
+          ...row,
+          item_count: 1,
+          items_summary: 'Recent Sale'
+        }));
+      } catch (fallbackError) {
+        console.error('❌ [Sale.getByDateRange] Fallback failed:', fallbackError);
+        return [];
+      }
     }
   }
 
@@ -361,9 +452,34 @@ class Sale {
 
   static async getTopProducts(startDate, endDate, limit = 5) {
     try {
-      console.log(`📊 [Sale.getTopProducts] Simplified query for testing`);
-      // Return empty array for now to avoid complex join issues
-      return [];
+      console.log(`📊 [Sale.getTopProducts] Getting top products`);
+      
+      const start = typeof startDate === 'string' ? startDate : startDate.toISOString().split('T')[0];
+      const end = typeof endDate === 'string' ? endDate : endDate.toISOString().split('T')[0];
+      
+      const query = `
+        SELECT 
+          p.id,
+          p.name,
+          p.code,
+          CAST(SUM(si.quantity) AS INTEGER) as quantity,
+          CAST(SUM(si.total) AS DECIMAL) as revenue
+        FROM sale_items si
+        JOIN sales s ON si.sale_id = s.id
+        JOIN products p ON si.product_id = p.id
+        WHERE s.is_active = 1 
+          AND s.is_draft = 0
+          AND DATE(s.created_at) >= $1 
+          AND DATE(s.created_at) <= $2
+        GROUP BY p.id, p.name, p.code
+        ORDER BY quantity DESC
+        LIMIT $3
+      `;
+      
+      const result = await db.query(query, [start, end, limit]);
+      console.log(`✅ [Sale.getTopProducts] Found ${result.rows.length} top products`);
+      
+      return result.rows;
     } catch (error) {
       console.error('❌ [Sale.getTopProducts] Error:', error);
       return [];
