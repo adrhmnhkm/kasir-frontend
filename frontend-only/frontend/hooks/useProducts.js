@@ -10,14 +10,7 @@ const useProducts = (filters = {}) => {
       setLoading(true);
       setError(null);
       
-      const params = new URLSearchParams();
-      if (filters.search) params.append('search', filters.search);
-      if (filters.category) params.append('category', filters.category);
-      
-      const response = await fetch(`/api/products?${params}`);
-      if (!response.ok) throw new Error('Failed to fetch products');
-      
-      const data = await response.json();
+      const data = await api.products.getAll(filters);
       setProducts(data);
     } catch (err) {
       setError(err.message);
@@ -33,18 +26,7 @@ const useProducts = (filters = {}) => {
 
   const createProduct = async (productData) => {
     try {
-      const response = await fetch('/api/products', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(productData)
-      });
-      
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.error || 'Failed to create product');
-      }
-      
-      const newProduct = await response.json();
+      const newProduct = await api.products.create(productData);
       setProducts(prev => [...prev, newProduct]);
       return newProduct;
     } catch (err) {
@@ -54,18 +36,7 @@ const useProducts = (filters = {}) => {
 
   const updateProduct = async (id, productData) => {
     try {
-      const response = await fetch(`/api/products/${id}`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(productData)
-      });
-      
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.error || 'Failed to update product');
-      }
-      
-      const updatedProduct = await response.json();
+      const updatedProduct = await api.products.update(id, productData);
       setProducts(prev => 
         prev.map(product => 
           product.id === id ? updatedProduct : product
@@ -79,14 +50,7 @@ const useProducts = (filters = {}) => {
 
   const deleteProduct = async (id) => {
     try {
-      const response = await fetch(`/api/products/${id}`, {
-        method: 'DELETE'
-      });
-      
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.error || 'Failed to delete product');
-      }
+      await api.products.delete(id);
       
       setProducts(prev => prev.filter(product => product.id !== id));
     } catch (err) {

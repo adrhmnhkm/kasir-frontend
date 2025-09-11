@@ -75,6 +75,8 @@ const productApi = {
   update: (id, data) => api.put(`/products/${id}`, data),
   updateStock: (id, data) => api.put(`/products/${id}/stock`, data),
   delete: (id) => api.delete(`/products/${id}`),
+  generateCode: (data) => api.post('/products/generate-code', data),
+  generateBarcode: (data) => api.post('/products/generate-barcode', data),
 };
 
 // Sales API
