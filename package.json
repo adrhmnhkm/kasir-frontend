@@ -1,0 +1,36 @@
+{
+  "name": "aplikasi-kasir-pvc",
+  "version": "1.0.0",
+  "description": "Aplikasi Kasir untuk Toko PVC, Pipa, Fitting, dan Bahan Bangunan",
+  "main": "src/backend/server.js",
+  "scripts": {
+    "start": "node src/backend/server.js",
+    "dev": "nodemon src/backend/server.js",
+    "start:old": "node server-simple.js",
+    "backup": "node scripts/backup.js",
+    "restore": "node scripts/restore.js"
+  },
+  "dependencies": {
+    "cors": "^2.8.5",
+    "escpos": "^3.0.0-alpha.6",
+    "escpos-usb": "^3.0.0-alpha.4",
+    "express": "^4.18.2",
+    "fs-extra": "^11.2.0",
+    "moment": "^2.29.4",
+    "multer": "^1.4.5-lts.1",
+    "sqlite3": "^5.1.7"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.2"
+  },
+  "keywords": [
+    "kasir",
+    "pos",
+    "pvc",
+    "bahan-bangunan",
+    "sqlite"
+  ],
+  "author": "",
+  "license": "MIT",
+  "packageManager": "pnpm@10.11.0+sha512.6540583f41cc5f628eb3d9773ecee802f4f9ef9923cc45b69890fb47991d4b092964694ec3a4f738a420c918a333062c8b925d312f42e4f0c263eb603551f977"
+}
