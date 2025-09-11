@@ -313,8 +313,7 @@ class Sale {
         LEFT JOIN sale_items si ON s.id = si.sale_id 
         WHERE s.is_active = 1 
           AND (
-            (s.created_at >= ? AND s.created_at <= ?) OR
-            (datetime(s.created_at) >= datetime(?) AND datetime(s.created_at) <= datetime(?))
+            date(s.created_at) >= date(?) AND date(s.created_at) <= date(?)
           )
         GROUP BY s.id
         ORDER BY s.created_at DESC
@@ -334,7 +333,7 @@ class Sale {
         }
       });
       
-      db.all(query, [start, end, start, end], (err, rows) => {
+      db.all(query, [start, end], (err, rows) => {
         if (err) {
           console.error('❌ [Sale.getByDateRange] Error:', err);
           reject(err);
