@@ -25,14 +25,8 @@ const ReportsPage = ({ showNotification }) => {
 
       console.log('API params:', params.toString());
 
-      const response = await fetch(`/api/reports/sales?${params}`);
-      console.log('Response status:', response.status);
-      
-      if (!response.ok) {
-        throw new Error(`API error: ${response.status}`);
-      }
-
-      const data = await response.json();
+      const queryParams = Object.fromEntries(params);
+      const data = await api.reports.getSales(queryParams);
       console.log('Sales data received:', data);
       
       setSalesData(data);

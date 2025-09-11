@@ -57,10 +57,8 @@ const ExpensePage = ({ showNotification }) => {
         }
       }
 
-      const response = await fetch(`/api/expenses?${params}`);
-      if (!response.ok) throw new Error('Failed to fetch expenses');
-      
-      const data = await response.json();
+      const queryParams = Object.fromEntries(params);
+      const data = await api.expenses.getAll(queryParams);
       setExpenses(data);
     } catch (error) {
       console.error('Error loading expenses:', error);
@@ -96,14 +94,7 @@ const ExpensePage = ({ showNotification }) => {
   const handleDeleteExpense = async (id) => {
     if (confirm('Yakin ingin menghapus pengeluaran ini?')) {
       try {
-        const response = await fetch(`/api/expenses/${id}`, {
-          method: 'DELETE'
-        });
-
-        if (!response.ok) {
-          const errorData = await response.json();
-          throw new Error(errorData.error || 'Failed to delete expense');
-        }
+        await api.expenses.delete(id);
 
         showNotification('Pengeluaran berhasil dihapus');
         loadExpenses();
