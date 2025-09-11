@@ -34,8 +34,6 @@ function App() {
         return <SalesPage showNotification={showNotification} />;
       case 'expenses':
         return <ExpensesPage showNotification={showNotification} />;
-      case 'reports':
-        return <ReportsPage showNotification={showNotification} />;
       case 'accounting':
         return <AccountingPage showNotification={showNotification} />;
       case 'settings':

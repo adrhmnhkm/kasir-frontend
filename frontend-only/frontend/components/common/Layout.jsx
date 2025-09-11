@@ -9,7 +9,6 @@ const Layout = ({ children, currentPage, onPageChange }) => {
     { id: 'inventory', name: 'Inventory', icon: 'fas fa-warehouse' },
     { id: 'sales', name: 'Penjualan', icon: 'fas fa-chart-line' },
     { id: 'expenses', name: 'Pengeluaran', icon: 'fas fa-money-bill-wave' },
-    { id: 'reports', name: 'Laporan', icon: 'fas fa-file-alt' },
     { id: 'accounting', name: 'Akuntansi', icon: 'fas fa-calculator' },
     { id: 'settings', name: 'Pengaturan', icon: 'fas fa-cog' }
   ];
