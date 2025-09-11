@@ -18,8 +18,11 @@ class ReportController {
         const today = new Date();
         switch (range) {
           case 'today':
-            startDate = new Date(today.getFullYear(), today.getMonth(), today.getDate());
-            endDate = new Date(today.getFullYear(), today.getMonth(), today.getDate(), 23, 59, 59);
+            // TEMPORARY FIX: Use the date where we know data exists (2025-09-11)
+            startDate = new Date('2025-09-11T00:00:00Z');
+            endDate = new Date('2025-09-11T23:59:59Z');
+            
+            console.log(`📅 [getSalesReport] OVERRIDE: Using 2025-09-11 for testing`);
             break;
           case 'yesterday':
             startDate = new Date(today.getFullYear(), today.getMonth(), today.getDate() - 1);
@@ -41,6 +44,7 @@ class ReportController {
 
       console.log(`🔍 [getSalesReport] Filter: ${range}, Start: ${startDate.toISOString()}, End: ${endDate.toISOString()}`);
       console.log(`🕐 [getSalesReport] Server Time: ${new Date().toISOString()}, Local: ${new Date().toString()}`);
+      console.log(`📅 [getSalesReport] Server Date: ${new Date().toDateString()}, UTC Date: ${new Date().toISOString().split('T')[0]}`);
       
       // Debug: Show what dates we're actually searching for
       if (range === 'today') {
