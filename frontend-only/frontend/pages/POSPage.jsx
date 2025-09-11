@@ -49,18 +49,7 @@ const POSPage = ({ showNotification }) => {
         is_draft: true
       };
 
-      const response = await fetch('/api/sales', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(saleData)
-      });
-
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.error || 'Failed to save draft');
-      }
-
-      const result = await response.json();
+      const result = await api.sales.create(saleData);
       showNotification(`Draft berhasil disimpan! Invoice: ${result.invoice_number}`);
       clearCart();
     } catch (error) {
@@ -86,18 +75,7 @@ const POSPage = ({ showNotification }) => {
 
   const handlePayment = async (saleData) => {
     try {
-      const response = await fetch('/api/sales', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(saleData)
-      });
-
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.error || 'Failed to process payment');
-      }
-
-      const result = await response.json();
+      const result = await api.sales.create(saleData);
       
       // Return the result to PaymentModal for print option
       return result;

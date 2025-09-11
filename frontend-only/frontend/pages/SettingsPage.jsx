@@ -20,10 +20,7 @@ const SettingsPage = ({ showNotification }) => {
   const loadSettings = async () => {
     try {
       setLoading(true);
-      const response = await fetch('/api/settings');
-      if (!response.ok) throw new Error('Failed to fetch settings');
-      
-      const data = await response.json();
+      const data = await api.settings.get();
       setSettings(data);
     } catch (error) {
       showNotification('Error loading settings', 'error');
@@ -38,17 +35,7 @@ const SettingsPage = ({ showNotification }) => {
     
     try {
       setSaving(true);
-      const response = await fetch('/api/settings', {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(settings)
-      });
-
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.error || 'Failed to update settings');
-      }
-
+      await api.settings.update(settings);
       showNotification('Settings berhasil disimpan!');
     } catch (error) {
       showNotification(`Error saving settings: ${error.message}`, 'error');

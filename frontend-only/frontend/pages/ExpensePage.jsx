@@ -72,10 +72,7 @@ const ExpensePage = ({ showNotification }) => {
 
   const loadCategories = async () => {
     try {
-      const response = await fetch('/api/expenses/categories');
-      if (!response.ok) throw new Error('Failed to fetch categories');
-      
-      const data = await response.json();
+      const data = await api.expenses.getCategories();
       setCategories(data);
     } catch (error) {
       console.error('Error loading categories:', error);
@@ -84,10 +81,7 @@ const ExpensePage = ({ showNotification }) => {
 
   const loadSummary = async () => {
     try {
-      const response = await fetch('/api/expenses/summary');
-      if (!response.ok) throw new Error('Failed to fetch summary');
-      
-      const data = await response.json();
+      const data = await api.expenses.getSummary();
       setSummary(data);
     } catch (error) {
       console.error('Error loading summary:', error);
