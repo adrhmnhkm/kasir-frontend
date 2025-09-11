@@ -50,6 +50,10 @@ const POSPage = ({ showNotification }) => {
       };
 
       const result = await api.sales.create(saleData);
+      
+      // Trigger update events untuk real-time updates
+      triggerDataUpdates();
+      
       showNotification(`Draft berhasil disimpan! Invoice: ${result.invoice_number}`);
       clearCart();
     } catch (error) {
@@ -76,6 +80,9 @@ const POSPage = ({ showNotification }) => {
   const handlePayment = async (saleData) => {
     try {
       const result = await api.sales.create(saleData);
+      
+      // Trigger update events untuk real-time updates
+      triggerDataUpdates();
       
       // Return the result to PaymentModal for print option
       return result;

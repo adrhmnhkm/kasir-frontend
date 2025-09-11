@@ -8,6 +8,8 @@ const ReportsPage = ({ showNotification }) => {
     start: '',
     end: ''
   });
+  const [autoRefresh, setAutoRefresh] = useState(true);
+  const [lastUpdated, setLastUpdated] = useState(null);
   
   // Data states for different reports
   const [salesData, setSalesData] = useState(null);
@@ -18,6 +20,45 @@ const ReportsPage = ({ showNotification }) => {
   useEffect(() => {
     loadReportData();
   }, [activeTab, period, customDateRange]);
+
+  // Auto-refresh setiap 30 detik untuk data real-time
+  useEffect(() => {
+    if (!autoRefresh) return;
+
+    const interval = setInterval(() => {
+      // Hanya auto-refresh jika user melihat data hari ini atau periode yang mencakup hari ini
+      if (period === 'today' || period === 'week' || period === 'month') {
+        loadReportData();
+      }
+    }, 30000); // 30 detik
+
+    return () => clearInterval(interval);
+  }, [activeTab, period, customDateRange, autoRefresh]);
+
+  // Listen untuk storage events (ketika ada penjualan baru dari tab lain)
+  useEffect(() => {
+    const handleStorageChange = (e) => {
+      if (e.key === 'sales_updated' || e.key === 'inventory_updated') {
+        loadReportData();
+      }
+    };
+
+    window.addEventListener('storage', handleStorageChange);
+    
+    // Listen untuk custom events dalam tab yang sama
+    const handleSalesUpdate = () => {
+      loadReportData();
+    };
+
+    window.addEventListener('salesUpdated', handleSalesUpdate);
+    window.addEventListener('inventoryUpdated', handleSalesUpdate);
+
+    return () => {
+      window.removeEventListener('storage', handleStorageChange);
+      window.removeEventListener('salesUpdated', handleSalesUpdate);
+      window.removeEventListener('inventoryUpdated', handleSalesUpdate);
+    };
+  }, []);
 
   const getDateRange = () => {
     const today = new Date();
@@ -84,6 +125,8 @@ const ReportsPage = ({ showNotification }) => {
           setInventoryData(inventoryData);
           break;
       }
+      
+      setLastUpdated(new Date());
     } catch (error) {
       console.error(`Error loading ${activeTab} data:`, error);
       showNotification(`Error loading ${activeTab} report: ${error.message}`, 'error');
@@ -451,13 +494,46 @@ const ReportsPage = ({ showNotification }) => {
         </div>
       </div>
 
-      {/* Period Info */}
-      <div className="mb-6">
+      {/* Period Info & Auto Refresh Status */}
+      <div className="mb-6 space-y-4">
         <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-          <p className="text-blue-800 font-medium">
-            <i className="fas fa-calendar-alt mr-2"></i>
-            Periode: {getPeriodLabel()}
-          </p>
+          <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center space-y-2 sm:space-y-0">
+            <p className="text-blue-800 font-medium">
+              <i className="fas fa-calendar-alt mr-2"></i>
+              Periode: {getPeriodLabel()}
+            </p>
+            
+            <div className="flex items-center space-x-4">
+              {lastUpdated && (
+                <p className="text-blue-600 text-sm">
+                  <i className="fas fa-clock mr-1"></i>
+                  Update: {lastUpdated.toLocaleTimeString('id-ID')}
+                </p>
+              )}
+              
+              <div className="flex items-center space-x-2">
+                <span className="text-blue-800 text-sm">Auto Refresh:</span>
+                <button
+                  onClick={() => setAutoRefresh(!autoRefresh)}
+                  className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
+                    autoRefresh ? 'bg-blue-600' : 'bg-gray-300'
+                  }`}
+                >
+                  <span
+                    className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
+                      autoRefresh ? 'translate-x-6' : 'translate-x-1'
+                    }`}
+                  />
+                </button>
+                {autoRefresh && (
+                  <span className="text-green-600 text-sm">
+                    <i className="fas fa-circle animate-pulse"></i>
+                    Live
+                  </span>
+                )}
+              </div>
+            </div>
+          </div>
         </div>
       </div>
 
