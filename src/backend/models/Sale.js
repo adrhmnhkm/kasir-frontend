@@ -1,31 +1,23 @@
-const sqlite3 = require('sqlite3').verbose();
-const path = require('path');
-
-// Use SQLite database
-const dbPath = path.join(__dirname, '../../kasir.db');
-const db = new sqlite3.Database(dbPath);
+const db = require('../database/adapter');
 
 class Sale {
-  static getAll() {
-    return new Promise((resolve, reject) => {
+  static async getAll() {
+    try {
       const query = `
         SELECT s.*, 
-               GROUP_CONCAT(si.product_name || ' x' || si.quantity || ' ' || si.unit_price) as items_summary
+               STRING_AGG(si.product_name || ' x' || si.quantity || ' ' || si.unit_price, ', ') as items_summary
         FROM sales s 
         LEFT JOIN sale_items si ON s.id = si.sale_id 
         WHERE s.is_active = 1
-        GROUP BY s.id
+        GROUP BY s.id, s.invoice_number, s.customer_id, s.subtotal, s.discount, s.tax, s.total, s.paid, s.change_amount, s.payment_method, s.notes, s.cashier, s.is_draft, s.is_active, s.created_at, s.updated_at
         ORDER BY s.created_at DESC
       `;
       
-      db.all(query, [], (err, rows) => {
-        if (err) {
-          reject(err);
-        } else {
-          resolve(rows);
-        }
-      });
-    });
+      const result = await db.query(query, []);
+      return result.rows;
+    } catch (error) {
+      throw error;
+    }
   }
 
   static getById(id) {
@@ -34,11 +26,11 @@ class Sale {
         // Get sale data
         const saleQuery = `
           SELECT s.*, 
-                 GROUP_CONCAT(si.product_name || ' x' || si.quantity || ' ' || si.unit_price) as items_summary
+                 STRING_AGG(si.product_name || ' x' || si.quantity || ' ' || si.unit_price, ', ') as items_summary
           FROM sales s 
           LEFT JOIN sale_items si ON s.id = si.sale_id 
           WHERE s.id = ? AND s.is_active = 1
-          GROUP BY s.id
+          GROUP BY s.id, s.invoice_number, s.customer_id, s.subtotal, s.discount, s.tax, s.total, s.paid, s.change_amount, s.payment_method, s.notes, s.cashier, s.is_draft, s.is_active, s.created_at, s.updated_at
         `;
         
         db.get(saleQuery, [id], async (err, sale) => {
@@ -285,11 +277,11 @@ class Sale {
     return new Promise((resolve, reject) => {
       const query = `
         SELECT s.*, 
-               GROUP_CONCAT(si.product_name || ' x' || si.quantity) as items_summary
+               STRING_AGG(si.product_name || ' x' || si.quantity, ', ') as items_summary
         FROM sales s 
         LEFT JOIN sale_items si ON s.id = si.sale_id 
         WHERE s.is_draft = 1 AND s.is_active = 1
-        GROUP BY s.id
+        GROUP BY s.id, s.invoice_number, s.customer_id, s.subtotal, s.discount, s.tax, s.total, s.paid, s.change_amount, s.payment_method, s.notes, s.cashier, s.is_draft, s.is_active, s.created_at, s.updated_at
         ORDER BY s.created_at DESC
       `;
       
@@ -303,19 +295,19 @@ class Sale {
     });
   }
 
-  static getByDateRange(startDate, endDate) {
-    return new Promise((resolve, reject) => {
+  static async getByDateRange(startDate, endDate) {
+    try {
       const query = `
         SELECT s.*, 
                COUNT(si.id) as item_count,
-               GROUP_CONCAT(si.product_name || ' x' || si.quantity) as items_summary
+               STRING_AGG(si.product_name || ' x' || si.quantity, ', ') as items_summary
         FROM sales s 
         LEFT JOIN sale_items si ON s.id = si.sale_id 
         WHERE s.is_active = 1 
           AND (
-            date(s.created_at) >= date(?) AND date(s.created_at) <= date(?)
+            s.created_at::date >= $1::date AND s.created_at::date <= $2::date
           )
-        GROUP BY s.id
+        GROUP BY s.id, s.invoice_number, s.customer_id, s.subtotal, s.discount, s.tax, s.total, s.paid, s.change_amount, s.payment_method, s.notes, s.cashier, s.is_draft, s.is_active, s.created_at, s.updated_at
         ORDER BY s.created_at DESC
       `;
       
@@ -326,32 +318,32 @@ class Sale {
       console.log(`📊 [Sale.getByDateRange] Searching between ${start} and ${end}`);
       
       // Debug: Show all recent sales for comparison
-      const debugQuery = "SELECT id, invoice_number, created_at, total, is_active FROM sales WHERE is_active = 1 ORDER BY created_at DESC LIMIT 5";
-      db.all(debugQuery, [], (err, debugRows) => {
-        if (!err) {
-          console.log(`🔍 [Sale.getByDateRange] Recent sales in DB:`, debugRows);
-        }
-      });
+      try {
+        const debugQuery = "SELECT id, invoice_number, created_at, total, is_active FROM sales WHERE is_active = 1 ORDER BY created_at DESC LIMIT 5";
+        const debugResult = await db.query(debugQuery, []);
+        console.log(`🔍 [Sale.getByDateRange] Recent sales in DB:`, debugResult.rows);
+      } catch (debugErr) {
+        console.log('Debug query failed:', debugErr.message);
+      }
       
-      db.all(query, [start, end], (err, rows) => {
-        if (err) {
-          console.error('❌ [Sale.getByDateRange] Error:', err);
-          reject(err);
-        } else {
-          console.log(`✅ [Sale.getByDateRange] Found ${rows.length} sales`);
-          if (rows.length > 0) {
-            console.log(`📈 Sample data:`, rows.slice(0, 2).map(r => ({
-              id: r.id,
-              invoice: r.invoice_number,
-              total: r.total,
-              created_at: r.created_at,
-              is_draft: r.is_draft
-            })));
-          }
-          resolve(rows);
-        }
-      });
-    });
+      const result = await db.query(query, [start, end]);
+      console.log(`✅ [Sale.getByDateRange] Found ${result.rows.length} sales`);
+      
+      if (result.rows.length > 0) {
+        console.log(`📈 Sample data:`, result.rows.slice(0, 2).map(r => ({
+          id: r.id,
+          invoice: r.invoice_number,
+          total: r.total,
+          created_at: r.created_at,
+          is_draft: r.is_draft
+        })));
+      }
+      
+      return result.rows;
+    } catch (error) {
+      console.error('❌ [Sale.getByDateRange] Error:', error);
+      throw error;
+    }
   }
 
   static generateInvoiceNumber() {
@@ -390,8 +382,8 @@ class Sale {
   }
 
 
-  static getTopProducts(startDate, endDate, limit = 5) {
-    return new Promise((resolve, reject) => {
+  static async getTopProducts(startDate, endDate, limit = 5) {
+    try {
       const query = `
         SELECT 
           p.id,
@@ -404,24 +396,21 @@ class Sale {
         JOIN products p ON si.product_id = p.id
         WHERE s.is_active = 1 
           AND s.is_draft = 0
-          AND s.created_at >= ? 
-          AND s.created_at <= ?
+          AND s.created_at::date >= $1::date 
+          AND s.created_at::date <= $2::date
         GROUP BY p.id, p.name, p.code
         ORDER BY quantity DESC
-        LIMIT ?
+        LIMIT $3
       `;
       
       const start = typeof startDate === 'string' ? startDate : startDate.toISOString();
       const end = typeof endDate === 'string' ? endDate : endDate.toISOString();
       
-      db.all(query, [start, end, limit], (err, rows) => {
-        if (err) {
-          reject(err);
-        } else {
-          resolve(rows);
-        }
-      });
-    });
+      const result = await db.query(query, [start, end, limit]);
+      return result.rows;
+    } catch (error) {
+      throw error;
+    }
   }
 
 

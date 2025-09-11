@@ -22,16 +22,22 @@ if (isProduction && hasPostgres) {
   db = {
     query: (sql, params = []) => {
       return new Promise((resolve, reject) => {
+        // Convert PostgreSQL syntax to SQLite
+        let sqliteQuery = sql
+          .replace(/\$(\d+)/g, '?')  // Replace $1, $2, etc. with ?
+          .replace(/::date/g, '')    // Remove ::date casting
+          .replace(/STRING_AGG\((.*?),\s*',\s*'\)/g, 'GROUP_CONCAT($1)'); // Convert STRING_AGG to GROUP_CONCAT
+        
         // Detect query type
-        const sqlLower = sql.toLowerCase().trim();
+        const sqlLower = sqliteQuery.toLowerCase().trim();
         
         if (sqlLower.startsWith('select')) {
-          sqliteDb.all(sql, params, (err, rows) => {
+          sqliteDb.all(sqliteQuery, params, (err, rows) => {
             if (err) reject(err);
             else resolve({ rows });
           });
         } else if (sqlLower.startsWith('insert')) {
-          sqliteDb.run(sql, params, function(err) {
+          sqliteDb.run(sqliteQuery, params, function(err) {
             if (err) reject(err);
             else resolve({ 
               rows: [{ id: this.lastID }],
@@ -40,7 +46,7 @@ if (isProduction && hasPostgres) {
             });
           });
         } else {
-          sqliteDb.run(sql, params, function(err) {
+          sqliteDb.run(sqliteQuery, params, function(err) {
             if (err) reject(err);
             else resolve({ 
               rows: [],
