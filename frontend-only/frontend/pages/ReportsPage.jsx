@@ -3,7 +3,7 @@ const { useState, useEffect } = React;
 const ReportsPage = ({ showNotification }) => {
   const [activeTab, setActiveTab] = useState('sales');
   const [loading, setLoading] = useState(false);
-  const [period, setPeriod] = useState('today');
+  const [period, setPeriod] = useState('week'); // Default to week since today filter has issues
   const [customDateRange, setCustomDateRange] = useState({
     start: '',
     end: ''
@@ -95,11 +95,14 @@ const ReportsPage = ({ showNotification }) => {
         endDate = new Date(today.getFullYear(), today.getMonth(), today.getDate(), 23, 59, 59);
     }
 
-    return {
+    const params = {
       start_date: startDate.toISOString().split('T')[0],
       end_date: endDate.toISOString().split('T')[0],
       range: period === 'custom' ? 'custom' : period
     };
+    
+    console.log(`📅 [ReportsPage] Date range params:`, params);
+    return params;
   };
 
   const loadReportData = async () => {
@@ -107,28 +110,39 @@ const ReportsPage = ({ showNotification }) => {
       setLoading(true);
       const dateParams = getDateRange();
       
+      console.log(`📊 [ReportsPage] Loading ${activeTab} data with params:`, dateParams);
+      
       switch (activeTab) {
         case 'sales':
+          console.log(`📈 [ReportsPage] Fetching sales data...`);
           const salesData = await api.reports.getSales(dateParams);
+          console.log(`📈 [ReportsPage] Sales data received:`, salesData);
           setSalesData(salesData);
           break;
         case 'financial':
+          console.log(`💰 [ReportsPage] Fetching financial data...`);
           const financialData = await api.reports.getFinancial(dateParams);
+          console.log(`💰 [ReportsPage] Financial data received:`, financialData);
           setFinancialData(financialData);
           break;
         case 'products':
+          console.log(`📦 [ReportsPage] Fetching products data...`);
           const productsData = await api.reports.getProducts(dateParams);
+          console.log(`📦 [ReportsPage] Products data received:`, productsData);
           setProductsData(productsData);
           break;
         case 'inventory':
+          console.log(`📋 [ReportsPage] Fetching inventory data...`);
           const inventoryData = await api.reports.getFinancial(dateParams); // Using financial for now as inventory endpoint might not exist
+          console.log(`📋 [ReportsPage] Inventory data received:`, inventoryData);
           setInventoryData(inventoryData);
           break;
       }
       
       setLastUpdated(new Date());
+      console.log(`✅ [ReportsPage] Successfully loaded ${activeTab} data`);
     } catch (error) {
-      console.error(`Error loading ${activeTab} data:`, error);
+      console.error(`❌ [ReportsPage] Error loading ${activeTab} data:`, error);
       showNotification(`Error loading ${activeTab} report: ${error.message}`, 'error');
     } finally {
       setLoading(false);
