@@ -326,6 +326,14 @@ class Sale {
       
       console.log(`📊 [Sale.getByDateRange] Searching between ${start} and ${end}`);
       
+      // Debug: Show all recent sales for comparison
+      const debugQuery = "SELECT id, invoice_number, created_at, total, is_active FROM sales WHERE is_active = 1 ORDER BY created_at DESC LIMIT 5";
+      db.all(debugQuery, [], (err, debugRows) => {
+        if (!err) {
+          console.log(`🔍 [Sale.getByDateRange] Recent sales in DB:`, debugRows);
+        }
+      });
+      
       db.all(query, [start, end, start, end], (err, rows) => {
         if (err) {
           console.error('❌ [Sale.getByDateRange] Error:', err);

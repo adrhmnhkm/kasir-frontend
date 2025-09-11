@@ -41,6 +41,17 @@ class ReportController {
 
       console.log(`🔍 [getSalesReport] Filter: ${range}, Start: ${startDate.toISOString()}, End: ${endDate.toISOString()}`);
       console.log(`🕐 [getSalesReport] Server Time: ${new Date().toISOString()}, Local: ${new Date().toString()}`);
+      
+      // Debug: Show what dates we're actually searching for
+      if (range === 'today') {
+        console.log(`📅 [getSalesReport] Today filter details:`, {
+          serverDate: new Date().toDateString(),
+          searchStart: startDate.toString(),
+          searchEnd: endDate.toString(),
+          isoStart: startDate.toISOString(),
+          isoEnd: endDate.toISOString()
+        });
+      }
 
       // Get sales data
       const sales = await Sale.getByDateRange(startDate, endDate);
