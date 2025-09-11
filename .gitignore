@@ -131,4 +131,9 @@ kasir.db
 # Scripts yang tidak diperlukan untuk user lain
 scripts/demo-*.sh
 scripts/demo-*.bat
-scripts/create-demo-*.js 
+scripts/create-demo-*.js
+
+# Vercel deployment
+.vercel
+.env*.local
+build.sh 

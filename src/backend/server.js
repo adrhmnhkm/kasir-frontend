@@ -7,7 +7,15 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 
 // Middleware
-app.use(cors());
+app.use(cors({
+  origin: [
+    'https://frontend-only-tau.vercel.app',
+    'http://localhost:3000',
+    'http://localhost:5173',
+    /\.vercel\.app$/
+  ],
+  credentials: true
+}));
 app.use(express.json());
 
 // API routes
@@ -119,8 +127,8 @@ app.use('/api/*', (req, res) => {
   res.status(404).json({ error: 'API endpoint not found' });
 });
 
-// Initialize database and start server
-async function startServer() {
+// Initialize database
+async function initializeApp() {
   try {
     // Check database file
     const dbInfo = checkDatabaseFile();
@@ -128,7 +136,18 @@ async function startServer() {
     // Initialize database
     await initializeDatabase();
     
-    // Start server
+    console.log('✅ Database initialized');
+    console.log(`📍 Database location: ${dbInfo.path}`);
+  } catch (error) {
+    console.error('Failed to initialize app:', error);
+  }
+}
+
+// For local development
+if (require.main === module) {
+  async function startServer() {
+    await initializeApp();
+    
     app.listen(PORT, () => {
       console.log(`🚀 Server running on port ${PORT}`);
       console.log(`📱 Application: http://localhost:${PORT}`);
@@ -137,22 +156,13 @@ async function startServer() {
       console.log(`🛍️  Products: http://localhost:${PORT}/api/products`);
       console.log(`💰 Sales: http://localhost:${PORT}/api/sales`);
       console.log(`💸 Expenses: http://localhost:${PORT}/api/expenses`);
-      console.log('');
-      console.log('✅ Backend refactoring completed!');
-      console.log('📁 New modular structure:');
-      console.log('   - Models: Product, Category, Sale, Expense');
-      console.log('   - Controllers: Business logic separation');
-      console.log('   - Routes: RESTful API endpoints');
-      console.log('   - Utils: Database and helper functions');
-      console.log(`💾 Database: SQLite persistent storage`);
-      console.log(`📍 Database location: ${dbInfo.path}`);
     });
-  } catch (error) {
-    console.error('Failed to start server:', error);
-    process.exit(1);
   }
+  
+  startServer();
+} else {
+  // For Vercel deployment - initialize without listening
+  initializeApp();
 }
-
-startServer();
 
 module.exports = app;

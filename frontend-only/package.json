@@ -1,0 +1,16 @@
+{
+  "name": "aplikasi-kasir-frontend",
+  "version": "1.0.0",
+  "description": "Frontend untuk Aplikasi Kasir - Static deployment",
+  "scripts": {
+    "build": "node build.js",
+    "dev": "serve public -p 3000",
+    "start": "serve public -p 3000"
+  },
+  "dependencies": {
+    "serve": "^14.2.1"
+  },
+  "devDependencies": {
+    "@babel/standalone": "^7.22.5"
+  }
+}

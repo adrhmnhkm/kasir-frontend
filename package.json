@@ -8,7 +8,10 @@
     "dev": "nodemon src/backend/server.js",
     "start:old": "node server-simple.js",
     "backup": "node scripts/backup.js",
-    "restore": "node scripts/restore.js"
+    "restore": "node scripts/restore.js",
+    "deploy:setup": "node scripts/deploy-vercel.js",
+    "deploy": "vercel --prod",
+    "build": "echo 'Build completed for serverless deployment'"
   },
   "dependencies": {
     "cors": "^2.8.5",
@@ -18,7 +21,8 @@
     "fs-extra": "^11.2.0",
     "moment": "^2.29.4",
     "multer": "^1.4.5-lts.1",
-    "sqlite3": "^5.1.7"
+    "sqlite3": "^5.1.7",
+    "pg": "^8.11.3"
   },
   "devDependencies": {
     "nodemon": "^3.0.2"
