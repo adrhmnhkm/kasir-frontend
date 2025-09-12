@@ -43,16 +43,7 @@ async function initializeDatabase() {
     
     console.log('🎉 Database initialization completed successfully!');
     
-    // Show current data count
-    const categories = await Category.getAll();
-    const products = await Product.getAll();
-    const expenses = await Expense.getAll();
-    
-    console.log(`📊 Current data:`);
-    console.log(`   - Categories: ${categories.length}`);
-    console.log(`   - Products: ${products.length}`);
-    console.log(`   - Expenses: ${expenses.length}`);
-    
+    // Skip data counting during startup to avoid race conditions
     return true;
   } catch (error) {
     console.error('❌ Database initialization failed:', error);
