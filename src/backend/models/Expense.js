@@ -258,33 +258,58 @@ class Expense {
     }
   }
 
-  // Initialize expenses table (skip in production/Postgres)
+  // Initialize expenses table
   static async initialize() {
-    if (process.env.NODE_ENV === 'production') {
-      return;
-    }
-
     try {
       const createTableQuery = `
         CREATE TABLE IF NOT EXISTS expenses (
-          id INTEGER PRIMARY KEY AUTOINCREMENT,
-          description TEXT NOT NULL,
-          amount REAL NOT NULL,
-          category TEXT NOT NULL DEFAULT 'lainnya',
-          payment_method TEXT DEFAULT 'cash',
-          reference_number TEXT,
+          id SERIAL PRIMARY KEY,
+          description VARCHAR(255) NOT NULL,
+          amount DECIMAL(15,2) NOT NULL,
+          category VARCHAR(100) DEFAULT 'lainnya',
+          payment_method VARCHAR(50) DEFAULT 'cash',
+          reference_number VARCHAR(255),
           notes TEXT,
-          user TEXT DEFAULT 'Admin',
-          created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-          updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-          is_active INTEGER DEFAULT 1
+          user VARCHAR(255) DEFAULT 'Admin',
+          is_active BOOLEAN DEFAULT true,
+          created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+          updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
         )
       `;
       
       await db.query(createTableQuery, []);
-      console.log('✅ Expenses table created/verified');
+
+      // Add missing columns if they don't exist (migration)
+      try {
+        await db.query(`
+          ALTER TABLE expenses 
+          ADD COLUMN IF NOT EXISTS reference_number VARCHAR(255)
+        `, []);
+      } catch (e) {
+        // Column might already exist, ignore error
+      }
+
+      try {
+        await db.query(`
+          ALTER TABLE expenses 
+          ADD COLUMN IF NOT EXISTS user VARCHAR(255) DEFAULT 'Admin'
+        `, []);
+      } catch (e) {
+        // Column might already exist, ignore error
+      }
+
+      try {
+        await db.query(`
+          ALTER TABLE expenses 
+          ADD COLUMN IF NOT EXISTS is_active BOOLEAN DEFAULT true
+        `, []);
+      } catch (e) {
+        // Column might already exist, ignore error
+      }
+
+      console.log('✅ Expenses table initialized');
     } catch (error) {
-      console.error('❌ Error creating expenses table:', error);
+      console.error('❌ Error initializing expenses table:', error);
       throw error;
     }
   }
