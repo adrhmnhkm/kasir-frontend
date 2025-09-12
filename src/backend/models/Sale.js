@@ -161,6 +161,7 @@ class Sale {
           paid, change_amount, payment_method, notes, cashier, is_draft,
           created_at, updated_at
         ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14)
+        RETURNING id
       `;
       
       // Debug timestamp
@@ -186,7 +187,7 @@ class Sale {
       ];
       
       const result = await db.query(saleQuery, saleValues);
-      const saleId = result.insertId || result.rows?.[0]?.id;
+      const saleId = result.rows[0].id;
       console.log('Created sale with ID:', saleId);
       
       // Insert sale items if any
