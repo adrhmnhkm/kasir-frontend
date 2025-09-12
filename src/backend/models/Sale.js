@@ -436,50 +436,35 @@ class Sale {
     let now;
     
     if (saleData && saleData.created_at) {
-      // Use timestamp from frontend (already in Jakarta timezone)
+      // Use timestamp from frontend (already in Jakarta timezone UTC+7)
       now = new Date(saleData.created_at);
       console.log('=== USING FRONTEND TIMESTAMP ===');
       console.log('Frontend timestamp:', saleData.created_at);
     } else {
-      // Fallback to server time with Jakarta timezone
-      now = new Date();
-      console.log('=== USING SERVER TIME ===');
+      // Fallback to server time with Jakarta timezone UTC+7
+      const serverTime = new Date();
+      now = new Date(serverTime.getTime() + (7 * 60 * 60 * 1000));
+      console.log('=== USING SERVER TIME UTC+7 ===');
+      console.log('Server UTC time:', serverTime.toISOString());
     }
     
     // Debug: Show current times
     console.log('=== INVOICE NUMBER GENERATION DEBUG ===');
-    console.log('Current UTC time:', now.toISOString());
-    console.log('Current local time:', now.toString());
-    console.log('Timezone offset (minutes):', now.getTimezoneOffset());
+    console.log('Jakarta time (UTC+7):', now.toISOString());
     
-    // Check if PostgreSQL timezone setting affects this
-    console.log('Node.js timezone:', Intl.DateTimeFormat().resolvedOptions().timeZone);
+    // Extract time components from Jakarta time
+    const year = now.getUTCFullYear();
+    const month = String(now.getUTCMonth() + 1).padStart(2, '0');
+    const day = String(now.getUTCDate()).padStart(2, '0');
+    const time = String(now.getUTCHours()).padStart(2, '0') + 
+                 String(now.getUTCMinutes()).padStart(2, '0') + 
+                 String(now.getUTCSeconds()).padStart(2, '0');
     
-    // Method 1: Using toLocaleString with timezone
-    const jakartaTimeString = now.toLocaleString('en-US', { 
-      timeZone: 'Asia/Jakarta',
-      year: 'numeric',
-      month: '2-digit',
-      day: '2-digit',
-      hour: '2-digit',
-      minute: '2-digit',
-      second: '2-digit',
-      hour12: false
-    });
-    
-    console.log('Jakarta time string:', jakartaTimeString);
-    
-    // Parse the Jakarta time string
-    const [datePart, timePart] = jakartaTimeString.split(', ');
-    const [month, day, year] = datePart.split('/');
-    const [hour, minute, second] = timePart.split(':');
-    
-    const time = hour + minute + second;
     const invoiceNumber = `INV-${year}${month}${day}-${time}`;
     
     console.log('Parsed components:');
     console.log('Year:', year, 'Month:', month, 'Day:', day);
-    console.log('Hour:', hour, 'Minute:', minute, 'Second:', second);
+    console.log('Hour:', now.getUTCHours(), 'Minute:', now.getUTCMinutes(), 'Second:', now.getUTCSeconds());
     console.log('Generated invoice:', invoiceNumber);
     console.log('==========================================');
     
