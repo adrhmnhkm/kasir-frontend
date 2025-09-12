@@ -141,8 +141,8 @@ class Sale {
 
   static create(saleData) {
     return new Promise((resolve, reject) => {
-      // Generate invoice number
-      const invoiceNumber = this.generateInvoiceNumber();
+      // Generate invoice number using frontend timestamp
+      const invoiceNumber = this.generateInvoiceNumber(saleData);
       
       // Insert sale first
       const saleQuery = `
@@ -421,9 +421,20 @@ class Sale {
     }
   }
 
-  static generateInvoiceNumber() {
-    // Use Jakarta timezone for invoice number - IMPROVED METHOD
-    const now = new Date();
+  static generateInvoiceNumber(saleData = null) {
+    // Use timestamp from frontend if available, otherwise use server time
+    let now;
+    
+    if (saleData && saleData.created_at) {
+      // Use timestamp from frontend (already in Jakarta timezone)
+      now = new Date(saleData.created_at);
+      console.log('=== USING FRONTEND TIMESTAMP ===');
+      console.log('Frontend timestamp:', saleData.created_at);
+    } else {
+      // Fallback to server time with Jakarta timezone
+      now = new Date();
+      console.log('=== USING SERVER TIME ===');
+    }
     
     // Debug: Show current times
     console.log('=== INVOICE NUMBER GENERATION DEBUG ===');
