@@ -70,7 +70,7 @@ class Sale {
                STRING_AGG(si.product_name || ' x' || si.quantity || ' ' || si.unit_price, ', ') as items_summary
         FROM sales s 
         LEFT JOIN sale_items si ON s.id = si.sale_id 
-        WHERE s.is_active = 1
+        WHERE s.is_active = true
         GROUP BY s.id, s.invoice_number, s.customer_id, s.subtotal, s.discount, s.tax, s.total, s.paid, s.change_amount, s.payment_method, s.notes, s.cashier, s.is_draft, s.is_active, s.created_at, s.updated_at
         ORDER BY s.created_at DESC
       `;
@@ -91,7 +91,7 @@ class Sale {
                  STRING_AGG(si.product_name || ' x' || si.quantity || ' ' || si.unit_price, ', ') as items_summary
           FROM sales s 
           LEFT JOIN sale_items si ON s.id = si.sale_id 
-          WHERE s.id = $1 AND s.is_active = 1
+          WHERE s.id = $1 AND s.is_active = true
           GROUP BY s.id, s.invoice_number, s.customer_id, s.subtotal, s.discount, s.tax, s.total, s.paid, s.change_amount, s.payment_method, s.notes, s.cashier, s.is_draft, s.is_active, s.created_at, s.updated_at
         `;
         
@@ -302,7 +302,7 @@ class Sale {
 
   static async delete(id) {
     try {
-      const query = 'UPDATE sales SET is_active = 0 WHERE id = ?';
+      const query = 'UPDATE sales SET is_active = false WHERE id = $1';
       await db.query(query, [id]);
       return { success: true };
     } catch (error) {
@@ -312,7 +312,7 @@ class Sale {
 
   static async finalize(id) {
     try {
-      const query = 'UPDATE sales SET is_draft = 0 WHERE id = ?';
+      const query = 'UPDATE sales SET is_draft = false WHERE id = $1';
       await db.query(query, [id]);
       return await Sale.getById(id);
     } catch (error) {
@@ -327,7 +327,7 @@ class Sale {
                STRING_AGG(si.product_name || ' x' || si.quantity, ', ') as items_summary
         FROM sales s 
         LEFT JOIN sale_items si ON s.id = si.sale_id 
-        WHERE s.is_draft = 1 AND s.is_active = 1
+        WHERE s.is_draft = true AND s.is_active = true
         GROUP BY s.id, s.invoice_number, s.customer_id, s.subtotal, s.discount, s.tax, s.total, s.paid, s.change_amount, s.payment_method, s.notes, s.cashier, s.is_draft, s.is_active, s.created_at, s.updated_at
         ORDER BY s.created_at DESC
       `;
@@ -356,7 +356,7 @@ class Sale {
                STRING_AGG(si.product_name || ' x' || si.quantity, ', ') as items_summary
         FROM sales s 
         LEFT JOIN sale_items si ON s.id = si.sale_id 
-        WHERE s.is_active = 1 
+        WHERE s.is_active = true 
           AND DATE(s.created_at) >= $1 
           AND DATE(s.created_at) <= $2
         GROUP BY s.id, s.invoice_number, s.customer_id, s.subtotal, s.discount, s.tax, s.total, s.paid, s.change_amount, s.payment_method, s.notes, s.cashier, s.is_draft, s.is_active, s.created_at, s.updated_at
@@ -383,7 +383,7 @@ class Sale {
       // Fallback: try to get recent sales without date filtering
       try {
         console.log('🔄 [Sale.getByDateRange] Fallback to recent sales');
-        const fallbackQuery = "SELECT * FROM sales WHERE is_active = 1 ORDER BY created_at DESC LIMIT 10";
+        const fallbackQuery = "SELECT * FROM sales WHERE is_active = true ORDER BY created_at DESC LIMIT 10";
         const fallbackResult = await db.query(fallbackQuery, []);
         
         return fallbackResult.rows.map(row => ({
@@ -463,7 +463,7 @@ class Sale {
           SUM(change_amount) as total_change,
           AVG(total) as avg_sale_value
         FROM sales 
-        WHERE is_active = 1 AND is_draft = 0
+        WHERE is_active = true AND is_draft = false
       `;
       
       const result = await db.query(query, []);
@@ -491,8 +491,8 @@ class Sale {
         FROM sale_items si
         JOIN sales s ON si.sale_id = s.id
         JOIN products p ON si.product_id = p.id
-        WHERE s.is_active = 1 
-          AND s.is_draft = 0
+        WHERE s.is_active = true 
+          AND s.is_draft = false
           AND DATE(s.created_at) >= $1 
           AND DATE(s.created_at) <= $2
         GROUP BY p.id, p.name, p.code
