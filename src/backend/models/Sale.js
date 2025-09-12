@@ -432,24 +432,40 @@ class Sale {
   }
 
   static generateInvoiceNumber(saleData = null) {
-    // Use timestamp from frontend if available, otherwise use server time
+    // Use timestamp from frontend if available, otherwise use server Jakarta time
     let now;
     
     if (saleData && saleData.created_at) {
-      // Use timestamp from frontend (already in Jakarta timezone UTC+7)
+      // Use timestamp from frontend (already Jakarta time)
       now = new Date(saleData.created_at);
       console.log('=== USING FRONTEND TIMESTAMP ===');
       console.log('Frontend timestamp:', saleData.created_at);
     } else {
-      // Fallback to server time with Jakarta timezone UTC+7
+      // Fallback to server Jakarta time
       const serverTime = new Date();
-      now = new Date(serverTime.getTime() + (7 * 60 * 60 * 1000));
-      console.log('=== USING SERVER TIME UTC+7 ===');
+      const jakartaTimeString = serverTime.toLocaleString('en-US', { 
+        timeZone: 'Asia/Jakarta',
+        year: 'numeric',
+        month: '2-digit',
+        day: '2-digit',
+        hour: '2-digit',
+        minute: '2-digit',
+        second: '2-digit',
+        hour12: false
+      });
+      
+      // Parse Jakarta time string
+      const [datePart, timePart] = jakartaTimeString.split(', ');
+      const [month, day, year] = datePart.split('/');
+      const [hour, minute, second] = timePart.split(':');
+      now = new Date(`${year}-${month}-${day}T${hour}:${minute}:${second}.000Z`);
+      
+      console.log('=== USING SERVER JAKARTA TIME ===');
     }
     
-    // Debug: Show current times
+    // Debug: Show Jakarta time
     console.log('=== INVOICE NUMBER GENERATION DEBUG ===');
-    console.log('Jakarta time (UTC+7):', now.toISOString());
+    console.log('Jakarta time:', now.toISOString());
     
     // Extract time components from Jakarta time
     const year = now.getUTCFullYear();
