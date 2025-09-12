@@ -28,6 +28,7 @@ app.use(cors({
     'https://kasir-receipt-ing0omaqt-adrhmnhkms-projects.vercel.app',
     'https://kasir-receipt-6gumhynl3-adrhmnhkms-projects.vercel.app',
     'https://frontend-only-2onde4li0-adrhmnhkms-projects.vercel.app',
+    'https://frontend-only-36mnvxcls-adrhmnhkms-projects.vercel.app',
     'http://localhost:3000',
     'http://localhost:5173',
     /\.vercel\.app$/
