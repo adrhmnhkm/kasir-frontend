@@ -5,8 +5,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Aplikasi Kasir PVC</title>
     
-    <!-- Tailwind CSS -->
-    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Preload Critical Resources -->
+    <link rel="preload" href="https://unpkg.com/tailwindcss@^3/dist/tailwind.min.css" as="style">
+    <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" as="style">
+    <link rel="preload" href="https://unpkg.com/react@18/umd/react.production.min.js" as="script">
+    <link rel="preload" href="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" as="script">
+    
+    <!-- Tailwind CSS - Production Build -->
+    <link href="https://unpkg.com/tailwindcss@^3/dist/tailwind.min.css" rel="stylesheet">
     
     <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
@@ -20,6 +26,16 @@
         @keyframes fadeIn {
             from { opacity: 0; transform: translateY(10px); }
             to { opacity: 1; transform: translateY(0); }
+        }
+        
+        /* Smooth app loading */
+        #root {
+            opacity: 0;
+            transition: opacity 0.5s ease-in;
+        }
+        
+        #root.loaded {
+            opacity: 1;
         }
         
         /* Custom scrollbar */
@@ -63,10 +79,10 @@
         console.log('🌐 API configured to:', window.API_BASE_URL);
     </script>
 
-    <!-- React and ReactDOM -->
-    <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
-    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
-    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <!-- React and ReactDOM - Production -->
+    <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <script src="https://unpkg.com/@babel/standalone@7/babel.min.js"></script>
 
     <!-- Utilities -->
     <script type="text/babel" src="/frontend/utils/api.js"></script>
@@ -116,7 +132,7 @@
     
     <!-- Render App -->
     <script type="text/babel">
-        // Function to check if all components are loaded
+        // Optimized component loading with progress tracking
         function checkComponents() {
             const requiredComponents = [
                 'api', 'formatCurrency', 'formatDate',
@@ -129,14 +145,28 @@
             ];
             
             const missing = requiredComponents.filter(comp => !window[comp]);
+            const loaded = requiredComponents.length - missing.length;
+            const progress = Math.round((loaded / requiredComponents.length) * 100);
+            
+            // Update progress in console (optional)
+            if (missing.length > 0) {
+                console.log(`⏳ Loading progress: ${progress}% (${loaded}/${requiredComponents.length})`);
+            }
             
             if (missing.length === 0) {
-                console.log('All components loaded successfully');
+                console.log('🚀 All components loaded successfully');
+                
+                // Smooth transition
                 const root = ReactDOM.createRoot(document.getElementById('root'));
                 root.render(React.createElement(App));
+                
+                // Add loaded class for smooth fade-in
+                setTimeout(() => {
+                    document.getElementById('root').classList.add('loaded');
+                }, 50);
             } else {
-                console.log('Waiting for components:', missing);
-                setTimeout(checkComponents, 100);
+                // Faster checking interval
+                setTimeout(checkComponents, 50);
             }
         }
         
