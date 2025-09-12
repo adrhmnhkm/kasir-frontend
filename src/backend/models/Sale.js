@@ -426,13 +426,22 @@ class Sale {
   }
 
   static generateInvoiceNumber() {
+    // Use Jakarta timezone for invoice number
     const now = new Date();
-    const year = now.getFullYear();
-    const month = String(now.getMonth() + 1).padStart(2, '0');
-    const day = String(now.getDate()).padStart(2, '0');
-    const time = String(now.getHours()).padStart(2, '0') + 
-                 String(now.getMinutes()).padStart(2, '0') + 
-                 String(now.getSeconds()).padStart(2, '0');
+    // Convert to Jakarta timezone (UTC+7)
+    const jakartaTime = new Date(now.getTime() + (7 * 60 * 60 * 1000));
+    
+    const year = jakartaTime.getUTCFullYear();
+    const month = String(jakartaTime.getUTCMonth() + 1).padStart(2, '0');
+    const day = String(jakartaTime.getUTCDate()).padStart(2, '0');
+    const time = String(jakartaTime.getUTCHours()).padStart(2, '0') + 
+                 String(jakartaTime.getUTCMinutes()).padStart(2, '0') + 
+                 String(jakartaTime.getUTCSeconds()).padStart(2, '0');
+    
+    console.log('Invoice number generation:');
+    console.log('Server time (UTC):', now.toISOString());
+    console.log('Jakarta time (UTC+7):', jakartaTime.toISOString());
+    console.log('Generated invoice:', `INV-${year}${month}${day}-${time}`);
     
     return `INV-${year}${month}${day}-${time}`;
   }
