@@ -154,7 +154,7 @@ class Sale {
           invoice_number, customer_id, subtotal, discount, tax, total,
           paid, change_amount, payment_method, notes, cashier, is_draft,
           created_at, updated_at
-        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NOW(), NOW())
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
       `;
       
       const saleValues = [
@@ -169,7 +169,9 @@ class Sale {
         saleData.payment_method || 'cash',
         saleData.notes || '',
         saleData.cashier || 'Kasir',
-        saleData.is_draft || false
+        saleData.is_draft || false,
+        saleData.created_at || new Date().toISOString(),
+        saleData.created_at || new Date().toISOString()
       ];
       
       db.run(saleQuery, saleValues, function(err) {
@@ -187,7 +189,7 @@ class Sale {
             INSERT INTO sale_items (
               sale_id, product_id, product_name, quantity, unit_price, 
               discount, total, created_at
-            ) VALUES (?, ?, ?, ?, ?, ?, ?, NOW())
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?)
           `;
           
           let itemsProcessed = 0;
@@ -201,7 +203,8 @@ class Sale {
               parseFloat(item.quantity),
               parseFloat(item.unit_price),
               parseFloat(item.discount) || 0,
-              parseFloat(item.total)
+              parseFloat(item.total),
+              saleData.created_at || new Date().toISOString()
             ];
             
             console.log('Inserting item:', itemValues);

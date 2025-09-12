@@ -62,6 +62,10 @@ const PaymentModal = ({
     try {
       setLoading(true);
       
+      // Get current time in Asia/Jakarta timezone
+      const now = new Date();
+      const jakartaTime = new Date(now.toLocaleString("en-US", {timeZone: "Asia/Jakarta"}));
+      
       const saleData = {
         customer_id: null,
         items: cart.map(item => ({
@@ -80,7 +84,8 @@ const PaymentModal = ({
         payment_method: 'cash',
         notes: customer,
         cashier: cashier,
-        is_draft: false
+        is_draft: false,
+        created_at: jakartaTime.toISOString()
       };
 
       const result = await onPayment(saleData);
