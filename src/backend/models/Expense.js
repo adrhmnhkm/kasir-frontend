@@ -31,7 +31,7 @@ class Expense {
       const query = `
         INSERT INTO expenses (
           description, amount, category, payment_method, 
-          reference_number, notes, user
+          reference_number, notes, "user"
         ) VALUES ($1, $2, $3, $4, $5, $6, $7)
       `;
       
