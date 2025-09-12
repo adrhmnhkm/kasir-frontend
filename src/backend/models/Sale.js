@@ -149,8 +149,8 @@ class Sale {
     });
   }
 
-  static create(saleData) {
-    return new Promise((resolve, reject) => {
+  static async create(saleData) {
+    try {
       // Generate invoice number using frontend timestamp
       const invoiceNumber = this.generateInvoiceNumber(saleData);
       
@@ -185,63 +185,44 @@ class Sale {
         receivedTimestamp
       ];
       
-      db.run(saleQuery, saleValues, function(err) {
-        if (err) {
-          reject(err);
-          return;
-        }
+      const result = await db.query(saleQuery, saleValues);
+      const saleId = result.insertId || result.rows?.[0]?.id;
+      console.log('Created sale with ID:', saleId);
+      
+      // Insert sale items if any
+      if (saleData.items && saleData.items.length > 0) {
+        const itemQuery = `
+          INSERT INTO sale_items (
+            sale_id, product_id, product_name, quantity, unit_price, 
+            discount, total, created_at
+          ) VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+        `;
         
-        const saleId = this.lastID;
-        console.log('Created sale with ID:', saleId);
-        
-        // Insert sale items if any
-        if (saleData.items && saleData.items.length > 0) {
-          const itemQuery = `
-            INSERT INTO sale_items (
-              sale_id, product_id, product_name, quantity, unit_price, 
-              discount, total, created_at
-            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?)
-          `;
+        for (const item of saleData.items) {
+          const productName = item.product_name || `Product ${item.product_id}`;
           
-          let itemsProcessed = 0;
-          saleData.items.forEach(item => {
-            const productName = item.product_name || `Product ${item.product_id}`;
-            
-            const itemValues = [
-              saleId,
-              item.product_id,
-              productName,
-              parseFloat(item.quantity),
-              parseFloat(item.unit_price),
-              parseFloat(item.discount) || 0,
-              parseFloat(item.total),
-              saleData.created_at || new Date().toISOString()
-            ];
-            
-            console.log('Inserting item:', itemValues);
-            
-            db.run(itemQuery, itemValues, function(err) {
-              if (err) {
-                console.error('Error inserting item:', err);
-                reject(err);
-                return;
-              }
-              
-              itemsProcessed++;
-              console.log(`Item ${itemsProcessed}/${saleData.items.length} inserted`);
-              
-              if (itemsProcessed === saleData.items.length) {
-                // All items inserted, get the complete sale
-                Sale.getById(saleId).then(resolve).catch(reject);
-              }
-            });
-          });
-        } else {
-          // No items, just return the sale
-          Sale.getById(saleId).then(resolve).catch(reject);
+          const itemValues = [
+            saleId,
+            item.product_id,
+            productName,
+            parseFloat(item.quantity),
+            parseFloat(item.unit_price),
+            parseFloat(item.discount) || 0,
+            parseFloat(item.total),
+            saleData.created_at || new Date().toISOString()
+          ];
+          
+          console.log('Inserting item:', itemValues);
+          await db.query(itemQuery, itemValues);
         }
-      });
-    });
+      }
+      
+      // Return the complete sale
+      return await Sale.getById(saleId);
+    } catch (error) {
+      console.error('Error creating sale:', error);
+      throw error;
+    }
   }
 
   static updateProductStock(items, saleId, invoiceNumber) {
@@ -287,8 +268,8 @@ class Sale {
     });
   }
 
-  static update(id, saleData) {
-    return new Promise((resolve, reject) => {
+  static async update(id, saleData) {
+    try {
       const query = `
         UPDATE sales SET 
           customer_id = ?, subtotal = ?, discount = ?, tax = ?, total = ?,
@@ -312,46 +293,35 @@ class Sale {
         id
       ];
       
-      db.run(query, values, function(err) {
-        if (err) {
-          reject(err);
-        } else {
-          resolve(this.getById(id));
-        }
-      }.bind(this));
-    });
+      await db.query(query, values);
+      return await Sale.getById(id);
+    } catch (error) {
+      throw error;
+    }
   }
 
-  static delete(id) {
-    return new Promise((resolve, reject) => {
+  static async delete(id) {
+    try {
       const query = 'UPDATE sales SET is_active = 0 WHERE id = ?';
-      
-      db.run(query, [id], function(err) {
-        if (err) {
-          reject(err);
-        } else {
-          resolve({ success: true });
-        }
-      });
-    });
+      await db.query(query, [id]);
+      return { success: true };
+    } catch (error) {
+      throw error;
+    }
   }
 
-  static finalize(id) {
-    return new Promise((resolve, reject) => {
+  static async finalize(id) {
+    try {
       const query = 'UPDATE sales SET is_draft = 0 WHERE id = ?';
-      
-      db.run(query, [id], function(err) {
-        if (err) {
-          reject(err);
-        } else {
-          resolve(this.getById(id));
-        }
-      }.bind(this));
-    });
+      await db.query(query, [id]);
+      return await Sale.getById(id);
+    } catch (error) {
+      throw error;
+    }
   }
 
-  static getDrafts() {
-    return new Promise((resolve, reject) => {
+  static async getDrafts() {
+    try {
       const query = `
         SELECT s.*, 
                STRING_AGG(si.product_name || ' x' || si.quantity, ', ') as items_summary
@@ -362,14 +332,11 @@ class Sale {
         ORDER BY s.created_at DESC
       `;
       
-      db.all(query, [], (err, rows) => {
-        if (err) {
-          reject(err);
-        } else {
-          resolve(rows);
-        }
-      });
-    });
+      const result = await db.query(query, []);
+      return result.rows || result;
+    } catch (error) {
+      throw error;
+    }
   }
 
   static async getByDateRange(startDate, endDate) {
@@ -486,8 +453,8 @@ class Sale {
     return invoiceNumber;
   }
 
-  static getSummary() {
-    return new Promise((resolve, reject) => {
+  static async getSummary() {
+    try {
       const query = `
         SELECT 
           COUNT(*) as total_sales,
@@ -499,14 +466,11 @@ class Sale {
         WHERE is_active = 1 AND is_draft = 0
       `;
       
-      db.get(query, [], (err, row) => {
-        if (err) {
-          reject(err);
-        } else {
-          resolve(row);
-        }
-      });
-    });
+      const result = await db.query(query, []);
+      return result.rows?.[0] || result[0];
+    } catch (error) {
+      throw error;
+    }
   }
 
 
