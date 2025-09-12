@@ -62,9 +62,15 @@ const PaymentModal = ({
     try {
       setLoading(true);
       
-      // Get current time in Asia/Jakarta timezone
+      // Get current time in Asia/Jakarta timezone - CORRECT METHOD
       const now = new Date();
-      const jakartaTime = new Date(now.toLocaleString("en-US", {timeZone: "Asia/Jakarta"}));
+      // Get Jakarta time by adding offset (UTC+7)
+      const jakartaOffset = 7 * 60; // 7 hours in minutes
+      const jakartaTime = new Date(now.getTime() + (jakartaOffset * 60 * 1000));
+      
+      console.log('Current time (UTC):', now.toISOString());
+      console.log('Jakarta time (UTC+7):', jakartaTime.toISOString());
+      console.log('Jakarta time local:', jakartaTime.toLocaleString('id-ID', {timeZone: 'Asia/Jakarta'}));
       
       const saleData = {
         customer_id: null,

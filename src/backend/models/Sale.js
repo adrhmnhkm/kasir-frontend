@@ -157,6 +157,11 @@ class Sale {
         ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
       `;
       
+      // Debug timestamp
+      const receivedTimestamp = saleData.created_at || new Date().toISOString();
+      console.log('Received timestamp from frontend:', receivedTimestamp);
+      console.log('Current server time:', new Date().toISOString());
+      
       const saleValues = [
         invoiceNumber,
         saleData.customer_id || null,
@@ -170,8 +175,8 @@ class Sale {
         saleData.notes || '',
         saleData.cashier || 'Kasir',
         saleData.is_draft || false,
-        saleData.created_at || new Date().toISOString(),
-        saleData.created_at || new Date().toISOString()
+        receivedTimestamp,
+        receivedTimestamp
       ];
       
       db.run(saleQuery, saleValues, function(err) {
