@@ -12,6 +12,10 @@
   ],
   "rewrites": [
     {
+      "source": "/receipt/(.*)",
+      "destination": "/public/receipt.html"
+    },
+    {
       "source": "/frontend/(.*)",
       "destination": "/frontend/$1"
     },
