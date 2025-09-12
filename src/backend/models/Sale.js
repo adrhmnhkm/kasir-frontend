@@ -424,8 +424,23 @@ class Sale {
   static generateInvoiceNumber() {
     // Use Jakarta timezone for invoice number
     const now = new Date();
+    
+    // Debug: Show current times
+    console.log('=== INVOICE NUMBER GENERATION DEBUG ===');
+    console.log('Current UTC time:', now.toISOString());
+    console.log('Current UTC time (local):', now.toString());
+    console.log('UTC Hours:', now.getUTCHours());
+    console.log('UTC Minutes:', now.getUTCMinutes());
+    console.log('UTC Seconds:', now.getUTCSeconds());
+    
     // Convert to Jakarta timezone (UTC+7)
     const jakartaTime = new Date(now.getTime() + (7 * 60 * 60 * 1000));
+    
+    console.log('Jakarta time (UTC+7):', jakartaTime.toISOString());
+    console.log('Jakarta time (local):', jakartaTime.toString());
+    console.log('Jakarta UTC Hours:', jakartaTime.getUTCHours());
+    console.log('Jakarta UTC Minutes:', jakartaTime.getUTCMinutes());
+    console.log('Jakarta UTC Seconds:', jakartaTime.getUTCSeconds());
     
     const year = jakartaTime.getUTCFullYear();
     const month = String(jakartaTime.getUTCMonth() + 1).padStart(2, '0');
@@ -434,10 +449,8 @@ class Sale {
                  String(jakartaTime.getUTCMinutes()).padStart(2, '0') + 
                  String(jakartaTime.getUTCSeconds()).padStart(2, '0');
     
-    console.log('Invoice number generation:');
-    console.log('Server time (UTC):', now.toISOString());
-    console.log('Jakarta time (UTC+7):', jakartaTime.toISOString());
     console.log('Generated invoice:', `INV-${year}${month}${day}-${time}`);
+    console.log('==========================================');
     
     return `INV-${year}${month}${day}-${time}`;
   }
