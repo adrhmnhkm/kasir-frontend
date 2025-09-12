@@ -378,12 +378,9 @@ class ReportController {
 
   // Method untuk menghitung HPP (Harga Pokok Penjualan)
   static async calculateHPP(startDate, endDate) {
-    return new Promise((resolve, reject) => {
-      const sqlite3 = require('sqlite3').verbose();
-      const path = require('path');
-      const dbPath = path.join(__dirname, '../../kasir.db');
-      const db = new sqlite3.Database(dbPath);
-
+    try {
+      const db = require('../database/adapter');
+      
       const query = `
         SELECT 
           si.product_id,
@@ -407,36 +404,34 @@ class ReportController {
       const start = typeof startDate === 'string' ? startDate : startDate.toISOString();
       const end = typeof endDate === 'string' ? endDate : endDate.toISOString();
       
-      db.all(query, [start, end], (err, rows) => {
-        if (err) {
-          reject(err);
-          return;
-        }
+      const result = await db.query(query, [start, end]);
+      const rows = result.rows || result;
 
-        const totalHPP = rows.reduce((sum, row) => sum + parseFloat(row.total_hpp || 0), 0);
-        const totalRevenue = rows.reduce((sum, row) => sum + parseFloat(row.total_revenue || 0), 0);
-        
-        const breakdown = rows.map(row => ({
-          product_id: row.product_id,
-          product_name: row.product_name,
-          purchase_price: parseFloat(row.purchase_price || 0),
-          selling_price: parseFloat(row.selling_price || 0),
-          quantity_sold: parseFloat(row.total_quantity_sold),
-          revenue: parseFloat(row.total_revenue),
-          hpp: parseFloat(row.total_hpp || 0),
-          margin: parseFloat(row.total_revenue) - parseFloat(row.total_hpp || 0),
-          margin_percentage: parseFloat(row.total_revenue) > 0 ? 
-            ((parseFloat(row.total_revenue) - parseFloat(row.total_hpp || 0)) / parseFloat(row.total_revenue)) * 100 : 0
-        }));
+      const totalHPP = rows.reduce((sum, row) => sum + parseFloat(row.total_hpp || 0), 0);
+      const totalRevenue = rows.reduce((sum, row) => sum + parseFloat(row.total_revenue || 0), 0);
+      
+      const breakdown = rows.map(row => ({
+        product_id: row.product_id,
+        product_name: row.product_name,
+        purchase_price: parseFloat(row.purchase_price || 0),
+        selling_price: parseFloat(row.selling_price || 0),
+        quantity_sold: parseFloat(row.total_quantity_sold),
+        revenue: parseFloat(row.total_revenue),
+        hpp: parseFloat(row.total_hpp || 0),
+        margin: parseFloat(row.total_revenue) - parseFloat(row.total_hpp || 0),
+        margin_percentage: parseFloat(row.total_revenue) > 0 ? 
+          ((parseFloat(row.total_revenue) - parseFloat(row.total_hpp || 0)) / parseFloat(row.total_revenue)) * 100 : 0
+      }));
 
-        db.close();
-        resolve({
-          totalHPP,
-          totalRevenue,
-          breakdown
-        });
-      });
-    });
+      return {
+        totalHPP,
+        totalRevenue,
+        breakdown
+      };
+    } catch (error) {
+      console.error('Error in calculateHPP:', error);
+      throw error;
+    }
   }
 }
 
