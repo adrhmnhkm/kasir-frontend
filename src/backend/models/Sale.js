@@ -160,7 +160,7 @@ class Sale {
           invoice_number, customer_id, subtotal, discount, tax, total,
           paid, change_amount, payment_method, notes, cashier, is_draft,
           created_at, updated_at
-        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14)
       `;
       
       // Debug timestamp
@@ -195,7 +195,7 @@ class Sale {
           INSERT INTO sale_items (
             sale_id, product_id, product_name, quantity, unit_price, 
             discount, total, created_at
-          ) VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+          ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
         `;
         
         for (const item of saleData.items) {
@@ -272,10 +272,10 @@ class Sale {
     try {
       const query = `
         UPDATE sales SET 
-          customer_id = ?, subtotal = ?, discount = ?, tax = ?, total = ?,
-          paid = ?, change_amount = ?, payment_method = ?, notes = ?,
-          cashier = ?, is_draft = ?, updated_at = CURRENT_TIMESTAMP
-        WHERE id = ?
+          customer_id = $1, subtotal = $2, discount = $3, tax = $4, total = $5,
+          paid = $6, change_amount = $7, payment_method = $8, notes = $9,
+          cashier = $10, is_draft = $11, updated_at = CURRENT_TIMESTAMP
+        WHERE id = $12
       `;
       
       const values = [
