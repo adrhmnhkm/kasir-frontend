@@ -258,11 +258,24 @@ class Expense {
     }
   }
 
+
   // Initialize expenses table
   static async initialize() {
     try {
+      // First, try to check if table exists and has is_active column
+      try {
+        await db.query('SELECT is_active FROM expenses LIMIT 1', []);
+        console.log('✅ Expenses table already exists with is_active column');
+        return;
+      } catch (e) {
+        console.log('🔄 Expenses table needs to be fixed, recreating...');
+      }
+
+      // Drop and recreate table to ensure correct structure
+      await db.query('DROP TABLE IF EXISTS expenses CASCADE', []);
+      
       const createTableQuery = `
-        CREATE TABLE IF NOT EXISTS expenses (
+        CREATE TABLE expenses (
           id SERIAL PRIMARY KEY,
           description VARCHAR(255) NOT NULL,
           amount DECIMAL(15,2) NOT NULL,
@@ -278,36 +291,7 @@ class Expense {
       `;
       
       await db.query(createTableQuery, []);
-
-      // Add missing columns if they don't exist (migration)
-      try {
-        await db.query(`
-          ALTER TABLE expenses 
-          ADD COLUMN IF NOT EXISTS reference_number VARCHAR(255)
-        `, []);
-      } catch (e) {
-        // Column might already exist, ignore error
-      }
-
-      try {
-        await db.query(`
-          ALTER TABLE expenses 
-          ADD COLUMN IF NOT EXISTS user VARCHAR(255) DEFAULT 'Admin'
-        `, []);
-      } catch (e) {
-        // Column might already exist, ignore error
-      }
-
-      try {
-        await db.query(`
-          ALTER TABLE expenses 
-          ADD COLUMN IF NOT EXISTS is_active BOOLEAN DEFAULT true
-        `, []);
-      } catch (e) {
-        // Column might already exist, ignore error
-      }
-
-      console.log('✅ Expenses table initialized');
+      console.log('✅ Expenses table recreated with correct structure');
     } catch (error) {
       console.error('❌ Error initializing expenses table:', error);
       throw error;
