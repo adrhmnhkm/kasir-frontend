@@ -10,6 +10,15 @@ const fs = require('fs');
 async function initializeDatabase() {
   try {
     console.log('🔄 Initializing database...');
+
+    // If Postgres is configured, ensure tables exist before model init
+    const hasPostgres = process.env.POSTGRES_URL || process.env.DATABASE_URL;
+    if (hasPostgres) {
+      console.log('🐘 Detected Postgres configuration. Ensuring tables exist...');
+      const postgres = require('../database/postgres');
+      await postgres.initializeTables();
+      console.log('✅ Postgres tables ensured');
+    }
     
     // Initialize Categories table and data
     console.log('📋 Setting up categories...');
