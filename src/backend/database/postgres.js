@@ -178,7 +178,7 @@ async function initializeTables() {
         payment_method VARCHAR(50) DEFAULT 'cash',
         reference_number VARCHAR(255),
         notes TEXT,
-        user VARCHAR(255) DEFAULT 'Admin',
+        "user" VARCHAR(255) DEFAULT 'Admin',
         is_active BOOLEAN DEFAULT true,
         created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
         updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
@@ -198,7 +198,7 @@ async function initializeTables() {
     try {
       await client.query(`
         ALTER TABLE expenses 
-        ADD COLUMN IF NOT EXISTS user VARCHAR(255) DEFAULT 'Admin'
+        ADD COLUMN IF NOT EXISTS "user" VARCHAR(255) DEFAULT 'Admin'
       `);
     } catch (e) {
       // Column might already exist, ignore error

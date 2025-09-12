@@ -283,7 +283,7 @@ class Expense {
           payment_method VARCHAR(50) DEFAULT 'cash',
           reference_number VARCHAR(255),
           notes TEXT,
-          user VARCHAR(255) DEFAULT 'Admin',
+          "user" VARCHAR(255) DEFAULT 'Admin',
           is_active BOOLEAN DEFAULT true,
           created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
           updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
