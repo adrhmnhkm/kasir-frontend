@@ -511,56 +511,67 @@ class Sale {
   }
 
 
-  // Initialize sales and sale_items tables
-  static async initialize() {
-    try {
-      // Create sales table
-      const createSalesTableQuery = `
-        CREATE TABLE IF NOT EXISTS sales (
-          id INTEGER PRIMARY KEY AUTOINCREMENT,
-          invoice_number TEXT UNIQUE NOT NULL,
-          customer_id INTEGER,
-          subtotal REAL NOT NULL,
-          discount REAL DEFAULT 0,
-          tax REAL DEFAULT 0,
-          total REAL NOT NULL,
-          paid REAL DEFAULT 0,
-          change_amount REAL DEFAULT 0,
-          payment_method TEXT DEFAULT 'cash',
-          notes TEXT,
-          cashier TEXT DEFAULT 'Kasir',
-          is_draft BOOLEAN DEFAULT 0,
-          is_active BOOLEAN DEFAULT 1,
-          created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-          updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
-        )
-      `;
+  // Initialize products, sales, and sale_items tables
+static async initialize() {
+  try {
+    // Create products table
+    const createProductsTableQuery = `
+      CREATE TABLE IF NOT EXISTS products (
+        id SERIAL PRIMARY KEY,
+        name TEXT NOT NULL,
+        sku TEXT UNIQUE,
+        price NUMERIC NOT NULL,
+        stock NUMERIC DEFAULT 0,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      )
+    `;
+    await db.query(createProductsTableQuery);
 
-      await db.query(createSalesTableQuery, []);
+    // Create sales table
+    const createSalesTableQuery = `
+      CREATE TABLE IF NOT EXISTS sales (
+        id SERIAL PRIMARY KEY,
+        invoice_number TEXT UNIQUE NOT NULL,
+        customer_id INTEGER,
+        subtotal NUMERIC NOT NULL,
+        discount NUMERIC DEFAULT 0,
+        tax NUMERIC DEFAULT 0,
+        total NUMERIC NOT NULL,
+        paid NUMERIC DEFAULT 0,
+        change_amount NUMERIC DEFAULT 0,
+        payment_method TEXT DEFAULT 'cash',
+        notes TEXT,
+        cashier TEXT DEFAULT 'Kasir',
+        is_draft BOOLEAN DEFAULT false,
+        is_active BOOLEAN DEFAULT true,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      )
+    `;
+    await db.query(createSalesTableQuery);
 
-      // Create sale_items table
-      const createSaleItemsTableQuery = `
-        CREATE TABLE IF NOT EXISTS sale_items (
-          id INTEGER PRIMARY KEY AUTOINCREMENT,
-          sale_id INTEGER NOT NULL,
-          product_id INTEGER NOT NULL,
-          product_name TEXT NOT NULL,
-          quantity REAL NOT NULL,
-          unit_price REAL NOT NULL,
-          discount REAL DEFAULT 0,
-          total REAL NOT NULL,
-          created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-          FOREIGN KEY (sale_id) REFERENCES sales (id),
-          FOREIGN KEY (product_id) REFERENCES products (id)
-        )
-      `;
+    // Create sale_items table
+    const createSaleItemsTableQuery = `
+      CREATE TABLE IF NOT EXISTS sale_items (
+        id SERIAL PRIMARY KEY,
+        sale_id INTEGER NOT NULL REFERENCES sales (id) ON DELETE CASCADE,
+        product_id INTEGER NOT NULL REFERENCES products (id),
+        product_name TEXT NOT NULL,
+        quantity NUMERIC NOT NULL,
+        unit_price NUMERIC NOT NULL,
+        discount NUMERIC DEFAULT 0,
+        total NUMERIC NOT NULL,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      )
+    `;
+    await db.query(createSaleItemsTableQuery);
 
-      await db.query(createSaleItemsTableQuery, []);
-      return true;
-    } catch (error) {
-      throw error;
-    }
+    return true;
+  } catch (error) {
+    throw error;
   }
+}
 }
 
 module.exports = Sale; 

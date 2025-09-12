@@ -46,17 +46,93 @@ async function initializeTables() {
         code VARCHAR(255) NOT NULL UNIQUE,
         name VARCHAR(255) NOT NULL,
         category_id INTEGER REFERENCES categories(id),
-        cost_price DECIMAL(15,2) DEFAULT 0,
+        purchase_price DECIMAL(15,2) DEFAULT 0,
         selling_price DECIMAL(15,2) NOT NULL,
-        stock INTEGER DEFAULT 0,
-        min_stock INTEGER DEFAULT 0,
-        description TEXT,
+        stock DECIMAL(15,2) DEFAULT 0,
+        unit VARCHAR(50) NOT NULL,
+        alt_unit VARCHAR(50),
+        alt_unit_conversion DECIMAL(15,2) DEFAULT 1,
+        min_stock DECIMAL(15,2) DEFAULT 0,
         barcode VARCHAR(255),
+        description TEXT,
         is_active BOOLEAN DEFAULT true,
         created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
         updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
       )
     `);
+
+    // Add missing columns if they don't exist (migration)
+    try {
+      await client.query(`
+        ALTER TABLE products 
+        ADD COLUMN IF NOT EXISTS purchase_price DECIMAL(15,2) DEFAULT 0
+      `);
+    } catch (e) {
+      // Column might already exist, ignore error
+    }
+
+    try {
+      await client.query(`
+        ALTER TABLE products 
+        ADD COLUMN IF NOT EXISTS unit VARCHAR(50) DEFAULT 'pcs'
+      `);
+    } catch (e) {
+      // Column might already exist, ignore error
+    }
+
+    try {
+      await client.query(`
+        ALTER TABLE products 
+        ADD COLUMN IF NOT EXISTS alt_unit VARCHAR(50)
+      `);
+    } catch (e) {
+      // Column might already exist, ignore error
+    }
+
+    try {
+      await client.query(`
+        ALTER TABLE products 
+        ADD COLUMN IF NOT EXISTS alt_unit_conversion DECIMAL(15,2) DEFAULT 1
+      `);
+    } catch (e) {
+      // Column might already exist, ignore error
+    }
+
+    try {
+      await client.query(`
+        ALTER TABLE products 
+        ADD COLUMN IF NOT EXISTS min_stock DECIMAL(15,2) DEFAULT 0
+      `);
+    } catch (e) {
+      // Column might already exist, ignore error
+    }
+
+    try {
+      await client.query(`
+        ALTER TABLE products 
+        ADD COLUMN IF NOT EXISTS barcode VARCHAR(255)
+      `);
+    } catch (e) {
+      // Column might already exist, ignore error
+    }
+
+    try {
+      await client.query(`
+        ALTER TABLE products 
+        ADD COLUMN IF NOT EXISTS description TEXT
+      `);
+    } catch (e) {
+      // Column might already exist, ignore error
+    }
+
+    try {
+      await client.query(`
+        ALTER TABLE products 
+        ADD COLUMN IF NOT EXISTS is_active BOOLEAN DEFAULT true
+      `);
+    } catch (e) {
+      // Column might already exist, ignore error
+    }
 
     await client.query(`
       CREATE TABLE IF NOT EXISTS sales (

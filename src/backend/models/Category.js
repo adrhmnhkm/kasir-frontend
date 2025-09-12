@@ -7,7 +7,7 @@ class Category {
         SELECT c.*, 
                COUNT(p.id) as product_count 
         FROM categories c 
-        LEFT JOIN products p ON c.id = p.category_id AND p.is_active = 1
+        LEFT JOIN products p ON c.id = p.category_id AND p.is_active = true
         GROUP BY c.id 
         ORDER BY c.name
       `;
@@ -26,7 +26,7 @@ class Category {
         SELECT c.*, 
                COUNT(p.id) as product_count 
         FROM categories c 
-        LEFT JOIN products p ON c.id = p.category_id AND p.is_active = 1
+        LEFT JOIN products p ON c.id = p.category_id AND p.is_active = true
         WHERE c.id = $1
         GROUP BY c.id
       `;
@@ -129,7 +129,7 @@ class Category {
   static async delete(id) {
     try {
       // First check if category has products
-      const checkQuery = 'SELECT COUNT(*) as count FROM products WHERE category_id = $1 AND is_active = 1';
+      const checkQuery = 'SELECT COUNT(*) as count FROM products WHERE category_id = $1 AND is_active = true';
       const checkResult = await db.query(checkQuery, [id]);
       
       if (checkResult.rows[0].count > 0) {

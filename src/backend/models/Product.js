@@ -7,7 +7,7 @@ class Product {
         SELECT p.*, c.name as category_name 
         FROM products p 
         LEFT JOIN categories c ON p.category_id = c.id 
-        WHERE p.is_active = 1
+        WHERE p.is_active = true
         ORDER BY p.name
       `;
       
@@ -24,7 +24,7 @@ class Product {
         SELECT p.*, c.name as category_name 
         FROM products p 
         LEFT JOIN categories c ON p.category_id = c.id 
-        WHERE p.id = ? AND p.is_active = 1
+        WHERE p.id = $1 AND p.is_active = true
       `;
       
       const result = await db.query(query, [id]);
@@ -36,7 +36,7 @@ class Product {
 
   static async existsByCode(code) {
     try {
-      const query = 'SELECT id FROM products WHERE code = ? AND is_active = 1';
+      const query = 'SELECT id FROM products WHERE code = $1 AND is_active = true';
       const result = await db.query(query, [code]);
       return (result.rows || result).length > 0;
     } catch (error) {
@@ -46,7 +46,7 @@ class Product {
 
   static async existsByBarcode(barcode) {
     try {
-      const query = 'SELECT id FROM products WHERE barcode = ? AND is_active = 1';
+      const query = 'SELECT id FROM products WHERE barcode = $1 AND is_active = true';
       const result = await db.query(query, [barcode]);
       return (result.rows || result).length > 0;
     } catch (error) {
@@ -61,7 +61,7 @@ class Product {
           code, name, category_id, purchase_price, selling_price,
           stock, unit, alt_unit, alt_unit_conversion, min_stock, 
           barcode, description
-        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12)
       `;
       
       const values = [
@@ -93,11 +93,11 @@ class Product {
     try {
       const query = `
         UPDATE products 
-        SET code = ?, name = ?, category_id = ?, purchase_price = ?, 
-            selling_price = ?, stock = ?, unit = ?, alt_unit = ?, 
-            alt_unit_conversion = ?, min_stock = ?, barcode = ?, 
-            description = ?, updated_at = CURRENT_TIMESTAMP
-        WHERE id = ? AND is_active = 1
+        SET code = $1, name = $2, category_id = $3, purchase_price = $4, 
+            selling_price = $5, stock = $6, unit = $7, alt_unit = $8, 
+            alt_unit_conversion = $9, min_stock = $10, barcode = $11, 
+            description = $12, updated_at = CURRENT_TIMESTAMP
+        WHERE id = $13 AND is_active = true
       `;
       
       const values = [
@@ -133,8 +133,8 @@ class Product {
     try {
       const query = `
         UPDATE products 
-        SET stock = ?, updated_at = CURRENT_TIMESTAMP
-        WHERE id = ? AND is_active = 1
+        SET stock = $1, updated_at = CURRENT_TIMESTAMP
+        WHERE id = $2 AND is_active = true
       `;
       
       const result = await db.query(query, [parseFloat(newStock), id]);
@@ -152,11 +152,11 @@ class Product {
 
   static async delete(id) {
     try {
-      // Soft delete - set is_active to 0
+      // Soft delete - set is_active to false
       const query = `
         UPDATE products 
-        SET is_active = 0, updated_at = CURRENT_TIMESTAMP
-        WHERE id = ? AND is_active = 1
+        SET is_active = false, updated_at = CURRENT_TIMESTAMP
+        WHERE id = $1 AND is_active = true
       `;
       
       const result = await db.query(query, [id]);
@@ -171,11 +171,11 @@ class Product {
     try {
       const query = `
         UPDATE products 
-        SET is_active = ?, updated_at = CURRENT_TIMESTAMP
-        WHERE id = ?
+        SET is_active = $1, updated_at = CURRENT_TIMESTAMP
+        WHERE id = $2
       `;
       
-      const result = await db.query(query, [isActive ? 1 : 0, id]);
+      const result = await db.query(query, [isActive, id]);
       return result.changes > 0;
     } catch (error) {
       throw error;
@@ -191,10 +191,10 @@ class Product {
                  WHEN p.stock <= p.min_stock THEN 'menipis'
                  ELSE 'aman'
                END as status,
-               MAX(0, p.min_stock - p.stock) as shortage
+               GREATEST(0, p.min_stock - p.stock) as shortage
         FROM products p 
         LEFT JOIN categories c ON p.category_id = c.id 
-        WHERE p.is_active = 1 AND p.stock <= p.min_stock
+        WHERE p.is_active = true AND p.stock <= p.min_stock
         ORDER BY p.stock ASC, p.name
       `;
       
@@ -211,18 +211,18 @@ class Product {
         SELECT p.*, c.name as category_name 
         FROM products p 
         LEFT JOIN categories c ON p.category_id = c.id 
-        WHERE p.is_active = 1
+        WHERE p.is_active = true
       `;
       const params = [];
 
       if (searchTerm) {
-        query += ' AND (p.name LIKE ? OR p.code LIKE ? OR p.barcode LIKE ?)';
+        query += ' AND (p.name ILIKE $' + (params.length + 1) + ' OR p.code ILIKE $' + (params.length + 2) + ' OR p.barcode ILIKE $' + (params.length + 3) + ')';
         const searchPattern = `%${searchTerm}%`;
         params.push(searchPattern, searchPattern, searchPattern);
       }
 
       if (categoryId) {
-        query += ' AND p.category_id = ?';
+        query += ' AND p.category_id = $' + (params.length + 1);
         params.push(categoryId);
       }
 
@@ -240,8 +240,8 @@ class Product {
     try {
       const query = `
         UPDATE products 
-        SET stock = stock + ?, updated_at = CURRENT_TIMESTAMP
-        WHERE id = ? AND is_active = 1
+        SET stock = stock + $1, updated_at = CURRENT_TIMESTAMP
+        WHERE id = $2 AND is_active = true
       `;
       
       const result = await db.query(query, [quantity, productId]);
@@ -261,8 +261,8 @@ class Product {
     try {
       const query = `
         UPDATE products 
-        SET purchase_price = ?, updated_at = CURRENT_TIMESTAMP
-        WHERE id = ? AND is_active = 1
+        SET purchase_price = $1, updated_at = CURRENT_TIMESTAMP
+        WHERE id = $2 AND is_active = true
       `;
       
       const result = await db.query(query, [purchasePrice, productId]);
