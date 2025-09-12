@@ -131,13 +131,14 @@ const PaymentModal = ({
   const quickAmounts = [50000, 100000, 200000, 500000];
 
   return (
-    <Modal
-      isOpen={isOpen}
-      onClose={onClose}
-      title={showPrintOptions ? "Pembayaran Berhasil" : "Pembayaran"}
-      size="md"
-    >
-      <div className="space-y-4">
+    <>
+      <Modal
+        isOpen={isOpen}
+        onClose={onClose}
+        title={showPrintOptions ? "Pembayaran Berhasil" : "Pembayaran"}
+        size="md"
+      >
+        <div className="space-y-4">
         {showPrintOptions ? (
           // Payment Success - Print Options
           <div className="text-center space-y-6">
@@ -310,19 +311,19 @@ const PaymentModal = ({
             Bayar Sekarang
           </LoadingButton>
         </div>
-          </>
         )}
-      </div>
-    </Modal>
+        </div>
+      </Modal>
 
-    {/* Receipt Modal */}
-    {showReceiptModal && paymentResult && (
-      <ReceiptModal 
-        isOpen={showReceiptModal}
-        onClose={handleReceiptModalClose}
-        saleId={paymentResult.id}
-      />
-    )}
+      {/* Receipt Modal */}
+      {showReceiptModal && paymentResult && (
+        <ReceiptModal 
+          isOpen={showReceiptModal}
+          onClose={handleReceiptModalClose}
+          saleId={paymentResult.id}
+        />
+      )}
+    </>
   );
 };
 
