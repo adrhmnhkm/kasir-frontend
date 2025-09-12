@@ -104,6 +104,16 @@ class Sale {
         
         const sale = result.rows[0];
         
+        // Debug: Check timestamp from database
+        console.log('=== DATABASE TIMESTAMP DEBUG ===');
+        console.log('Sale ID:', sale.id);
+        console.log('Invoice Number:', sale.invoice_number);
+        console.log('Created At from DB:', sale.created_at);
+        console.log('Created At type:', typeof sale.created_at);
+        console.log('Created At as Date:', new Date(sale.created_at));
+        console.log('Created At ISO:', new Date(sale.created_at).toISOString());
+        console.log('==================================');
+        
         // Get sale items
         try {
           const items = await this.getItemsBySaleId(id);
