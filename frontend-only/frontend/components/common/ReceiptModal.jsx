@@ -113,7 +113,7 @@ const ReceiptModal = ({ isOpen, onClose, saleId }) => {
 
         <div class="mb-2 border-b pb-2">
           <div>No. Struk: ${receiptData.invoice_number}</div>
-          <div>Tanggal: ${new Date(receiptData.created_at).toLocaleString('id-ID')}</div>
+          <div>Tanggal: ${new Date(receiptData.created_at).toLocaleString('id-ID', { timeZone: 'Asia/Jakarta' })}</div>
           <div>Kasir: ${receiptData.cashier || 'Kasir'}</div>
         </div>
 
@@ -225,7 +225,7 @@ const ReceiptModal = ({ isOpen, onClose, saleId }) => {
 
               <div className="mb-2 border-b border-dashed border-gray-400 pb-2">
                 <div>No. Struk: {receiptData.invoice_number}</div>
-                <div>Tanggal: {new Date(receiptData.created_at).toLocaleString('id-ID')}</div>
+                <div>Tanggal: {new Date(receiptData.created_at).toLocaleString('id-ID', { timeZone: 'Asia/Jakarta' })}</div>
                 <div>Kasir: {receiptData.cashier || 'Kasir'}</div>
               </div>
 

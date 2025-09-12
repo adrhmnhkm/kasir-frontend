@@ -5,12 +5,13 @@ const formatDate = (dateString, options = {}) => {
     month: 'short',
     day: 'numeric',
     hour: '2-digit',
-    minute: '2-digit'
+    minute: '2-digit',
+    timeZone: 'Asia/Jakarta'
   };
   
   const finalOptions = { ...defaultOptions, ...options };
   
-  return new Date(dateString).toLocaleDateString('id-ID', finalOptions);
+  return new Date(dateString).toLocaleString('id-ID', finalOptions);
 };
 
 // Format date only (no time)
@@ -26,7 +27,8 @@ const formatDateOnly = (dateString) => {
 const formatTimeOnly = (dateString) => {
   return new Date(dateString).toLocaleTimeString('id-ID', {
     hour: '2-digit',
-    minute: '2-digit'
+    minute: '2-digit',
+    timeZone: 'Asia/Jakarta'
   });
 };
 

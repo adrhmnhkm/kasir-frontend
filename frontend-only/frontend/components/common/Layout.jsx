@@ -64,8 +64,9 @@ const Layout = ({ children, currentPage, onPageChange }) => {
                 {new Date().toLocaleDateString('id-ID', { 
                   weekday: 'long', 
                   year: 'numeric', 
-                  month: 'long', 
-                  day: 'numeric' 
+                  month: 'long',
+                  day: 'numeric',
+                  timeZone: 'Asia/Jakarta'
                 })}
               </span>
             </div>
