@@ -22,6 +22,20 @@ function App() {
   const [currentPage, setCurrentPage] = useState('pos');
   const { notification, showNotification, hideNotification } = useNotification();
 
+  // Check if this is a receipt page based on URL
+  const checkReceiptPage = () => {
+    const path = window.location.pathname;
+    const receiptMatch = path.match(/^\/receipt\/(\d+)$/);
+    return receiptMatch ? receiptMatch[1] : null;
+  };
+
+  const saleId = checkReceiptPage();
+
+  // If this is a receipt page, render only the receipt
+  if (saleId) {
+    return <ReceiptPage saleId={saleId} />;
+  }
+
   const renderPage = () => {
     switch (currentPage) {
       case 'pos':
