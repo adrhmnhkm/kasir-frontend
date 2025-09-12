@@ -6,56 +6,17 @@
     <title>Aplikasi Kasir PVC</title>
     
     <!-- Preload Critical Resources -->
-    <link rel="preload" href="https://unpkg.com/tailwindcss@^3/dist/tailwind.min.css" as="style">
+    <link rel="preload" href="/styles.css" as="style">
     <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" as="style">
     <link rel="preload" href="https://unpkg.com/react@18/umd/react.production.min.js" as="script">
     <link rel="preload" href="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" as="script">
     
-    <!-- Tailwind CSS - Production Build -->
-    <link href="https://unpkg.com/tailwindcss@^3/dist/tailwind.min.css" rel="stylesheet">
+    <!-- Tailwind CSS - Local Build -->
+    <link href="/styles.css" rel="stylesheet">
     
     <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     
-    <!-- Custom Styles -->
-    <style>
-        .fade-in {
-            animation: fadeIn 0.3s ease-in;
-        }
-        
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-        
-        /* Smooth app loading */
-        #root {
-            opacity: 0;
-            transition: opacity 0.5s ease-in;
-        }
-        
-        #root.loaded {
-            opacity: 1;
-        }
-        
-        /* Custom scrollbar */
-        ::-webkit-scrollbar {
-            width: 6px;
-        }
-        
-        ::-webkit-scrollbar-track {
-            background: #f1f1f1;
-        }
-        
-        ::-webkit-scrollbar-thumb {
-            background: #c1c1c1;
-            border-radius: 3px;
-        }
-        
-        ::-webkit-scrollbar-thumb:hover {
-            background: #a8a8a8;
-        }
-    </style>
 </head>
 <body>
     <div id="root"></div>

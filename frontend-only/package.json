@@ -4,6 +4,7 @@
   "description": "Frontend untuk Aplikasi Kasir - Static deployment",
   "scripts": {
     "build": "node build.js",
+    "build:css": "npx tailwindcss -i src/styles.css -o public/styles.css --minify",
     "dev": "serve public -p 3000",
     "start": "serve public -p 3000"
   },
@@ -11,6 +12,13 @@
     "serve": "^14.2.1"
   },
   "devDependencies": {
-    "@babel/standalone": "^7.22.5"
-  }
+    "@babel/standalone": "^7.22.5",
+    "@tailwindcss/cli": "^4.1.13",
+    "autoprefixer": "^10.4.21",
+    "tailwindcss": "^4.1.13"
+  },
+  "main": "index.js",
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
 }
