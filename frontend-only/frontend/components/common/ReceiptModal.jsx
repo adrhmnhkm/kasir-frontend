@@ -45,9 +45,9 @@ const ReceiptModal = ({ isOpen, onClose, saleId }) => {
   };
 
   const formatJakartaTime = (dateString) => {
-    // Parse the date string and convert to Jakarta time
+    // Direct Jakarta time formatting - no double toLocaleString
     const date = new Date(dateString);
-    const jakartaTimeString = date.toLocaleString('en-US', { 
+    return date.toLocaleString('id-ID', { 
       timeZone: 'Asia/Jakarta',
       year: 'numeric',
       month: '2-digit',
@@ -57,14 +57,6 @@ const ReceiptModal = ({ isOpen, onClose, saleId }) => {
       second: '2-digit',
       hour12: false
     });
-    
-    // Parse Jakarta time string to create proper Date object
-    const [datePart, timePart] = jakartaTimeString.split(', ');
-    const [month, day, year] = datePart.split('/');
-    const [hour, minute, second] = timePart.split(':');
-    const jakartaTime = new Date(`${year}-${month}-${day}T${hour}:${minute}:${second}.000Z`);
-    
-    return jakartaTime.toLocaleString('id-ID', { timeZone: 'Asia/Jakarta' });
   };
 
   const handlePrint = () => {
