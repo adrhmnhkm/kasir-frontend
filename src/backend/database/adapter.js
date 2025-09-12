@@ -35,8 +35,12 @@ if (isProduction && hasPostgres) {
         
         if (sqlLower.startsWith('select')) {
           sqliteDb.all(sqliteQuery, params, (err, rows) => {
-            if (err) reject(err);
-            else resolve({ rows });
+            if (err) {
+              console.error('SQLite SELECT error:', err);
+              reject(err);
+            } else {
+              resolve({ rows: rows || [] });
+            }
           });
         } else if (sqlLower.startsWith('insert')) {
           // Handle INSERT with RETURNING clause
@@ -44,28 +48,39 @@ if (isProduction && hasPostgres) {
             // Remove RETURNING clause and get the inserted ID
             const insertQuery = sqliteQuery.replace(/RETURNING \*/g, '');
             sqliteDb.run(insertQuery, params, function(err) {
-              if (err) reject(err);
-              else {
+              if (err) {
+                console.error('SQLite INSERT error:', err);
+                reject(err);
+              } else {
                 // Get the inserted record
-                const selectQuery = `SELECT * FROM ${sqliteQuery.match(/INSERT INTO (\w+)/i)[1]} WHERE id = ?`;
+                const tableName = sqliteQuery.match(/INSERT INTO (\w+)/i)[1];
+                const selectQuery = `SELECT * FROM ${tableName} WHERE id = ?`;
                 sqliteDb.get(selectQuery, [this.lastID], (err, row) => {
-                  if (err) reject(err);
-                  else resolve({ 
-                    rows: row ? [row] : [],
-                    lastID: this.lastID,
-                    changes: this.changes 
-                  });
+                  if (err) {
+                    console.error('SQLite SELECT after INSERT error:', err);
+                    reject(err);
+                  } else {
+                    resolve({ 
+                      rows: row ? [row] : [],
+                      lastID: this.lastID,
+                      changes: this.changes 
+                    });
+                  }
                 });
               }
             });
           } else {
             sqliteDb.run(sqliteQuery, params, function(err) {
-              if (err) reject(err);
-              else resolve({ 
-                rows: [{ id: this.lastID }],
-                lastID: this.lastID,
-                changes: this.changes 
-              });
+              if (err) {
+                console.error('SQLite INSERT error:', err);
+                reject(err);
+              } else {
+                resolve({ 
+                  rows: [{ id: this.lastID }],
+                  lastID: this.lastID,
+                  changes: this.changes 
+                });
+              }
             });
           }
         } else {
@@ -74,8 +89,10 @@ if (isProduction && hasPostgres) {
             // Remove RETURNING clause and get the updated record
             const updateQuery = sqliteQuery.replace(/RETURNING \*/g, '');
             sqliteDb.run(updateQuery, params, function(err) {
-              if (err) reject(err);
-              else if (this.changes === 0) {
+              if (err) {
+                console.error('SQLite UPDATE error:', err);
+                reject(err);
+              } else if (this.changes === 0) {
                 resolve({ rows: [], changes: 0 });
               } else {
                 // Get the updated record (assuming WHERE id = ? is the last parameter)
@@ -83,21 +100,29 @@ if (isProduction && hasPostgres) {
                 const idParam = params[params.length - 1];
                 const selectQuery = `SELECT * FROM ${tableName} WHERE id = ?`;
                 sqliteDb.get(selectQuery, [idParam], (err, row) => {
-                  if (err) reject(err);
-                  else resolve({ 
-                    rows: row ? [row] : [],
-                    changes: this.changes 
-                  });
+                  if (err) {
+                    console.error('SQLite SELECT after UPDATE error:', err);
+                    reject(err);
+                  } else {
+                    resolve({ 
+                      rows: row ? [row] : [],
+                      changes: this.changes 
+                    });
+                  }
                 });
               }
             });
           } else {
             sqliteDb.run(sqliteQuery, params, function(err) {
-              if (err) reject(err);
-              else resolve({ 
-                rows: [],
-                changes: this.changes 
-              });
+              if (err) {
+                console.error('SQLite UPDATE error:', err);
+                reject(err);
+              } else {
+                resolve({ 
+                  rows: [],
+                  changes: this.changes 
+                });
+              }
             });
           }
         }

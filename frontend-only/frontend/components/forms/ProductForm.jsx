@@ -83,21 +83,13 @@ const ProductForm = ({
         return;
       }
 
-      const url = editingProduct ? `/api/products/${editingProduct.id}` : '/api/products';
-      const method = editingProduct ? 'PUT' : 'POST';
-      
-      const response = await fetch(url, {
-        method,
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(formData)
-      });
-
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.error || 'Failed to save product');
+      let result;
+      if (editingProduct) {
+        result = await api.products.update(editingProduct.id, formData);
+      } else {
+        result = await api.products.create(formData);
       }
 
-      const result = await response.json();
       showNotification(
         editingProduct ? 'Produk berhasil diupdate' : 'Produk berhasil ditambahkan'
       );

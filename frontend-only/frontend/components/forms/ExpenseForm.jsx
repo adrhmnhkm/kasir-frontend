@@ -98,21 +98,13 @@ const ExpenseForm = ({
         notes: formData.notes.trim()
       };
 
-      const url = editingExpense ? `/api/expenses/${editingExpense.id}` : '/api/expenses';
-      const method = editingExpense ? 'PUT' : 'POST';
-      
-      const response = await fetch(url, {
-        method,
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(submitData)
-      });
-
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.error || 'Failed to save expense');
+      let result;
+      if (editingExpense) {
+        result = await api.expenses.update(editingExpense.id, submitData);
+      } else {
+        result = await api.expenses.create(submitData);
       }
 
-      const result = await response.json();
       showNotification(
         editingExpense ? 'Pengeluaran berhasil diupdate' : 'Pengeluaran berhasil ditambahkan'
       );
