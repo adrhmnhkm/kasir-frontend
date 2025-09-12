@@ -1,16 +1,15 @@
 // Database adapter that switches between SQLite and PostgreSQL
-const isProduction = process.env.NODE_ENV === 'production';
 const hasPostgres = process.env.POSTGRES_URL || process.env.DATABASE_URL;
 
 let db;
 
-if (isProduction && hasPostgres) {
-  // Use PostgreSQL for production
-  console.log('🐘 Using PostgreSQL database for production');
+if (hasPostgres) {
+  // Always use PostgreSQL when connection string is provided (e.g., Railway)
+  console.log('🐘 Using PostgreSQL database');
   db = require('./postgres');
 } else {
-  // Use SQLite for development
-  console.log('📱 Using SQLite database for development');
+  // Use SQLite fallback (local development only)
+  console.log('📱 Using SQLite database (fallback)');
   
   const sqlite3 = require('sqlite3').verbose();
   const path = require('path');
@@ -28,7 +27,8 @@ if (isProduction && hasPostgres) {
           .replace(/::date/g, '')    // Remove ::date casting
           .replace(/STRING_AGG\((.*?),\s*',\s*'\)/g, 'GROUP_CONCAT($1)') // Convert STRING_AGG to GROUP_CONCAT
           .replace(/SERIAL PRIMARY KEY/g, 'INTEGER PRIMARY KEY AUTOINCREMENT') // Convert SERIAL to AUTOINCREMENT
-          .replace(/TIMESTAMP DEFAULT CURRENT_TIMESTAMP/g, 'DATETIME DEFAULT CURRENT_TIMESTAMP'); // Convert TIMESTAMP to DATETIME
+          .replace(/TIMESTAMP WITH TIME ZONE DEFAULT NOW\(\)/g, 'DATETIME DEFAULT CURRENT_TIMESTAMP')
+          .replace(/TIMESTAMP DEFAULT CURRENT_TIMESTAMP/g, 'DATETIME DEFAULT CURRENT_TIMESTAMP');
         
         // Detect query type
         const sqlLower = sqliteQuery.toLowerCase().trim();
