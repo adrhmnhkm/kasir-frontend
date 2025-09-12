@@ -43,6 +43,7 @@ app.use(cors({
     'https://frontend-only-d1ehpj1vb-adrhmnhkms-projects.vercel.app',
     'https://frontend-only-37t5ekmzc-adrhmnhkms-projects.vercel.app',
     'https://frontend-only-crvbklqxh-adrhmnhkms-projects.vercel.app',
+    'https://frontend-only-7qfb0xggg-adrhmnhkms-projects.vercel.app',
     'http://localhost:3000',
     'http://localhost:5173',
     /\.vercel\.app$/
