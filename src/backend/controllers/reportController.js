@@ -233,6 +233,8 @@ class ReportController {
       }
 
       console.log(`🔍 [getFinancialReport] Filter: ${range}, Start: ${startDate.toISOString()}, End: ${endDate.toISOString()}`);
+      console.log(`🔍 [getFinancialReport] startDate type: ${typeof startDate}, endDate type: ${typeof endDate}`);
+      console.log(`🔍 [getFinancialReport] startDate value: ${startDate}, endDate value: ${endDate}`);
 
       // Get sales and expenses
       const sales = await Sale.getByDateRange(startDate, endDate);
@@ -379,6 +381,9 @@ class ReportController {
   // Method untuk menghitung HPP (Harga Pokok Penjualan)
   static async calculateHPP(startDate, endDate) {
     try {
+      console.log(`🔍 [calculateHPP] startDate: ${startDate}, endDate: ${endDate}`);
+      console.log(`🔍 [calculateHPP] startDate type: ${typeof startDate}, endDate type: ${typeof endDate}`);
+      
       const db = require('../database/adapter');
       
       const query = `
