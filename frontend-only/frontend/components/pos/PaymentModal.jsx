@@ -14,6 +14,7 @@ const PaymentModal = ({
   const [loading, setLoading] = useState(false);
   const [paymentResult, setPaymentResult] = useState(null);
   const [showPrintOptions, setShowPrintOptions] = useState(false);
+  const [showReceiptModal, setShowReceiptModal] = useState(false);
   const paymentRef = useRef(null);
 
   const getCartSubtotal = () => {
@@ -107,9 +108,9 @@ const PaymentModal = ({
 
   const handlePrintReceipt = () => {
     if (paymentResult) {
-      window.open(`/receipt/${paymentResult.id}`, '_blank');
+      // Open receipt modal instead of new window
+      setShowReceiptModal(true);
     }
-    handleFinishPayment();
   };
 
   const handleSkipPrint = () => {
@@ -120,6 +121,11 @@ const PaymentModal = ({
     if (onPaymentSuccess && paymentResult) {
       onPaymentSuccess(paymentResult);
     }
+  };
+
+  const handleReceiptModalClose = () => {
+    setShowReceiptModal(false);
+    handleFinishPayment();
   };
 
   const quickAmounts = [50000, 100000, 200000, 500000];
@@ -308,6 +314,15 @@ const PaymentModal = ({
         )}
       </div>
     </Modal>
+
+    {/* Receipt Modal */}
+    {showReceiptModal && paymentResult && (
+      <ReceiptModal 
+        isOpen={showReceiptModal}
+        onClose={handleReceiptModalClose}
+        saleId={paymentResult.id}
+      />
+    )}
   );
 };
 

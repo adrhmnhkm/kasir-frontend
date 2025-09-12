@@ -12,6 +12,8 @@ const SalesPage = ({ showNotification }) => {
   const [statusFilter, setStatusFilter] = useState('all'); // all, completed, draft
   const [sortBy, setSortBy] = useState('date'); // date, total, invoice
   const [sortOrder, setSortOrder] = useState('desc'); // asc, desc
+  const [showReceiptModal, setShowReceiptModal] = useState(false);
+  const [selectedSaleId, setSelectedSaleId] = useState(null);
 
   useEffect(() => {
     loadSales();
@@ -52,7 +54,8 @@ const SalesPage = ({ showNotification }) => {
   };
 
   const handlePrintReceipt = (saleId) => {
-    window.open(`/receipt/${saleId}`, '_blank', 'width=300,height=600');
+    setSelectedSaleId(saleId);
+    setShowReceiptModal(true);
   };
 
   const handleFinalizeDraft = async (saleId) => {
@@ -515,6 +518,13 @@ const SalesPage = ({ showNotification }) => {
         </div>
       </div>
     </div>
+
+    {/* Receipt Modal */}
+    <ReceiptModal 
+      isOpen={showReceiptModal}
+      onClose={() => setShowReceiptModal(false)}
+      saleId={selectedSaleId}
+    />
   );
 };
 
