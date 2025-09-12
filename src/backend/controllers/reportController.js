@@ -412,21 +412,27 @@ class ReportController {
       const result = await db.query(query, [start, end]);
       const rows = result.rows || result;
 
+      console.log(`🔍 [calculateHPP] Query result rows count: ${rows.length}`);
+      console.log(`🔍 [calculateHPP] First few rows:`, rows.slice(0, 3));
+
       const totalHPP = rows.reduce((sum, row) => sum + parseFloat(row.total_hpp || 0), 0);
       const totalRevenue = rows.reduce((sum, row) => sum + parseFloat(row.total_revenue || 0), 0);
       
-      const breakdown = rows.map(row => ({
-        product_id: row.product_id,
-        product_name: row.product_name,
-        purchase_price: parseFloat(row.purchase_price || 0),
-        selling_price: parseFloat(row.selling_price || 0),
-        quantity_sold: parseFloat(row.total_quantity_sold),
-        revenue: parseFloat(row.total_revenue),
-        hpp: parseFloat(row.total_hpp || 0),
-        margin: parseFloat(row.total_revenue) - parseFloat(row.total_hpp || 0),
-        margin_percentage: parseFloat(row.total_revenue) > 0 ? 
-          ((parseFloat(row.total_revenue) - parseFloat(row.total_hpp || 0)) / parseFloat(row.total_revenue)) * 100 : 0
-      }));
+      const breakdown = rows.map(row => {
+        console.log(`🔍 [calculateHPP] Processing row:`, row);
+        return {
+          product_id: row.product_id,
+          product_name: row.product_name,
+          purchase_price: parseFloat(row.purchase_price || 0),
+          selling_price: parseFloat(row.selling_price || 0),
+          quantity_sold: parseFloat(row.total_quantity_sold),
+          revenue: parseFloat(row.total_revenue),
+          hpp: parseFloat(row.total_hpp || 0),
+          margin: parseFloat(row.total_revenue) - parseFloat(row.total_hpp || 0),
+          margin_percentage: parseFloat(row.total_revenue) > 0 ? 
+            ((parseFloat(row.total_revenue) - parseFloat(row.total_hpp || 0)) / parseFloat(row.total_revenue)) * 100 : 0
+        };
+      });
 
       return {
         totalHPP,
