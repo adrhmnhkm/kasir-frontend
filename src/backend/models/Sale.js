@@ -422,37 +422,44 @@ class Sale {
   }
 
   static generateInvoiceNumber() {
-    // Use Jakarta timezone for invoice number
+    // Use Jakarta timezone for invoice number - IMPROVED METHOD
     const now = new Date();
     
     // Debug: Show current times
     console.log('=== INVOICE NUMBER GENERATION DEBUG ===');
     console.log('Current UTC time:', now.toISOString());
-    console.log('Current UTC time (local):', now.toString());
-    console.log('UTC Hours:', now.getUTCHours());
-    console.log('UTC Minutes:', now.getUTCMinutes());
-    console.log('UTC Seconds:', now.getUTCSeconds());
+    console.log('Current local time:', now.toString());
+    console.log('Timezone offset (minutes):', now.getTimezoneOffset());
     
-    // Convert to Jakarta timezone (UTC+7)
-    const jakartaTime = new Date(now.getTime() + (7 * 60 * 60 * 1000));
+    // Method 1: Using toLocaleString with timezone
+    const jakartaTimeString = now.toLocaleString('en-US', { 
+      timeZone: 'Asia/Jakarta',
+      year: 'numeric',
+      month: '2-digit',
+      day: '2-digit',
+      hour: '2-digit',
+      minute: '2-digit',
+      second: '2-digit',
+      hour12: false
+    });
     
-    console.log('Jakarta time (UTC+7):', jakartaTime.toISOString());
-    console.log('Jakarta time (local):', jakartaTime.toString());
-    console.log('Jakarta UTC Hours:', jakartaTime.getUTCHours());
-    console.log('Jakarta UTC Minutes:', jakartaTime.getUTCMinutes());
-    console.log('Jakarta UTC Seconds:', jakartaTime.getUTCSeconds());
+    console.log('Jakarta time string:', jakartaTimeString);
     
-    const year = jakartaTime.getUTCFullYear();
-    const month = String(jakartaTime.getUTCMonth() + 1).padStart(2, '0');
-    const day = String(jakartaTime.getUTCDate()).padStart(2, '0');
-    const time = String(jakartaTime.getUTCHours()).padStart(2, '0') + 
-                 String(jakartaTime.getUTCMinutes()).padStart(2, '0') + 
-                 String(jakartaTime.getUTCSeconds()).padStart(2, '0');
+    // Parse the Jakarta time string
+    const [datePart, timePart] = jakartaTimeString.split(', ');
+    const [month, day, year] = datePart.split('/');
+    const [hour, minute, second] = timePart.split(':');
     
-    console.log('Generated invoice:', `INV-${year}${month}${day}-${time}`);
+    const time = hour + minute + second;
+    const invoiceNumber = `INV-${year}${month}${day}-${time}`;
+    
+    console.log('Parsed components:');
+    console.log('Year:', year, 'Month:', month, 'Day:', day);
+    console.log('Hour:', hour, 'Minute:', minute, 'Second:', second);
+    console.log('Generated invoice:', invoiceNumber);
     console.log('==========================================');
     
-    return `INV-${year}${month}${day}-${time}`;
+    return invoiceNumber;
   }
 
   static getSummary() {
