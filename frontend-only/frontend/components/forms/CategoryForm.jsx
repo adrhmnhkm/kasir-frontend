@@ -43,24 +43,19 @@ const CategoryForm = ({
         return;
       }
 
-      const url = editingCategory ? `/api/categories/${editingCategory.id}` : '/api/categories';
-      const method = editingCategory ? 'PUT' : 'POST';
-      
-      const response = await fetch(url, {
-        method,
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
+      let result;
+      if (editingCategory) {
+        result = await api.categories.update(editingCategory.id, {
           name: formData.name.trim(),
           description: formData.description.trim()
-        })
-      });
-
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.error || 'Failed to save category');
+        });
+      } else {
+        result = await api.categories.create({
+          name: formData.name.trim(),
+          description: formData.description.trim()
+        });
       }
 
-      const result = await response.json();
       showNotification(
         editingCategory ? 'Kategori berhasil diupdate' : 'Kategori berhasil ditambahkan'
       );

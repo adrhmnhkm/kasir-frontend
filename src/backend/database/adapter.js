@@ -26,7 +26,9 @@ if (isProduction && hasPostgres) {
         let sqliteQuery = sql
           .replace(/\$(\d+)/g, '?')  // Replace $1, $2, etc. with ?
           .replace(/::date/g, '')    // Remove ::date casting
-          .replace(/STRING_AGG\((.*?),\s*',\s*'\)/g, 'GROUP_CONCAT($1)'); // Convert STRING_AGG to GROUP_CONCAT
+          .replace(/STRING_AGG\((.*?),\s*',\s*'\)/g, 'GROUP_CONCAT($1)') // Convert STRING_AGG to GROUP_CONCAT
+          .replace(/SERIAL PRIMARY KEY/g, 'INTEGER PRIMARY KEY AUTOINCREMENT') // Convert SERIAL to AUTOINCREMENT
+          .replace(/TIMESTAMP DEFAULT CURRENT_TIMESTAMP/g, 'DATETIME DEFAULT CURRENT_TIMESTAMP'); // Convert TIMESTAMP to DATETIME
         
         // Detect query type
         const sqlLower = sqliteQuery.toLowerCase().trim();
@@ -37,22 +39,67 @@ if (isProduction && hasPostgres) {
             else resolve({ rows });
           });
         } else if (sqlLower.startsWith('insert')) {
-          sqliteDb.run(sqliteQuery, params, function(err) {
-            if (err) reject(err);
-            else resolve({ 
-              rows: [{ id: this.lastID }],
-              lastID: this.lastID,
-              changes: this.changes 
+          // Handle INSERT with RETURNING clause
+          if (sqliteQuery.includes('RETURNING')) {
+            // Remove RETURNING clause and get the inserted ID
+            const insertQuery = sqliteQuery.replace(/RETURNING \*/g, '');
+            sqliteDb.run(insertQuery, params, function(err) {
+              if (err) reject(err);
+              else {
+                // Get the inserted record
+                const selectQuery = `SELECT * FROM ${sqliteQuery.match(/INSERT INTO (\w+)/i)[1]} WHERE id = ?`;
+                sqliteDb.get(selectQuery, [this.lastID], (err, row) => {
+                  if (err) reject(err);
+                  else resolve({ 
+                    rows: row ? [row] : [],
+                    lastID: this.lastID,
+                    changes: this.changes 
+                  });
+                });
+              }
             });
-          });
+          } else {
+            sqliteDb.run(sqliteQuery, params, function(err) {
+              if (err) reject(err);
+              else resolve({ 
+                rows: [{ id: this.lastID }],
+                lastID: this.lastID,
+                changes: this.changes 
+              });
+            });
+          }
         } else {
-          sqliteDb.run(sqliteQuery, params, function(err) {
-            if (err) reject(err);
-            else resolve({ 
-              rows: [],
-              changes: this.changes 
+          // Handle UPDATE with RETURNING clause
+          if (sqliteQuery.includes('RETURNING')) {
+            // Remove RETURNING clause and get the updated record
+            const updateQuery = sqliteQuery.replace(/RETURNING \*/g, '');
+            sqliteDb.run(updateQuery, params, function(err) {
+              if (err) reject(err);
+              else if (this.changes === 0) {
+                resolve({ rows: [], changes: 0 });
+              } else {
+                // Get the updated record (assuming WHERE id = ? is the last parameter)
+                const tableName = sqliteQuery.match(/UPDATE (\w+)/i)[1];
+                const idParam = params[params.length - 1];
+                const selectQuery = `SELECT * FROM ${tableName} WHERE id = ?`;
+                sqliteDb.get(selectQuery, [idParam], (err, row) => {
+                  if (err) reject(err);
+                  else resolve({ 
+                    rows: row ? [row] : [],
+                    changes: this.changes 
+                  });
+                });
+              }
             });
-          });
+          } else {
+            sqliteDb.run(sqliteQuery, params, function(err) {
+              if (err) reject(err);
+              else resolve({ 
+                rows: [],
+                changes: this.changes 
+              });
+            });
+          }
         }
       });
     },

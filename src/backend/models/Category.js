@@ -1,13 +1,8 @@
-const sqlite3 = require('sqlite3').verbose();
-const path = require('path');
-
-// Use SQLite database
-const dbPath = path.join(__dirname, '../../kasir.db');
-const db = new sqlite3.Database(dbPath);
+const db = require('../database/adapter');
 
 class Category {
-  static getAll() {
-    return new Promise((resolve, reject) => {
+  static async getAll() {
+    try {
       const query = `
         SELECT c.*, 
                COUNT(p.id) as product_count 
@@ -17,72 +12,66 @@ class Category {
         ORDER BY c.name
       `;
       
-      db.all(query, [], (err, rows) => {
-        if (err) {
-          reject(err);
-        } else {
-          resolve(rows);
-        }
-      });
-    });
+      const result = await db.query(query);
+      return result.rows;
+    } catch (error) {
+      console.error('Error in Category.getAll:', error);
+      throw error;
+    }
   }
 
-  static getById(id) {
-    return new Promise((resolve, reject) => {
+  static async getById(id) {
+    try {
       const query = `
         SELECT c.*, 
                COUNT(p.id) as product_count 
         FROM categories c 
         LEFT JOIN products p ON c.id = p.category_id AND p.is_active = 1
-        WHERE c.id = ?
+        WHERE c.id = $1
         GROUP BY c.id
       `;
       
-      db.get(query, [id], (err, row) => {
-        if (err) {
-          reject(err);
-        } else {
-          resolve(row);
-        }
-      });
-    });
+      const result = await db.query(query, [id]);
+      return result.rows[0] || null;
+    } catch (error) {
+      console.error('Error in Category.getById:', error);
+      throw error;
+    }
   }
 
-  static existsByName(name) {
-    return new Promise((resolve, reject) => {
-      const query = 'SELECT id FROM categories WHERE LOWER(name) = LOWER(?)';
-      
-      db.get(query, [name], (err, row) => {
-        if (err) {
-          reject(err);
-        } else {
-          resolve(!!row);
-        }
-      });
-    });
+  static async existsByName(name) {
+    try {
+      const query = 'SELECT id FROM categories WHERE LOWER(name) = LOWER($1)';
+      const result = await db.query(query, [name]);
+      return result.rows.length > 0;
+    } catch (error) {
+      console.error('Error in Category.existsByName:', error);
+      throw error;
+    }
   }
 
-  static create(categoryData) {
-    return new Promise((resolve, reject) => {
+  static async create(categoryData) {
+    try {
       // Auto-generate prefix from category name
       const prefix = this.generatePrefixFromName(categoryData.name);
       
       const query = `
         INSERT INTO categories (name, description, prefix)
-        VALUES (?, ?, ?)
+        VALUES ($1, $2, $3)
+        RETURNING *
       `;
       
-      db.run(query, [categoryData.name, categoryData.description || null, prefix], function(err) {
-        if (err) {
-          reject(err);
-        } else {
-          // Get the created category
-          Category.getById(this.lastID)
-            .then(category => resolve(category))
-            .catch(reject);
-        }
-      });
-    });
+      const result = await db.query(query, [
+        categoryData.name, 
+        categoryData.description || null, 
+        prefix
+      ]);
+      
+      return result.rows[0];
+    } catch (error) {
+      console.error('Error in Category.create:', error);
+      throw error;
+    }
   }
 
   // Auto-generate prefix from category name
@@ -115,129 +104,94 @@ class Category {
     return words.slice(0, 3).map(word => word[0]).join('');
   }
 
-  static update(id, categoryData) {
-    return new Promise((resolve, reject) => {
+  static async update(id, categoryData) {
+    try {
       const query = `
         UPDATE categories 
-        SET name = ?, description = ?, updated_at = CURRENT_TIMESTAMP
-        WHERE id = ?
+        SET name = $1, description = $2, updated_at = CURRENT_TIMESTAMP
+        WHERE id = $3
+        RETURNING *
       `;
       
-      db.run(query, [categoryData.name, categoryData.description || null, id], function(err) {
-        if (err) {
-          reject(err);
-        } else if (this.changes === 0) {
-          resolve(null);
-        } else {
-          // Get the updated category
-          Category.getById(id)
-            .then(category => resolve(category))
-            .catch(reject);
-        }
-      });
-    });
+      const result = await db.query(query, [
+        categoryData.name, 
+        categoryData.description || null, 
+        id
+      ]);
+      
+      return result.rows[0] || null;
+    } catch (error) {
+      console.error('Error in Category.update:', error);
+      throw error;
+    }
   }
 
-  static delete(id) {
-    return new Promise((resolve, reject) => {
+  static async delete(id) {
+    try {
       // First check if category has products
-      const checkQuery = 'SELECT COUNT(*) as count FROM products WHERE category_id = ? AND is_active = 1';
+      const checkQuery = 'SELECT COUNT(*) as count FROM products WHERE category_id = $1 AND is_active = 1';
+      const checkResult = await db.query(checkQuery, [id]);
       
-      db.get(checkQuery, [id], (err, row) => {
-        if (err) {
-          reject(err);
-          return;
-        }
-        
-        if (row.count > 0) {
-          reject(new Error('Cannot delete category that has products'));
-          return;
-        }
-        
-        // Delete the category
-        const deleteQuery = 'DELETE FROM categories WHERE id = ?';
-        db.run(deleteQuery, [id], function(err) {
-          if (err) {
-            reject(err);
-          } else {
-            resolve(this.changes > 0);
-          }
-        });
-      });
-    });
+      if (checkResult.rows[0].count > 0) {
+        throw new Error('Cannot delete category that has products');
+      }
+      
+      // Delete the category
+      const deleteQuery = 'DELETE FROM categories WHERE id = $1';
+      const deleteResult = await db.query(deleteQuery, [id]);
+      
+      return deleteResult.changes > 0;
+    } catch (error) {
+      console.error('Error in Category.delete:', error);
+      throw error;
+    }
   }
 
   // Initialize categories table with default data
   static async initialize() {
-    return new Promise((resolve, reject) => {
+    try {
       // Create table if not exists
       const createTableQuery = `
         CREATE TABLE IF NOT EXISTS categories (
-          id INTEGER PRIMARY KEY AUTOINCREMENT,
+          id SERIAL PRIMARY KEY,
           name TEXT NOT NULL UNIQUE,
           description TEXT,
           prefix TEXT,
-          created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-          updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
+          created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+          updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
         )
       `;
 
-      db.run(createTableQuery, [], (err) => {
-        if (err) {
-          reject(err);
-          return;
+      await db.query(createTableQuery);
+
+      // Check if categories already exist
+      const countResult = await db.query('SELECT COUNT(*) as count FROM categories');
+      const count = parseInt(countResult.rows[0].count);
+
+      if (count === 0) {
+        // Insert default categories
+        const defaultCategories = [
+          { name: 'Pipa PVC', description: 'Pipa PVC berbagai ukuran' },
+          { name: 'Fitting PVC', description: 'Fitting dan sambungan PVC' },
+          { name: 'Pipa Galvanis', description: 'Pipa galvanis' },
+          { name: 'Fitting Galvanis', description: 'Fitting galvanis' },
+          { name: 'Semen', description: 'Semen berbagai merk' },
+          { name: 'Cat', description: 'Cat tembok dan kayu' },
+          { name: 'Alat', description: 'Peralatan dan tools' },
+          { name: 'Tepung', description: 'Tepung berbagai jenis' },
+          { name: 'Lain-lain', description: 'Produk lainnya' }
+        ];
+
+        for (const cat of defaultCategories) {
+          const prefix = Category.generatePrefixFromName(cat.name);
+          const insertQuery = 'INSERT INTO categories (name, description, prefix) VALUES ($1, $2, $3)';
+          await db.query(insertQuery, [cat.name, cat.description, prefix]);
         }
-
-        // Ensure prefix column exists (for existing databases)
-        db.run('ALTER TABLE categories ADD COLUMN prefix TEXT;', [], (err) => {
-          // Ignore error if column already exists
-          if (err && !err.message.includes('duplicate column name')) {
-            console.warn('Warning: Could not add prefix column:', err.message);
-          }
-        });
-
-        // Check if categories already exist
-        db.get('SELECT COUNT(*) as count FROM categories', [], (err, row) => {
-          if (err) {
-            reject(err);
-            return;
-          }
-
-          if (row.count === 0) {
-            // Insert default categories
-            const defaultCategories = [
-              { name: 'Pipa PVC', description: 'Pipa PVC berbagai ukuran' },
-              { name: 'Fitting PVC', description: 'Fitting dan sambungan PVC' },
-              { name: 'Pipa Galvanis', description: 'Pipa galvanis' },
-              { name: 'Fitting Galvanis', description: 'Fitting galvanis' },
-              { name: 'Semen', description: 'Semen berbagai merk' },
-              { name: 'Cat', description: 'Cat tembok dan kayu' },
-              { name: 'Alat', description: 'Peralatan dan tools' },
-              { name: 'Tepung', description: 'Tepung berbagai jenis' },
-              { name: 'Lain-lain', description: 'Produk lainnya' }
-            ];
-
-            const insertQuery = 'INSERT INTO categories (name, description, prefix) VALUES (?, ?, ?)';
-            let completed = 0;
-
-            defaultCategories.forEach(cat => {
-              const prefix = Category.generatePrefixFromName(cat.name);
-              db.run(insertQuery, [cat.name, cat.description, prefix], (err) => {
-                if (err) {
-                  console.error('Error inserting default category:', err);
-                }
-                completed++;
-                if (completed === defaultCategories.length) {
-                  resolve();
-                }
-              });
-            });
-          } else {
-            resolve();
-          }
-        });
-      });
-    });
+      }
+    } catch (error) {
+      console.error('Error in Category.initialize:', error);
+      throw error;
+    }
   }
 }
 

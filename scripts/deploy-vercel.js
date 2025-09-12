@@ -119,3 +119,4 @@ console.log('💡 Quick deploy command:');
 console.log('   vercel --prod\n');
 
 console.log('✅ Ready for deployment!');
+
