@@ -513,63 +513,53 @@ class Sale {
 
   // Initialize sales and sale_items tables
   static async initialize() {
-    return new Promise((resolve, reject) => {
-      db.serialize(() => {
-        // Create sales table
-        const createSalesTableQuery = `
-          CREATE TABLE IF NOT EXISTS sales (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            invoice_number TEXT UNIQUE NOT NULL,
-            customer_id INTEGER,
-            subtotal REAL NOT NULL,
-            discount REAL DEFAULT 0,
-            tax REAL DEFAULT 0,
-            total REAL NOT NULL,
-            paid REAL DEFAULT 0,
-            change_amount REAL DEFAULT 0,
-            payment_method TEXT DEFAULT 'cash',
-            notes TEXT,
-            cashier TEXT DEFAULT 'Kasir',
-            is_draft BOOLEAN DEFAULT 0,
-            is_active BOOLEAN DEFAULT 1,
-            created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-            updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
-          )
-        `;
+    try {
+      // Create sales table
+      const createSalesTableQuery = `
+        CREATE TABLE IF NOT EXISTS sales (
+          id INTEGER PRIMARY KEY AUTOINCREMENT,
+          invoice_number TEXT UNIQUE NOT NULL,
+          customer_id INTEGER,
+          subtotal REAL NOT NULL,
+          discount REAL DEFAULT 0,
+          tax REAL DEFAULT 0,
+          total REAL NOT NULL,
+          paid REAL DEFAULT 0,
+          change_amount REAL DEFAULT 0,
+          payment_method TEXT DEFAULT 'cash',
+          notes TEXT,
+          cashier TEXT DEFAULT 'Kasir',
+          is_draft BOOLEAN DEFAULT 0,
+          is_active BOOLEAN DEFAULT 1,
+          created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+          updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
+        )
+      `;
 
-        db.run(createSalesTableQuery, [], (err) => {
-          if (err) {
-            reject(err);
-            return;
-          }
+      await db.query(createSalesTableQuery, []);
 
-          // Create sale_items table
-          const createSaleItemsTableQuery = `
-            CREATE TABLE IF NOT EXISTS sale_items (
-              id INTEGER PRIMARY KEY AUTOINCREMENT,
-              sale_id INTEGER NOT NULL,
-              product_id INTEGER NOT NULL,
-              product_name TEXT NOT NULL,
-              quantity REAL NOT NULL,
-              unit_price REAL NOT NULL,
-              discount REAL DEFAULT 0,
-              total REAL NOT NULL,
-              created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-              FOREIGN KEY (sale_id) REFERENCES sales (id),
-              FOREIGN KEY (product_id) REFERENCES products (id)
-            )
-          `;
+      // Create sale_items table
+      const createSaleItemsTableQuery = `
+        CREATE TABLE IF NOT EXISTS sale_items (
+          id INTEGER PRIMARY KEY AUTOINCREMENT,
+          sale_id INTEGER NOT NULL,
+          product_id INTEGER NOT NULL,
+          product_name TEXT NOT NULL,
+          quantity REAL NOT NULL,
+          unit_price REAL NOT NULL,
+          discount REAL DEFAULT 0,
+          total REAL NOT NULL,
+          created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+          FOREIGN KEY (sale_id) REFERENCES sales (id),
+          FOREIGN KEY (product_id) REFERENCES products (id)
+        )
+      `;
 
-          db.run(createSaleItemsTableQuery, [], (err) => {
-            if (err) {
-              reject(err);
-            } else {
-              resolve();
-            }
-          });
-        });
-      });
-    });
+      await db.query(createSaleItemsTableQuery, []);
+      return true;
+    } catch (error) {
+      throw error;
+    }
   }
 }
 
