@@ -243,8 +243,8 @@ class Expense {
       const query = `
         SELECT * FROM expenses 
         WHERE is_active = true 
-          AND created_at >= ? 
-          AND created_at <= ?
+          AND created_at >= $1 
+          AND created_at <= $2
         ORDER BY created_at DESC
       `;
       
