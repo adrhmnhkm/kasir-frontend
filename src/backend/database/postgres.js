@@ -6,6 +6,8 @@ const isProduction = process.env.NODE_ENV === 'production';
 const pool = new Pool({
   connectionString: process.env.POSTGRES_URL || process.env.DATABASE_URL,
   ssl: isProduction ? { rejectUnauthorized: false } : false,
+  // Set timezone to Asia/Jakarta for all connections
+  options: '-c timezone=Asia/Jakarta'
 });
 
 // Test connection
@@ -33,8 +35,8 @@ async function initializeTables() {
         name VARCHAR(255) NOT NULL UNIQUE,
         description TEXT,
         is_active BOOLEAN DEFAULT true,
-        created_at TIMESTAMP WITH TIME ZONE DEFAULT (NOW() AT TIME ZONE 'Asia/Jakarta'),
-        updated_at TIMESTAMP WITH TIME ZONE DEFAULT (NOW() AT TIME ZONE 'Asia/Jakarta')
+        created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+        updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
       )
     `);
 
@@ -51,8 +53,8 @@ async function initializeTables() {
         description TEXT,
         barcode VARCHAR(255),
         is_active BOOLEAN DEFAULT true,
-        created_at TIMESTAMP WITH TIME ZONE DEFAULT (NOW() AT TIME ZONE 'Asia/Jakarta'),
-        updated_at TIMESTAMP WITH TIME ZONE DEFAULT (NOW() AT TIME ZONE 'Asia/Jakarta')
+        created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+        updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
       )
     `);
 
@@ -72,8 +74,8 @@ async function initializeTables() {
         cashier VARCHAR(255) DEFAULT 'Kasir',
         is_draft BOOLEAN DEFAULT false,
         is_active BOOLEAN DEFAULT true,
-        created_at TIMESTAMP WITH TIME ZONE DEFAULT (NOW() AT TIME ZONE 'Asia/Jakarta'),
-        updated_at TIMESTAMP WITH TIME ZONE DEFAULT (NOW() AT TIME ZONE 'Asia/Jakarta')
+        created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+        updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
       )
     `);
 
@@ -87,7 +89,7 @@ async function initializeTables() {
         unit_price DECIMAL(15,2) NOT NULL,
         discount DECIMAL(15,2) DEFAULT 0,
         total DECIMAL(15,2) NOT NULL,
-        created_at TIMESTAMP WITH TIME ZONE DEFAULT (NOW() AT TIME ZONE 'Asia/Jakarta')
+        created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
       )
     `);
 
@@ -100,8 +102,8 @@ async function initializeTables() {
         payment_method VARCHAR(50) DEFAULT 'cash',
         notes TEXT,
         receipt_number VARCHAR(255),
-        created_at TIMESTAMP WITH TIME ZONE DEFAULT (NOW() AT TIME ZONE 'Asia/Jakarta'),
-        updated_at TIMESTAMP WITH TIME ZONE DEFAULT (NOW() AT TIME ZONE 'Asia/Jakarta')
+        created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+        updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
       )
     `);
 
@@ -114,7 +116,7 @@ async function initializeTables() {
         previous_stock INTEGER NOT NULL,
         new_stock INTEGER NOT NULL,
         reason VARCHAR(255),
-        created_at TIMESTAMP WITH TIME ZONE DEFAULT (NOW() AT TIME ZONE 'Asia/Jakarta')
+        created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
       )
     `);
 
@@ -124,8 +126,8 @@ async function initializeTables() {
         key VARCHAR(255) NOT NULL UNIQUE,
         value TEXT,
         description TEXT,
-        created_at TIMESTAMP WITH TIME ZONE DEFAULT (NOW() AT TIME ZONE 'Asia/Jakarta'),
-        updated_at TIMESTAMP WITH TIME ZONE DEFAULT (NOW() AT TIME ZONE 'Asia/Jakarta')
+        created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+        updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
       )
     `);
 

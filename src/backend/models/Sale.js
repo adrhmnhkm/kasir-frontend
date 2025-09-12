@@ -11,6 +11,8 @@ if (isProduction && hasPostgres) {
   const pool = new Pool({
     connectionString: process.env.POSTGRES_URL || process.env.DATABASE_URL,
     ssl: isProduction ? { rejectUnauthorized: false } : false,
+    // Set timezone to Asia/Jakarta for all connections
+    options: '-c timezone=Asia/Jakarta'
   });
   
   db = {
@@ -152,7 +154,7 @@ class Sale {
           invoice_number, customer_id, subtotal, discount, tax, total,
           paid, change_amount, payment_method, notes, cashier, is_draft,
           created_at, updated_at
-        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NOW() AT TIME ZONE 'Asia/Jakarta', NOW() AT TIME ZONE 'Asia/Jakarta')
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NOW(), NOW())
       `;
       
       const saleValues = [
@@ -185,7 +187,7 @@ class Sale {
             INSERT INTO sale_items (
               sale_id, product_id, product_name, quantity, unit_price, 
               discount, total, created_at
-            ) VALUES (?, ?, ?, ?, ?, ?, ?, NOW() AT TIME ZONE 'Asia/Jakarta')
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, NOW())
           `;
           
           let itemsProcessed = 0;
