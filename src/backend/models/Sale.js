@@ -164,7 +164,7 @@ class Sale {
       `;
       
       // Debug timestamp
-      const receivedTimestamp = saleData.created_at || new Date().toISOString();
+      const receivedTimestamp = saleData.created_at || new Date().toLocaleString('sv-SE', { timeZone: 'Asia/Jakarta' }).replace(' ', 'T');
       console.log('Received timestamp from frontend:', receivedTimestamp);
       console.log('Current server time:', new Date().toISOString());
       
@@ -458,7 +458,7 @@ class Sale {
       const [datePart, timePart] = jakartaTimeString.split(', ');
       const [month, day, year] = datePart.split('/');
       const [hour, minute, second] = timePart.split(':');
-      now = new Date(`${year}-${month}-${day}T${hour}:${minute}:${second}.000Z`);
+      now = new Date(`${year}-${month}-${day}T${hour}:${minute}:${second}`);
       
       console.log('=== USING SERVER JAKARTA TIME ===');
     }
