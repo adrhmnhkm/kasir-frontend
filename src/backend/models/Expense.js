@@ -1,9 +1,4 @@
-const sqlite3 = require('sqlite3').verbose();
-const path = require('path');
-
-// Use SQLite database
-const dbPath = path.join(__dirname, '../../kasir.db');
-const db = new sqlite3.Database(dbPath);
+const db = require('../database/adapter');
 
 class Expense {
   static async getAll() {
@@ -96,7 +91,7 @@ class Expense {
   }
 
   static async getByCategory(category) {
-    try { 
+    try {
       const query = `
         SELECT * FROM expenses 
         WHERE category = ? AND is_active = 1
@@ -263,8 +258,12 @@ class Expense {
     }
   }
 
-  // Initialize expenses table
+  // Initialize expenses table (skip in production/Postgres)
   static async initialize() {
+    if (process.env.NODE_ENV === 'production') {
+      return;
+    }
+
     try {
       const createTableQuery = `
         CREATE TABLE IF NOT EXISTS expenses (

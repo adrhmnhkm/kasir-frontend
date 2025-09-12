@@ -1,9 +1,4 @@
-const sqlite3 = require('sqlite3').verbose();
-const path = require('path');
-
-// Use SQLite database
-const dbPath = path.join(__dirname, '../../kasir.db');
-const db = new sqlite3.Database(dbPath);
+const db = require('../database/adapter');
 
 class Product {
   static async getAll() {
@@ -282,10 +277,13 @@ class Product {
     }
   }
 
-  // Initialize products table with default data
+  // Initialize products table with default data (skip in production/Postgres)
   static async initialize() {
-    return new Promise((resolve, reject) => {
-      // Create table if not exists
+    if (process.env.NODE_ENV === 'production') {
+      return;
+    }
+
+    try {
       const createTableQuery = `
         CREATE TABLE IF NOT EXISTS products (
           id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -308,75 +306,23 @@ class Product {
         )
       `;
 
-      db.run(createTableQuery, [], (err) => {
-        if (err) {
-          reject(err);
-          return;
-        }
+      await db.query(createTableQuery, []);
 
-        // Check if products already exist
-        db.get('SELECT COUNT(*) as count FROM products', [], (err, row) => {
-          if (err) {
-            reject(err);
-            return;
-          }
+      // Check if products already exist
+      const countResult = await db.query('SELECT COUNT(*) as count FROM products', []);
+      const count = countResult.rows?.[0]?.count || countResult[0]?.count || 0;
 
-          if (row.count === 0) {
-            // Insert default products
-            const defaultProducts = [
-              {
-                code: 'PVC001', name: 'Pipa PVC 1/2"', category_id: 1,
-                purchase_price: 15000, selling_price: 18000, stock: 50, unit: 'batang',
-                alt_unit: 'meter', alt_unit_conversion: 4, min_stock: 10,
-                barcode: '8901234567890', description: 'Pipa PVC diameter 1/2 inch panjang 4 meter'
-              },
-              {
-                code: 'PVC002', name: 'Pipa PVC 3/4"', category_id: 1,
-                purchase_price: 22000, selling_price: 26000, stock: 30, unit: 'batang',
-                alt_unit: 'meter', alt_unit_conversion: 4, min_stock: 10,
-                barcode: '8901234567891', description: 'Pipa PVC diameter 3/4 inch panjang 4 meter'
-              },
-              {
-                code: 'FIT001', name: 'Elbow PVC 1/2"', category_id: 2,
-                purchase_price: 3000, selling_price: 4500, stock: 100, unit: 'pcs',
-                alt_unit: null, alt_unit_conversion: 1, min_stock: 20,
-                barcode: '8901234567893', description: 'Elbow PVC 90 derajat diameter 1/2 inch'
-              }
-            ];
+      if (count === 0) {
+        const defaultProducts = [];
+        // Optionally seed here if needed
+        console.log('✅ Products table is empty (dev). Skipping seed.');
+      }
 
-            const insertQuery = `
-              INSERT INTO products (
-                code, name, category_id, purchase_price, selling_price,
-                stock, unit, alt_unit, alt_unit_conversion, min_stock,
-                barcode, description
-              ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-            `;
-
-            let completed = 0;
-            defaultProducts.forEach(product => {
-              const values = [
-                product.code, product.name, product.category_id,
-                product.purchase_price, product.selling_price, product.stock,
-                product.unit, product.alt_unit, product.alt_unit_conversion,
-                product.min_stock, product.barcode, product.description
-              ];
-
-              db.run(insertQuery, values, (err) => {
-                if (err) {
-                  console.error('Error inserting default product:', err);
-                }
-                completed++;
-                if (completed === defaultProducts.length) {
-                  resolve();
-                }
-              });
-            });
-          } else {
-            resolve();
-          }
-        });
-      });
-    });
+      console.log('✅ Products table initialized');
+    } catch (error) {
+      console.error('❌ Error initializing products table:', error);
+      throw error;
+    }
   }
 }
 
