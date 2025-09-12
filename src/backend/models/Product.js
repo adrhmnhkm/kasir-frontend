@@ -6,8 +6,8 @@ const dbPath = path.join(__dirname, '../../kasir.db');
 const db = new sqlite3.Database(dbPath);
 
 class Product {
-  static getAll() {
-    return new Promise((resolve, reject) => {
+  static async getAll() {
+    try {
       const query = `
         SELECT p.*, c.name as category_name 
         FROM products p 
@@ -16,18 +16,15 @@ class Product {
         ORDER BY p.name
       `;
       
-      db.all(query, [], (err, rows) => {
-        if (err) {
-          reject(err);
-        } else {
-          resolve(rows);
-        }
-      });
-    });
+      const result = await db.query(query, []);
+      return result.rows || result;
+    } catch (error) {
+      throw error;
+    }
   }
 
-  static getById(id) {
-    return new Promise((resolve, reject) => {
+  static async getById(id) {
+    try {
       const query = `
         SELECT p.*, c.name as category_name 
         FROM products p 
@@ -35,46 +32,35 @@ class Product {
         WHERE p.id = ? AND p.is_active = 1
       `;
       
-      db.get(query, [id], (err, row) => {
-        if (err) {
-          reject(err);
-        } else {
-          resolve(row);
-        }
-      });
-    });
+      const result = await db.query(query, [id]);
+      return result.rows?.[0] || result[0];
+    } catch (error) {
+      throw error;
+    }
   }
 
-  static existsByCode(code) {
-    return new Promise((resolve, reject) => {
+  static async existsByCode(code) {
+    try {
       const query = 'SELECT id FROM products WHERE code = ? AND is_active = 1';
-      
-      db.get(query, [code], (err, row) => {
-        if (err) {
-          reject(err);
-        } else {
-          resolve(!!row);
-        }
-      });
-    });
+      const result = await db.query(query, [code]);
+      return (result.rows || result).length > 0;
+    } catch (error) {
+      throw error;
+    }
   }
 
-  static existsByBarcode(barcode) {
-    return new Promise((resolve, reject) => {
+  static async existsByBarcode(barcode) {
+    try {
       const query = 'SELECT id FROM products WHERE barcode = ? AND is_active = 1';
-      
-      db.get(query, [barcode], (err, row) => {
-        if (err) {
-          reject(err);
-        } else {
-          resolve(!!row);
-        }
-      });
-    });
+      const result = await db.query(query, [barcode]);
+      return (result.rows || result).length > 0;
+    } catch (error) {
+      throw error;
+    }
   }
 
-  static create(productData) {
-    return new Promise((resolve, reject) => {
+  static async create(productData) {
+    try {
       const query = `
         INSERT INTO products (
           code, name, category_id, purchase_price, selling_price,
@@ -98,21 +84,18 @@ class Product {
         productData.description || null
       ];
       
-      db.run(query, values, function(err) {
-        if (err) {
-          reject(err);
-        } else {
-          // Get the created product
-          Product.getById(this.lastID)
-            .then(product => resolve(product))
-            .catch(reject);
-        }
-      });
-    });
+      const result = await db.query(query, values);
+      const productId = result.insertId || result.rows?.[0]?.id;
+      
+      // Get the created product
+      return await Product.getById(productId);
+    } catch (error) {
+      throw error;
+    }
   }
 
-  static update(id, productData) {
-    return new Promise((resolve, reject) => {
+  static async update(id, productData) {
+    try {
       const query = `
         UPDATE products 
         SET code = ?, name = ?, category_id = ?, purchase_price = ?, 
@@ -138,46 +121,42 @@ class Product {
         id
       ];
       
-      db.run(query, values, function(err) {
-        if (err) {
-          reject(err);
-        } else if (this.changes === 0) {
-          resolve(null);
-        } else {
-          // Get the updated product
-          Product.getById(id)
-            .then(product => resolve(product))
-            .catch(reject);
-        }
-      });
-    });
+      const result = await db.query(query, values);
+      
+      if (result.changes === 0) {
+        return null;
+      }
+      
+      // Get the updated product
+      return await Product.getById(id);
+    } catch (error) {
+      throw error;
+    }
   }
 
-  static updateStock(id, newStock) {
-    return new Promise((resolve, reject) => {
+  static async updateStock(id, newStock) {
+    try {
       const query = `
         UPDATE products 
         SET stock = ?, updated_at = CURRENT_TIMESTAMP
         WHERE id = ? AND is_active = 1
       `;
       
-      db.run(query, [parseFloat(newStock), id], function(err) {
-        if (err) {
-          reject(err);
-        } else if (this.changes === 0) {
-          resolve(null);
-        } else {
-          // Get the updated product
-          Product.getById(id)
-            .then(product => resolve(product))
-            .catch(reject);
-        }
-      });
-    });
+      const result = await db.query(query, [parseFloat(newStock), id]);
+      
+      if (result.changes === 0) {
+        return null;
+      }
+      
+      // Get the updated product
+      return await Product.getById(id);
+    } catch (error) {
+      throw error;
+    }
   }
 
-  static delete(id) {
-    return new Promise((resolve, reject) => {
+  static async delete(id) {
+    try {
       // Soft delete - set is_active to 0
       const query = `
         UPDATE products 
@@ -185,37 +164,31 @@ class Product {
         WHERE id = ? AND is_active = 1
       `;
       
-      db.run(query, [id], function(err) {
-        if (err) {
-          reject(err);
-        } else {
-          resolve(this.changes > 0);
-        }
-      });
-    });
+      const result = await db.query(query, [id]);
+      return result.changes > 0;
+    } catch (error) {
+      throw error;
+    }
   }
 
   // Method khusus untuk update status
-  static updateStatus(id, isActive) {
-    return new Promise((resolve, reject) => {
+  static async updateStatus(id, isActive) {
+    try {
       const query = `
         UPDATE products 
         SET is_active = ?, updated_at = CURRENT_TIMESTAMP
         WHERE id = ?
       `;
       
-      db.run(query, [isActive ? 1 : 0, id], function(err) {
-        if (err) {
-          reject(err);
-        } else {
-          resolve(this.changes > 0);
-        }
-      });
-    });
+      const result = await db.query(query, [isActive ? 1 : 0, id]);
+      return result.changes > 0;
+    } catch (error) {
+      throw error;
+    }
   }
 
-  static getLowStock() {
-    return new Promise((resolve, reject) => {
+  static async getLowStock() {
+    try {
       const query = `
         SELECT p.*, c.name as category_name,
                CASE 
@@ -230,18 +203,15 @@ class Product {
         ORDER BY p.stock ASC, p.name
       `;
       
-      db.all(query, [], (err, rows) => {
-        if (err) {
-          reject(err);
-        } else {
-          resolve(rows);
-        }
-      });
-    });
+      const result = await db.query(query, []);
+      return result.rows || result;
+    } catch (error) {
+      throw error;
+    }
   }
 
-  static search(searchTerm, categoryId) {
-    return new Promise((resolve, reject) => {
+  static async search(searchTerm, categoryId) {
+    try {
       let query = `
         SELECT p.*, c.name as category_name 
         FROM products p 
@@ -263,56 +233,53 @@ class Product {
 
       query += ' ORDER BY p.name';
 
-      db.all(query, params, (err, rows) => {
-        if (err) {
-          reject(err);
-        } else {
-          resolve(rows);
-        }
-      });
-    });
+      const result = await db.query(query, params);
+      return result.rows || result;
+    } catch (error) {
+      throw error;
+    }
   }
 
   // Adjust stock (add or subtract)
-  static adjustStock(productId, quantity) {
-    return new Promise((resolve, reject) => {
+  static async adjustStock(productId, quantity) {
+    try {
       const query = `
         UPDATE products 
         SET stock = stock + ?, updated_at = CURRENT_TIMESTAMP
         WHERE id = ? AND is_active = 1
       `;
       
-      db.run(query, [quantity, productId], function(err) {
-        if (err) {
-          reject(err);
-        } else if (this.changes === 0) {
-          reject(new Error('Product not found or not active'));
-        } else {
-          resolve({ success: true, changes: this.changes });
-        }
-      });
-    });
+      const result = await db.query(query, [quantity, productId]);
+      
+      if (result.changes === 0) {
+        throw new Error('Product not found or not active');
+      }
+      
+      return { success: true, changes: result.changes };
+    } catch (error) {
+      throw error;
+    }
   }
 
   // Update purchase price
-  static updatePurchasePrice(productId, purchasePrice) {
-    return new Promise((resolve, reject) => {
+  static async updatePurchasePrice(productId, purchasePrice) {
+    try {
       const query = `
         UPDATE products 
         SET purchase_price = ?, updated_at = CURRENT_TIMESTAMP
         WHERE id = ? AND is_active = 1
       `;
       
-      db.run(query, [purchasePrice, productId], function(err) {
-        if (err) {
-          reject(err);
-        } else if (this.changes === 0) {
-          reject(new Error('Product not found or not active'));
-        } else {
-          resolve({ success: true, changes: this.changes });
-        }
-      });
-    });
+      const result = await db.query(query, [purchasePrice, productId]);
+      
+      if (result.changes === 0) {
+        throw new Error('Product not found or not active');
+      }
+      
+      return { success: true, changes: result.changes };
+    } catch (error) {
+      throw error;
+    }
   }
 
   // Initialize products table with default data
