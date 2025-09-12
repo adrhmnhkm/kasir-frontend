@@ -91,32 +91,29 @@ class Sale {
                  STRING_AGG(si.product_name || ' x' || si.quantity || ' ' || si.unit_price, ', ') as items_summary
           FROM sales s 
           LEFT JOIN sale_items si ON s.id = si.sale_id 
-          WHERE s.id = ? AND s.is_active = 1
+          WHERE s.id = $1 AND s.is_active = 1
           GROUP BY s.id, s.invoice_number, s.customer_id, s.subtotal, s.discount, s.tax, s.total, s.paid, s.change_amount, s.payment_method, s.notes, s.cashier, s.is_draft, s.is_active, s.created_at, s.updated_at
         `;
         
-        db.get(saleQuery, [id], async (err, sale) => {
-          if (err) {
-            reject(err);
-            return;
-          }
-          
-          if (!sale) {
-            reject(new Error('Sale not found'));
-            return;
-          }
-          
-          // Get sale items
-          try {
-            const items = await this.getItemsBySaleId(id);
-            sale.items = items;
-            resolve(sale);
-          } catch (itemsErr) {
-            console.error('Error getting sale items:', itemsErr);
-            sale.items = [];
-            resolve(sale);
-          }
-        });
+        const result = await db.query(saleQuery, [id]);
+        
+        if (!result.rows || result.rows.length === 0) {
+          reject(new Error('Sale not found'));
+          return;
+        }
+        
+        const sale = result.rows[0];
+        
+        // Get sale items
+        try {
+          const items = await this.getItemsBySaleId(id);
+          sale.items = items;
+          resolve(sale);
+        } catch (itemsErr) {
+          console.error('Error getting sale items:', itemsErr);
+          sale.items = [];
+          resolve(sale);
+        }
       } catch (error) {
         reject(error);
       }
@@ -124,22 +121,21 @@ class Sale {
   }
 
   static getItemsBySaleId(saleId) {
-    return new Promise((resolve, reject) => {
-      const query = `
-        SELECT si.*, p.name as product_name, p.code as product_code
-        FROM sale_items si
-        LEFT JOIN products p ON si.product_id = p.id
-        WHERE si.sale_id = ?
-        ORDER BY si.id
-      `;
-      
-      db.all(query, [saleId], (err, rows) => {
-        if (err) {
-          reject(err);
-        } else {
-          resolve(rows);
-        }
-      });
+    return new Promise(async (resolve, reject) => {
+      try {
+        const query = `
+          SELECT si.*, p.name as product_name, p.code as product_code
+          FROM sale_items si
+          LEFT JOIN products p ON si.product_id = p.id
+          WHERE si.sale_id = $1
+          ORDER BY si.id
+        `;
+        
+        const result = await db.query(query, [saleId]);
+        resolve(result.rows);
+      } catch (error) {
+        reject(error);
+      }
     });
   }
 
