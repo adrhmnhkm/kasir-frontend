@@ -44,6 +44,29 @@ const ReceiptModal = ({ isOpen, onClose, saleId }) => {
     }).format(amount);
   };
 
+  const formatJakartaTime = (dateString) => {
+    // Parse the date string and convert to Jakarta time
+    const date = new Date(dateString);
+    const jakartaTimeString = date.toLocaleString('en-US', { 
+      timeZone: 'Asia/Jakarta',
+      year: 'numeric',
+      month: '2-digit',
+      day: '2-digit',
+      hour: '2-digit',
+      minute: '2-digit',
+      second: '2-digit',
+      hour12: false
+    });
+    
+    // Parse Jakarta time string to create proper Date object
+    const [datePart, timePart] = jakartaTimeString.split(', ');
+    const [month, day, year] = datePart.split('/');
+    const [hour, minute, second] = timePart.split(':');
+    const jakartaTime = new Date(`${year}-${month}-${day}T${hour}:${minute}:${second}.000Z`);
+    
+    return jakartaTime.toLocaleString('id-ID', { timeZone: 'Asia/Jakarta' });
+  };
+
   const handlePrint = () => {
     // Create a new window with just the receipt content
     const printWindow = window.open('', '_blank', 'width=400,height=600');
@@ -113,7 +136,7 @@ const ReceiptModal = ({ isOpen, onClose, saleId }) => {
 
         <div class="mb-2 border-b pb-2">
           <div>No. Struk: ${receiptData.invoice_number}</div>
-          <div>Tanggal: ${new Date(receiptData.created_at).toLocaleString('id-ID', { timeZone: 'Asia/Jakarta' })}</div>
+          <div>Tanggal: ${formatJakartaTime(receiptData.created_at)}</div>
           <div>Kasir: ${receiptData.cashier || 'Kasir'}</div>
         </div>
 
@@ -225,7 +248,7 @@ const ReceiptModal = ({ isOpen, onClose, saleId }) => {
 
               <div className="mb-2 border-b border-dashed border-gray-400 pb-2">
                 <div>No. Struk: {receiptData.invoice_number}</div>
-                <div>Tanggal: {new Date(receiptData.created_at).toLocaleString('id-ID', { timeZone: 'Asia/Jakarta' })}</div>
+                <div>Tanggal: {formatJakartaTime(receiptData.created_at)}</div>
                 <div>Kasir: {receiptData.cashier || 'Kasir'}</div>
               </div>
 
