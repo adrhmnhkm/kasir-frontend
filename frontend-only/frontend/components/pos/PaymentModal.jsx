@@ -67,7 +67,6 @@ const PaymentModal = ({
       // Jakarta time is UTC+7
       const jakartaTime = new Date(now.getTime() + (7 * 60 * 60 * 1000));
       
-      console.log('Current UTC time:', now.toISOString());
       console.log('Jakarta time (UTC+7):', jakartaTime.toISOString());
       
       const saleData = {

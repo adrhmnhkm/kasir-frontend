@@ -445,7 +445,6 @@ class Sale {
       const serverTime = new Date();
       now = new Date(serverTime.getTime() + (7 * 60 * 60 * 1000));
       console.log('=== USING SERVER TIME UTC+7 ===');
-      console.log('Server UTC time:', serverTime.toISOString());
     }
     
     // Debug: Show current times
