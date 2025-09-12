@@ -311,6 +311,7 @@ const PaymentModal = ({
             Bayar Sekarang
           </LoadingButton>
         </div>
+          </>
         )}
         </div>
       </Modal>
