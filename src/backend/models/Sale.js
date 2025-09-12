@@ -150,8 +150,9 @@ class Sale {
       const saleQuery = `
         INSERT INTO sales (
           invoice_number, customer_id, subtotal, discount, tax, total,
-          paid, change_amount, payment_method, notes, cashier, is_draft
-        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+          paid, change_amount, payment_method, notes, cashier, is_draft,
+          created_at, updated_at
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NOW() AT TIME ZONE 'Asia/Jakarta', NOW() AT TIME ZONE 'Asia/Jakarta')
       `;
       
       const saleValues = [
@@ -183,8 +184,8 @@ class Sale {
           const itemQuery = `
             INSERT INTO sale_items (
               sale_id, product_id, product_name, quantity, unit_price, 
-              discount, total
-            ) VALUES (?, ?, ?, ?, ?, ?, ?)
+              discount, total, created_at
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, NOW() AT TIME ZONE 'Asia/Jakarta')
           `;
           
           let itemsProcessed = 0;
