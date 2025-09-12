@@ -176,12 +176,42 @@ async function initializeTables() {
         amount DECIMAL(15,2) NOT NULL,
         category VARCHAR(100),
         payment_method VARCHAR(50) DEFAULT 'cash',
+        reference_number VARCHAR(255),
         notes TEXT,
-        receipt_number VARCHAR(255),
+        user VARCHAR(255) DEFAULT 'Admin',
+        is_active BOOLEAN DEFAULT true,
         created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
         updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
       )
     `);
+
+    // Add missing columns if they don't exist (migration)
+    try {
+      await client.query(`
+        ALTER TABLE expenses 
+        ADD COLUMN IF NOT EXISTS reference_number VARCHAR(255)
+      `);
+    } catch (e) {
+      // Column might already exist, ignore error
+    }
+
+    try {
+      await client.query(`
+        ALTER TABLE expenses 
+        ADD COLUMN IF NOT EXISTS user VARCHAR(255) DEFAULT 'Admin'
+      `);
+    } catch (e) {
+      // Column might already exist, ignore error
+    }
+
+    try {
+      await client.query(`
+        ALTER TABLE expenses 
+        ADD COLUMN IF NOT EXISTS is_active BOOLEAN DEFAULT true
+      `);
+    } catch (e) {
+      // Column might already exist, ignore error
+    }
 
     await client.query(`
       CREATE TABLE IF NOT EXISTS stock_movements (
