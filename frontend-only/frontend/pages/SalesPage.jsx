@@ -165,7 +165,8 @@ const SalesPage = ({ showNotification }) => {
   const filteredSales = getFilteredAndSortedSales();
 
   return (
-    <div className="p-6">
+    <>
+      <div className="p-6">
       <div className="flex justify-between items-center mb-6">
         <h2 className="text-2xl font-bold">Manajemen Penjualan</h2>
         <button
@@ -517,14 +518,15 @@ const SalesPage = ({ showNotification }) => {
           )}
         </div>
       </div>
-    </div>
+      </div>
 
-    {/* Receipt Modal */}
-    <ReceiptModal 
-      isOpen={showReceiptModal}
-      onClose={() => setShowReceiptModal(false)}
-      saleId={selectedSaleId}
-    />
+      {/* Receipt Modal */}
+      <ReceiptModal 
+        isOpen={showReceiptModal}
+        onClose={() => setShowReceiptModal(false)}
+        saleId={selectedSaleId}
+      />
+    </>
   );
 };
 
