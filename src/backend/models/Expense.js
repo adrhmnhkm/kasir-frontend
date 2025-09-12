@@ -5,7 +5,7 @@ class Expense {
     try {
       const query = `
         SELECT * FROM expenses 
-        WHERE is_active = 1
+        WHERE is_active = true
         ORDER BY created_at DESC
       `;
       
@@ -18,7 +18,7 @@ class Expense {
 
   static async getById(id) {
     try {
-      const query = 'SELECT * FROM expenses WHERE id = ? AND is_active = 1';
+      const query = 'SELECT * FROM expenses WHERE id = $1 AND is_active = true';
       const result = await db.query(query, [id]);
       return result.rows?.[0] || result[0];
     } catch (error) {
@@ -32,7 +32,7 @@ class Expense {
         INSERT INTO expenses (
           description, amount, category, payment_method, 
           reference_number, notes, user
-        ) VALUES (?, ?, ?, ?, ?, ?, ?)
+        ) VALUES ($1, $2, $3, $4, $5, $6, $7)
       `;
       
       const values = [
@@ -58,9 +58,9 @@ class Expense {
     try {
       const query = `
         UPDATE expenses SET 
-          description = ?, amount = ?, category = ?, payment_method = ?,
-          reference_number = ?, notes = ?, updated_at = CURRENT_TIMESTAMP
-        WHERE id = ?
+          description = $1, amount = $2, category = $3, payment_method = $4,
+          reference_number = $5, notes = $6, updated_at = CURRENT_TIMESTAMP
+        WHERE id = $7
       `;
       
       const values = [
@@ -82,7 +82,7 @@ class Expense {
 
   static async delete(id) {
     try {
-      const query = 'UPDATE expenses SET is_active = 0 WHERE id = ?';
+      const query = 'UPDATE expenses SET is_active = false WHERE id = $1';
       await db.query(query, [id]);
       return { success: true };
     } catch (error) {
@@ -94,7 +94,7 @@ class Expense {
     try {
       const query = `
         SELECT * FROM expenses 
-        WHERE category = ? AND is_active = 1
+        WHERE category = $1 AND is_active = true
         ORDER BY created_at DESC
       `;
       
@@ -109,7 +109,7 @@ class Expense {
     try {
       const query = `
         SELECT * FROM expenses 
-        WHERE created_at BETWEEN ? AND ? AND is_active = 1
+        WHERE created_at BETWEEN $1 AND $2 AND is_active = true
         ORDER BY created_at DESC
       `;
       
@@ -130,7 +130,7 @@ class Expense {
           category,
           COUNT(*) as count
         FROM expenses 
-        WHERE is_active = 1
+        WHERE is_active = true
         GROUP BY category
         ORDER BY total_amount DESC
       `;
@@ -147,7 +147,7 @@ class Expense {
       const query = `
         SELECT SUM(amount) as total_amount
         FROM expenses 
-        WHERE created_at BETWEEN ? AND ? AND is_active = 1
+        WHERE created_at BETWEEN $1 AND $2 AND is_active = true
       `;
       
       const result = await db.query(query, [startDate, endDate]);
@@ -166,7 +166,7 @@ class Expense {
       
       const query = `
         SELECT * FROM expenses 
-        WHERE created_at BETWEEN ? AND ? AND is_active = 1
+        WHERE created_at BETWEEN $1 AND $2 AND is_active = true
         ORDER BY created_at DESC
       `;
       
@@ -183,7 +183,7 @@ class Expense {
       const query = `
         SELECT SUM(amount) as total_amount
         FROM expenses 
-        WHERE created_at BETWEEN ? AND ? AND is_active = 1
+        WHERE created_at BETWEEN $1 AND $2 AND is_active = true
       `;
       
       const result = await db.query(query, [startDate || '1900-01-01', endDate || '2099-12-31']);
@@ -203,7 +203,7 @@ class Expense {
           COUNT(*) as count,
           SUM(amount) as total_amount
         FROM expenses 
-        WHERE created_at BETWEEN ? AND ? AND is_active = 1
+        WHERE created_at BETWEEN $1 AND $2 AND is_active = true
         GROUP BY category
         ORDER BY total_amount DESC
       `;
@@ -221,7 +221,7 @@ class Expense {
       const query = `
         SELECT DISTINCT category
         FROM expenses 
-        WHERE is_active = 1
+        WHERE is_active = true
         ORDER BY category
       `;
       
@@ -242,7 +242,7 @@ class Expense {
     try {
       const query = `
         SELECT * FROM expenses 
-        WHERE is_active = 1 
+        WHERE is_active = true 
           AND created_at >= ? 
           AND created_at <= ?
         ORDER BY created_at DESC
