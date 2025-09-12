@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aplikasi Kasir PVC</title>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    
+    <!-- Custom Styles -->
+    <style>
+        .fade-in {
+            animation: fadeIn 0.3s ease-in;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        /* Custom scrollbar */
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+        
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1;
+        }
+        
+        ::-webkit-scrollbar-thumb {
+            background: #c1c1c1;
+            border-radius: 3px;
+        }
+        
+        ::-webkit-scrollbar-thumb:hover {
+            background: #a8a8a8;
+        }
+    </style>
+</head>
+<body>
+    <div id="root"></div>
+
+    <!-- API Configuration - Load FIRST before any components -->
+    <script>
+        window.API_BASE_URL = 'https://backend-production-4a72.up.railway.app/api'; // Railway backend
+        console.log('🔧 API Base URL set early:', window.API_BASE_URL);
+        console.log('🌐 Testing backend connection...');
+        
+        // Test backend connectivity immediately
+        fetch(window.API_BASE_URL + '/health')
+            .then(response => {
+                console.log('✅ Backend health check:', response.status);
+            })
+            .catch(error => {
+                console.error('❌ Backend connection failed:', error);
+            });
+        
+        // Debug: API URL configured
+        console.log('🌐 API configured to:', window.API_BASE_URL);
+    </script>
+
+    <!-- React and ReactDOM -->
+    <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+    <!-- Utilities -->
+    <script type="text/babel" src="/frontend/utils/api.js"></script>
+    <script type="text/babel" src="/frontend/utils/currency.js"></script>
+    <script type="text/babel" src="/frontend/utils/date.js"></script>
+    
+    <!-- React Components -->
+    <script type="text/babel" src="/frontend/components/common/Layout.jsx"></script>
+    <script type="text/babel" src="/frontend/components/common/Notification.jsx"></script>
+    <script type="text/babel" src="/frontend/components/common/Loading.jsx"></script>
+    <script type="text/babel" src="/frontend/components/common/Modal.jsx"></script>
+    <script type="text/babel" src="/frontend/components/common/ReceiptPage.jsx"></script>
+    <script type="text/babel" src="/frontend/components/common/ReceiptModal.jsx"></script>
+    
+    <!-- POS Components -->
+    <script type="text/babel" src="/frontend/components/pos/ProductGrid.jsx"></script>
+    <script type="text/babel" src="/frontend/components/pos/Cart.jsx"></script>
+    <script type="text/babel" src="/frontend/components/pos/CartItem.jsx"></script>
+    <script type="text/babel" src="/frontend/components/pos/PaymentModal.jsx"></script>
+    
+    <!-- Product Components -->
+    <script type="text/babel" src="/frontend/components/products/ProductTable.jsx"></script>
+    <script type="text/babel" src="/frontend/components/categories/CategoryTable.jsx"></script>
+    <script type="text/babel" src="/frontend/components/forms/ProductForm.jsx"></script>
+    <script type="text/babel" src="/frontend/components/forms/CategoryForm.jsx"></script>
+    
+    <!-- Expense Components -->
+    <script type="text/babel" src="/frontend/components/forms/ExpenseForm.jsx"></script>
+    <script type="text/babel" src="/frontend/components/expenses/ExpenseTable.jsx"></script>
+    
+    <!-- React Pages -->
+    <script type="text/babel" src="/frontend/pages/POSPage.jsx"></script>
+    <script type="text/babel" src="/frontend/pages/ProductsPage.jsx"></script>
+    <script type="text/babel" src="/frontend/pages/InventoryPage.jsx"></script>
+    <script type="text/babel" src="/frontend/pages/SalesPage.jsx"></script>
+    <script type="text/babel" src="/frontend/pages/SettingsPage.jsx"></script>
+    <script type="text/babel" src="/frontend/pages/ExpensePage.jsx"></script>
+    <script type="text/babel" src="/frontend/pages/AccountingPage.jsx"></script>
+    
+    <!-- React Hooks -->
+    <script type="text/babel" src="/frontend/hooks/useNotification.js"></script>
+    <script type="text/babel" src="/frontend/hooks/useCart.js"></script>
+    <script type="text/babel" src="/frontend/hooks/useProducts.js"></script>
+    
+    <!-- Main App -->
+    <script type="text/babel" src="/frontend/App.jsx"></script>
+    
+    <!-- Render App -->
+    <script type="text/babel">
+        // Function to check if all components are loaded
+        function checkComponents() {
+            const requiredComponents = [
+                'api', 'formatCurrency', 'formatDate',
+                'App', 'Layout', 'Notification', 'Loading', 'Modal', 'ReceiptPage', 'ReceiptModal',
+                'ProductGrid', 'Cart', 'CartItem', 'PaymentModal',
+                'ProductTable', 'CategoryTable', 'ProductForm', 'CategoryForm',
+                'ExpenseForm', 'ExpenseTable',
+                'POSPage', 'ProductsPage', 'InventoryPage', 'SalesPage', 'SettingsPage',
+                'AccountingPage', 'ExpensePage'
+            ];
+            
+            const missing = requiredComponents.filter(comp => !window[comp]);
+            
+            if (missing.length === 0) {
+                console.log('All components loaded successfully');
+                const root = ReactDOM.createRoot(document.getElementById('root'));
+                root.render(React.createElement(App));
+            } else {
+                console.log('Waiting for components:', missing);
+                setTimeout(checkComponents, 100);
+            }
+        }
+        
+        // Start checking when DOM is ready
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', checkComponents);
+        } else {
+            checkComponents();
+        }
+    </script>
+</body>
+</html> 
