@@ -2,6 +2,10 @@
   "version": 2,
   "builds": [
     {
+      "src": "receipt.html",
+      "use": "@vercel/static"
+    },
+    {
       "src": "public/**/*",
       "use": "@vercel/static"
     },
@@ -13,7 +17,7 @@
   "rewrites": [
     {
       "source": "/receipt/(.*)",
-      "destination": "/public/receipt.html"
+      "destination": "/receipt.html"
     },
     {
       "source": "/frontend/(.*)",
