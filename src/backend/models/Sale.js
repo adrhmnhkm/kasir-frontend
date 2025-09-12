@@ -442,6 +442,9 @@ class Sale {
     console.log('Current local time:', now.toString());
     console.log('Timezone offset (minutes):', now.getTimezoneOffset());
     
+    // Check if PostgreSQL timezone setting affects this
+    console.log('Node.js timezone:', Intl.DateTimeFormat().resolvedOptions().timeZone);
+    
     // Method 1: Using toLocaleString with timezone
     const jakartaTimeString = now.toLocaleString('en-US', { 
       timeZone: 'Asia/Jakarta',
