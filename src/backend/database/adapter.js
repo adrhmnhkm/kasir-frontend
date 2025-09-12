@@ -1,6 +1,11 @@
 // Database adapter that switches between SQLite and PostgreSQL
 const hasPostgres = process.env.POSTGRES_URL || process.env.DATABASE_URL;
 
+console.log('🔍 Database configuration check:');
+console.log('  POSTGRES_URL:', process.env.POSTGRES_URL ? 'SET' : 'NOT SET');
+console.log('  DATABASE_URL:', process.env.DATABASE_URL ? 'SET' : 'NOT SET');
+console.log('  hasPostgres:', hasPostgres ? 'TRUE' : 'FALSE');
+
 let db;
 
 if (hasPostgres) {

@@ -396,10 +396,10 @@ class ReportController {
         FROM sale_items si
         JOIN sales s ON si.sale_id = s.id
         LEFT JOIN products p ON si.product_id = p.id
-        WHERE s.is_active = 1 
-          AND s.is_draft = 0
-          AND s.created_at >= ? 
-          AND s.created_at <= ?
+        WHERE s.is_active = true 
+          AND s.is_draft = false
+          AND s.created_at >= $1 
+          AND s.created_at <= $2
         GROUP BY si.product_id, si.product_name, p.purchase_price, p.selling_price
         ORDER BY total_hpp DESC
       `;
