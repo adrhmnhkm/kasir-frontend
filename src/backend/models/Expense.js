@@ -6,40 +6,33 @@ const dbPath = path.join(__dirname, '../../kasir.db');
 const db = new sqlite3.Database(dbPath);
 
 class Expense {
-  static getAll() {
-    return new Promise((resolve, reject) => {
+  static async getAll() {
+    try {
       const query = `
         SELECT * FROM expenses 
         WHERE is_active = 1
         ORDER BY created_at DESC
       `;
       
-      db.all(query, [], (err, rows) => {
-        if (err) {
-          reject(err);
-        } else {
-          resolve(rows);
-        }
-      });
-    });
+      const result = await db.query(query, []);
+      return result.rows || result;
+    } catch (error) {
+      throw error;
+    }
   }
 
-  static getById(id) {
-    return new Promise((resolve, reject) => {
+  static async getById(id) {
+    try {
       const query = 'SELECT * FROM expenses WHERE id = ? AND is_active = 1';
-      
-      db.get(query, [id], (err, row) => {
-        if (err) {
-          reject(err);
-        } else {
-          resolve(row);
-        }
-      });
-    });
+      const result = await db.query(query, [id]);
+      return result.rows?.[0] || result[0];
+    } catch (error) {
+      throw error;
+    }
   }
 
-  static create(expenseData) {
-    return new Promise((resolve, reject) => {
+  static async create(expenseData) {
+    try {
       const query = `
         INSERT INTO expenses (
           description, amount, category, payment_method, 
@@ -57,18 +50,17 @@ class Expense {
         expenseData.user || 'Admin'
       ];
       
-      db.run(query, values, function(err) {
-        if (err) {
-          reject(err);
-        } else {
-          resolve(this.getById(this.lastID));
-        }
-      }.bind(this));
-    });
+      const result = await db.query(query, values);
+      const expenseId = result.insertId || result.rows?.[0]?.id;
+      
+      return await Expense.getById(expenseId);
+    } catch (error) {
+      throw error;
+    }
   }
 
-  static update(id, expenseData) {
-    return new Promise((resolve, reject) => {
+  static async update(id, expenseData) {
+    try {
       const query = `
         UPDATE expenses SET 
           description = ?, amount = ?, category = ?, payment_method = ?,
@@ -86,68 +78,55 @@ class Expense {
         id
       ];
       
-      db.run(query, values, function(err) {
-        if (err) {
-          reject(err);
-        } else {
-          resolve(this.getById(id));
-        }
-      }.bind(this));
-    });
+      await db.query(query, values);
+      return await Expense.getById(id);
+    } catch (error) {
+      throw error;
+    }
   }
 
-  static delete(id) {
-    return new Promise((resolve, reject) => {
+  static async delete(id) {
+    try {
       const query = 'UPDATE expenses SET is_active = 0 WHERE id = ?';
-      
-      db.run(query, [id], function(err) {
-        if (err) {
-          reject(err);
-        } else {
-          resolve({ success: true });
-        }
-      });
-    });
+      await db.query(query, [id]);
+      return { success: true };
+    } catch (error) {
+      throw error;
+    }
   }
 
-  static getByCategory(category) {
-    return new Promise((resolve, reject) => {
+  static async getByCategory(category) {
+    try { 
       const query = `
         SELECT * FROM expenses 
         WHERE category = ? AND is_active = 1
         ORDER BY created_at DESC
       `;
       
-      db.all(query, [category], (err, rows) => {
-        if (err) {
-          reject(err);
-        } else {
-          resolve(rows);
-        }
-      });
-    });
+      const result = await db.query(query, [category]);
+      return result.rows || result;
+    } catch (error) {
+      throw error;
+    }
   }
 
-  static getByDateRange(startDate, endDate) {
-    return new Promise((resolve, reject) => {
+  static async getByDateRange(startDate, endDate) {
+    try {
       const query = `
         SELECT * FROM expenses 
         WHERE created_at BETWEEN ? AND ? AND is_active = 1
         ORDER BY created_at DESC
       `;
       
-      db.all(query, [startDate, endDate], (err, rows) => {
-        if (err) {
-          reject(err);
-        } else {
-          resolve(rows);
-        }
-      });
-    });
+      const result = await db.query(query, [startDate, endDate]);
+      return result.rows || result;
+    } catch (error) {
+      throw error;
+    }
   }
 
-  static getSummary() {
-    return new Promise((resolve, reject) => {
+  static async getSummary() {
+    try {
       const query = `
         SELECT 
           COUNT(*) as total_expenses,
@@ -161,37 +140,31 @@ class Expense {
         ORDER BY total_amount DESC
       `;
       
-      db.all(query, [], (err, rows) => {
-        if (err) {
-          reject(err);
-        } else {
-          resolve(rows);
-        }
-      });
-    });
+      const result = await db.query(query, []);
+      return result.rows || result;
+    } catch (error) {
+      throw error;
+    }
   }
 
-  static getTotalByPeriod(startDate, endDate) {
-    return new Promise((resolve, reject) => {
+  static async getTotalByPeriod(startDate, endDate) {
+    try {
       const query = `
         SELECT SUM(amount) as total_amount
         FROM expenses 
         WHERE created_at BETWEEN ? AND ? AND is_active = 1
       `;
       
-      db.get(query, [startDate, endDate], (err, row) => {
-        if (err) {
-          reject(err);
-        } else {
-          resolve(row);
-        }
-      });
-    });
+      const result = await db.query(query, [startDate, endDate]);
+      return result.rows?.[0] || result[0];
+    } catch (error) {
+      throw error;
+    }
   }
 
   // Get today's expenses
-  static getTodayExpenses() {
-    return new Promise((resolve, reject) => {
+  static async getTodayExpenses() {
+    try {
       const today = new Date();
       const startOfDay = new Date(today.getFullYear(), today.getMonth(), today.getDate()).toISOString();
       const endOfDay = new Date(today.getFullYear(), today.getMonth(), today.getDate(), 23, 59, 59).toISOString();
@@ -202,38 +175,33 @@ class Expense {
         ORDER BY created_at DESC
       `;
       
-      db.all(query, [startOfDay, endOfDay], (err, rows) => {
-        if (err) {
-          reject(err);
-        } else {
-          resolve(rows);
-        }
-      });
-    });
+      const result = await db.query(query, [startOfDay, endOfDay]);
+      return result.rows || result;
+    } catch (error) {
+      throw error;
+    }
   }
 
   // Get total expenses for a period
-  static getTotalExpenses(startDate, endDate) {
-    return new Promise((resolve, reject) => {
+  static async getTotalExpenses(startDate, endDate) {
+    try {
       const query = `
         SELECT SUM(amount) as total_amount
         FROM expenses 
         WHERE created_at BETWEEN ? AND ? AND is_active = 1
       `;
       
-      db.get(query, [startDate || '1900-01-01', endDate || '2099-12-31'], (err, row) => {
-        if (err) {
-          reject(err);
-        } else {
-          resolve(row ? row.total_amount || 0 : 0);
-        }
-      });
-    });
+      const result = await db.query(query, [startDate || '1900-01-01', endDate || '2099-12-31']);
+      const row = result.rows?.[0] || result[0];
+      return row ? row.total_amount || 0 : 0;
+    } catch (error) {
+      throw error;
+    }
   }
 
   // Get expense summary by category
-  static getExpenseSummaryByCategory(startDate, endDate) {
-    return new Promise((resolve, reject) => {
+  static async getExpenseSummaryByCategory(startDate, endDate) {
+    try {
       const query = `
         SELECT 
           category,
@@ -245,19 +213,16 @@ class Expense {
         ORDER BY total_amount DESC
       `;
       
-      db.all(query, [startDate || '1900-01-01', endDate || '2099-12-31'], (err, rows) => {
-        if (err) {
-          reject(err);
-        } else {
-          resolve(rows);
-        }
-      });
-    });
+      const result = await db.query(query, [startDate || '1900-01-01', endDate || '2099-12-31']);
+      return result.rows || result;
+    } catch (error) {
+      throw error;
+    }
   }
 
   // Get expense categories
-  static getExpenseCategories() {
-    return new Promise((resolve, reject) => {
+  static async getExpenseCategories() {
+    try {
       const query = `
         SELECT DISTINCT category
         FROM expenses 
@@ -265,23 +230,21 @@ class Expense {
         ORDER BY category
       `;
       
-      db.all(query, [], (err, rows) => {
-        if (err) {
-          reject(err);
-        } else {
-          resolve(rows.map(row => row.category));
-        }
-      });
-    });
+      const result = await db.query(query, []);
+      const rows = result.rows || result;
+      return rows.map(row => row.category);
+    } catch (error) {
+      throw error;
+    }
   }
 
   // Get expenses by date range (alias for getByDateRange)
-  static getExpensesByDateRange(startDate, endDate) {
-    return this.getByDateRange(startDate, endDate);
+  static async getExpensesByDateRange(startDate, endDate) {
+    return await this.getByDateRange(startDate, endDate);
   }
 
-  static getByDateRange(startDate, endDate) {
-    return new Promise((resolve, reject) => {
+  static async getByDateRange(startDate, endDate) {
+    try {
       const query = `
         SELECT * FROM expenses 
         WHERE is_active = 1 
@@ -293,19 +256,16 @@ class Expense {
       const start = typeof startDate === 'string' ? startDate : startDate.toISOString();
       const end = typeof endDate === 'string' ? endDate : endDate.toISOString();
       
-      db.all(query, [start, end], (err, rows) => {
-        if (err) {
-          reject(err);
-        } else {
-          resolve(rows);
-        }
-      });
-    });
+      const result = await db.query(query, [start, end]);
+      return result.rows || result;
+    } catch (error) {
+      throw error;
+    }
   }
 
   // Initialize expenses table
   static async initialize() {
-    return new Promise((resolve, reject) => {
+    try {
       const createTableQuery = `
         CREATE TABLE IF NOT EXISTS expenses (
           id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -322,15 +282,12 @@ class Expense {
         )
       `;
       
-      db.run(createTableQuery, [], function(err) {
-        if (err) {
-          reject(err);
-        } else {
-          console.log('✅ Expenses table created/verified');
-          resolve();
-        }
-      });
-    });
+      await db.query(createTableQuery, []);
+      console.log('✅ Expenses table created/verified');
+    } catch (error) {
+      console.error('❌ Error creating expenses table:', error);
+      throw error;
+    }
   }
 }
 
