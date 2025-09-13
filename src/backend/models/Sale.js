@@ -182,10 +182,11 @@ class Sale {
         console.log('Jakarta time toString:', jakartaTime.toString());
         console.log('Jakarta time toISOString:', jakartaTime.toISOString());
         
-        // Send Jakarta time with timezone offset
-        // Add +07:00 timezone offset to indicate Jakarta time
-        dbTimestamp = jakartaTime.toISOString().replace('Z', '+07:00');
-        console.log('Sending Jakarta time with timezone offset to DB:', dbTimestamp);
+        // Store Jakarta time as string to avoid PostgreSQL UTC conversion
+        // Format: YYYY-MM-DD HH:mm:ss (Jakarta time)
+        const jakartaTimeString = saleData.created_at; // Already in Jakarta time format
+        dbTimestamp = jakartaTimeString;
+        console.log('Storing Jakarta time as string to DB:', dbTimestamp);
         console.log('=====================================');
       } else {
         // Fallback to server Jakarta time
@@ -197,9 +198,9 @@ class Sale {
         const [datePart, timePart] = jakartaTimeString.split(', ');
         const [month, day, year] = datePart.split('/');
         const [hour, minute, second] = timePart.split(':');
-        const jakartaTime = new Date(`${year}-${month}-${day}T${hour}:${minute}:${second}`);
-        dbTimestamp = jakartaTime.toISOString().replace('Z', '+07:00');
-        console.log('Fallback Jakarta time with timezone offset to DB:', dbTimestamp);
+        const jakartaTimeString = `${year}-${month}-${day} ${hour}:${minute}:${second}`;
+        dbTimestamp = jakartaTimeString;
+        console.log('Fallback Jakarta time as string to DB:', dbTimestamp);
       }
       
       const saleValues = [
