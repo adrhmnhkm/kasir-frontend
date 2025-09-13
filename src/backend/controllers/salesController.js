@@ -4,18 +4,19 @@ const Product = require('../models/Product');
 class SalesController {
   async getAllSales(req, res) {
     try {
-      const { 
-        status, 
-        start_date, 
-        end_date, 
+      const {
+        status,
+        start_date,
+        end_date,
         period,
         draft,
         cashier,
-        page = 1, 
-        limit = 50 
+        page = 1,
+        limit = 50
       } = req.query;
-      
-      let sales;
+
+      // Buat objek filter untuk diteruskan ke model
+      const filters = {};
 
       // Handle period filter (today, week, month)
       if (period) {
@@ -27,54 +28,46 @@ class SalesController {
           endDate = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1);
         } else if (period === 'week') {
           const weekStart = new Date(now);
-          weekStart.setDate(now.getDate() - now.getDay()); // Start of week (Sunday)
+          weekStart.setDate(now.getDate() - now.getDay()); // Mulai dari hari Minggu
           weekStart.setHours(0, 0, 0, 0);
           startDate = weekStart;
-          endDate = new Date(weekStart.getTime() + 7 * 24 * 60 * 60 * 1000); // End of week
+          endDate = new Date(weekStart.getTime() + 7 * 24 * 60 * 60 * 1000); // Akhir minggu
         } else if (period === 'month') {
           startDate = new Date(now.getFullYear(), now.getMonth(), 1);
           endDate = new Date(now.getFullYear(), now.getMonth() + 1, 1);
         }
-
-        if (startDate && endDate) {
-          const start = typeof startDate === 'string' ? startDate : startDate.toISOString();
-          const end = typeof endDate === 'string' ? endDate : endDate.toISOString();
-          sales = await Sale.getByDateRange(start, end);
-        } else {
-          sales = await Sale.getAll();
-        }
+        filters.startDate = startDate;
+        filters.endDate = endDate;
       } else if (start_date && end_date) {
-        // Custom date range
-        sales = await Sale.getByDateRange(start_date, end_date);
-      } else {
-        sales = await Sale.getAll();
+        // Handle custom date range
+        filters.startDate = new Date(start_date);
+        filters.endDate = new Date(new Date(end_date).setHours(23, 59, 59, 999));
       }
 
-      // Apply status filter
+      // Terapkan filter status
       if (status === 'draft' || draft === 'true') {
-        sales = sales.filter(sale => sale.is_draft);
+        filters.is_draft = true;
       } else if (status === 'completed') {
-        sales = sales.filter(sale => !sale.is_draft);
+        filters.is_draft = false;
       }
 
-      // Apply cashier filter
+      // Terapkan filter kasir
       if (cashier) {
-        sales = sales.filter(sale => 
-          sale.cashier && sale.cashier.toLowerCase().includes(cashier.toLowerCase())
-        );
+        filters.cashier = cashier;
       }
 
-      // Sort by created_at descending
-      sales.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+      // Panggil Sale.getAll dengan semua filter yang sudah dikompilasi
+      const sales = await Sale.getAll(filters);
 
-      // Apply pagination
-      if (page && limit) {
-        const startIndex = (parseInt(page) - 1) * parseInt(limit);
-        const endIndex = startIndex + parseInt(limit);
-        sales = sales.slice(startIndex, endIndex);
-      }
+      // Sorting, pagination, dll. dilakukan di sini setelah data difilter oleh database
+      const sortedSales = sales.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
 
-      res.json(sales);
+      const pageNum = parseInt(page);
+      const limitNum = parseInt(limit);
+      const startIndex = (pageNum - 1) * limitNum;
+      const paginatedSales = sortedSales.slice(startIndex, startIndex + limitNum);
+
+      res.json(paginatedSales);
     } catch (error) {
       console.error('Error in getAllSales:', error);
       res.status(500).json({ error: error.message });

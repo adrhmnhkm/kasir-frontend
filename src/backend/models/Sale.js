@@ -63,24 +63,52 @@ if (isProduction && hasPostgres) {
 }
 
 class Sale {
-  static async getAll() {
+  static async getAll(filters = {}) {
     try {
-      const query = `
-        SELECT s.*, 
-               STRING_AGG(si.product_name || ' x' || si.quantity || ' ' || si.unit_price, ', ') as items_summary
-        FROM sales s 
-        LEFT JOIN sale_items si ON s.id = si.sale_id 
-        WHERE s.is_active = true
-        GROUP BY s.id, s.invoice_number, s.customer_id, s.subtotal, s.discount, s.tax, s.total, s.paid, s.change_amount, s.payment_method, s.notes, s.cashier, s.is_draft, s.is_active, s.created_at, s.updated_at
-        ORDER BY s.created_at DESC
+      let query = `
+        SELECT
+          s.*,
+          (SELECT COUNT(*) FROM sale_items si WHERE si.sale_id = s.id) AS item_count
+        FROM sales s
       `;
+
+      const conditions = [];
+      const values = [];
+      let paramIndex = 1;
+
+      if (filters.is_draft !== undefined) {
+        conditions.push(`s.is_draft = $${paramIndex++}`);
+        values.push(filters.is_draft);
+      }
       
-      const result = await db.query(query, []);
-      return result.rows;
+      if (filters.startDate) {
+        conditions.push(`s.created_at >= $${paramIndex++}`);
+        values.push(filters.startDate.toISOString());
+      }
+
+      if (filters.endDate) {
+        conditions.push(`s.created_at < $${paramIndex++}`);
+        values.push(filters.endDate.toISOString());
+      }
+      
+      if (filters.cashier) {
+          conditions.push(`LOWER(s.cashier) = LOWER($${paramIndex++})`);
+          values.push(filters.cashier);
+      }
+
+      if (conditions.length > 0) {
+        query += ` WHERE ` + conditions.join(' AND ');
+      }
+
+      query += ` ORDER BY s.created_at DESC`;
+
+      const { rows } = await db.query(query, values);
+      return rows;
     } catch (error) {
+      console.error('Error fetching sales from database:', error);
       throw error;
     }
-  }
+}
 
   static getById(id) {
     return new Promise(async (resolve, reject) => {
