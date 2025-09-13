@@ -49,8 +49,12 @@ const ReceiptModal = ({ isOpen, onClose, saleId }) => {
     console.log('Input dateString:', dateString);
     console.log('DateString type:', typeof dateString);
     
+    // Remove Z suffix if present to prevent UTC interpretation
+    const cleanDateString = dateString.replace('Z', '');
+    console.log('Clean dateString (no Z):', cleanDateString);
+    
     // Database sudah menyimpan Jakarta time, jadi tidak perlu konversi timezone
-    const date = new Date(dateString);
+    const date = new Date(cleanDateString);
     console.log('Parsed Date object:', date);
     console.log('Date toString:', date.toString());
     console.log('Date toISOString:', date.toISOString());
@@ -71,7 +75,7 @@ const ReceiptModal = ({ isOpen, onClose, saleId }) => {
     console.log('=====================================');
     
     // Also show alert for debugging
-    alert(`DEBUG TIMEZONE:\nInput: ${dateString}\nFormatted: ${formatted}`);
+    alert(`DEBUG TIMEZONE:\nInput: ${dateString}\nClean: ${cleanDateString}\nFormatted: ${formatted}`);
     
     return formatted;
   };

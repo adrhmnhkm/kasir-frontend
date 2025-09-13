@@ -130,7 +130,11 @@ const ReceiptPage = ({ saleId }) => {
             console.log('Input created_at:', receiptData.created_at);
             console.log('Type:', typeof receiptData.created_at);
             
-            const date = new Date(receiptData.created_at);
+            // Remove Z suffix if present to prevent UTC interpretation
+            const cleanDateString = receiptData.created_at.replace('Z', '');
+            console.log('Clean dateString (no Z):', cleanDateString);
+            
+            const date = new Date(cleanDateString);
             console.log('Parsed Date:', date);
             console.log('Date toString:', date.toString());
             console.log('Date toISOString:', date.toISOString());
@@ -141,7 +145,7 @@ const ReceiptPage = ({ saleId }) => {
             console.log('================================');
             
             // Also show alert for debugging
-            alert(`DEBUG RECEIPT PAGE:\nInput: ${receiptData.created_at}\nFormatted: ${formatted}`);
+            alert(`DEBUG RECEIPT PAGE:\nInput: ${receiptData.created_at}\nClean: ${cleanDateString}\nFormatted: ${formatted}`);
             
             return formatted;
           })()}</div>
