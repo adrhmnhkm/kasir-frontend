@@ -170,16 +170,20 @@ const POSPage = ({ showNotification }) => {
 
       {/* Payment Modal */}
       {showPayment && (
-        <PaymentModal
-          isOpen={showPayment}
-          cart={cart}
-          cashier={cashier}
-          customer={customer}
-          onPayment={handlePayment}
-          onPaymentSuccess={handlePaymentSuccess}
-          onClose={() => setShowPayment(false)}
-          showNotification={showNotification}
-        />
+        <>
+          {console.log('POSPage rendering PaymentModal - showPayment:', showPayment)}
+          {console.log('POSPage rendering PaymentModal - cart:', cart)}
+          <PaymentModal
+            isOpen={showPayment}
+            cart={cart}
+            cashier={cashier}
+            customer={customer}
+            onPayment={handlePayment}
+            onPaymentSuccess={handlePaymentSuccess}
+            onClose={() => setShowPayment(false)}
+            showNotification={showNotification}
+          />
+        </>
       )}
     </div>
   );
