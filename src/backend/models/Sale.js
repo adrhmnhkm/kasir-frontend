@@ -154,6 +154,21 @@ class Sale {
       // Generate invoice number using frontend timestamp
       const invoiceNumber = this.generateInvoiceNumber(saleData);
       
+      // Debug: Check table structure
+      try {
+        const tableInfo = await db.query(`
+          SELECT column_name, data_type, is_nullable 
+          FROM information_schema.columns 
+          WHERE table_name = 'sales' 
+          ORDER BY ordinal_position
+        `);
+        console.log('=== SALES TABLE STRUCTURE ===');
+        console.log('Columns:', tableInfo.rows.map(row => row.column_name));
+        console.log('================================');
+      } catch (tableError) {
+        console.log('Error checking table structure:', tableError.message);
+      }
+
       // Insert sale first
       const saleQuery = `
         INSERT INTO sales (
