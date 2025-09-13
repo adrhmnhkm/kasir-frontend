@@ -140,6 +140,9 @@ const ReceiptPage = ({ saleId }) => {
             console.log('Formatted (no timezone):', formatted);
             console.log('================================');
             
+            // Also show alert for debugging
+            alert(`DEBUG RECEIPT PAGE:\nInput: ${receiptData.created_at}\nFormatted: ${formatted}`);
+            
             return formatted;
           })()}</div>
           <div>Kasir: {receiptData.cashier || 'Kasir'}</div>

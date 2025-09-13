@@ -70,6 +70,9 @@ const ReceiptModal = ({ isOpen, onClose, saleId }) => {
     console.log('Formatted Jakarta time (no timezone conversion):', formatted);
     console.log('=====================================');
     
+    // Also show alert for debugging
+    alert(`DEBUG TIMEZONE:\nInput: ${dateString}\nFormatted: ${formatted}`);
+    
     return formatted;
   };
 
