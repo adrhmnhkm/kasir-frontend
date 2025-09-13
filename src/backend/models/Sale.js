@@ -182,8 +182,11 @@ class Sale {
         console.log('Jakarta time toString:', jakartaTime.toString());
         console.log('Jakarta time toISOString:', jakartaTime.toISOString());
         
-        dbTimestamp = jakartaTime.toISOString().replace('Z', '');
-        console.log('Converted Jakarta time for DB:', dbTimestamp);
+        // Convert Jakarta time to UTC for database storage
+        // Since PostgreSQL stores TIMESTAMP as UTC, we need to convert Jakarta time to UTC
+        const utcTime = new Date(jakartaTime.getTime() - (7 * 60 * 60 * 1000)); // Subtract 7 hours
+        dbTimestamp = utcTime.toISOString().replace('Z', '');
+        console.log('Converted Jakarta time to UTC for DB:', dbTimestamp);
         console.log('=====================================');
       } else {
         // Fallback to server Jakarta time
@@ -196,8 +199,9 @@ class Sale {
         const [month, day, year] = datePart.split('/');
         const [hour, minute, second] = timePart.split(':');
         const jakartaTime = new Date(`${year}-${month}-${day}T${hour}:${minute}:${second}`);
-        dbTimestamp = jakartaTime.toISOString().replace('Z', '');
-        console.log('Fallback Jakarta time for DB:', dbTimestamp);
+        const utcTime = new Date(jakartaTime.getTime() - (7 * 60 * 60 * 1000)); // Subtract 7 hours
+        dbTimestamp = utcTime.toISOString().replace('Z', '');
+        console.log('Fallback Jakarta time to UTC for DB:', dbTimestamp);
       }
       
       const saleValues = [
