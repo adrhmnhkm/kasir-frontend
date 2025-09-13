@@ -125,7 +125,7 @@ const ReceiptPage = ({ saleId }) => {
         {/* Transaction Info */}
         <div className="mb-2 border-b border-dashed border-black pb-2">
           <div>No. Struk: {receiptData.invoice_number}</div>
-          <div>Tanggal: {new Date(receiptData.created_at).toLocaleString('id-ID', { timeZone: 'Asia/Jakarta' })}</div>
+          <div>Tanggal: {new Date(receiptData.created_at).toLocaleString('id-ID')}</div>
           <div>Kasir: {receiptData.cashier || 'Kasir'}</div>
         </div>
 
