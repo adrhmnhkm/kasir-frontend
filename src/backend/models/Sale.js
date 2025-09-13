@@ -191,15 +191,15 @@ class Sale {
       } else {
         // Fallback to server Jakarta time
         const serverTime = new Date();
-        const jakartaTimeString = serverTime.toLocaleString('en-US', { 
+        const jakartaLocaleString = serverTime.toLocaleString('en-US', { 
           timeZone: 'Asia/Jakarta', year: 'numeric', month: '2-digit', day: '2-digit',
           hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false
         });
-        const [datePart, timePart] = jakartaTimeString.split(', ');
+        const [datePart, timePart] = jakartaLocaleString.split(', ');
         const [month, day, year] = datePart.split('/');
         const [hour, minute, second] = timePart.split(':');
-        const jakartaTimeString = `${year}-${month}-${day} ${hour}:${minute}:${second}`;
-        dbTimestamp = jakartaTimeString;
+        const fallbackJakartaTimeString = `${year}-${month}-${day} ${hour}:${minute}:${second}`;
+        dbTimestamp = fallbackJakartaTimeString;
         console.log('Fallback Jakarta time as string to DB:', dbTimestamp);
       }
       
