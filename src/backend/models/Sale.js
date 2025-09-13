@@ -158,8 +158,7 @@ class Sale {
       const saleQuery = `
         INSERT INTO sales (
           invoice_number, customer_id, subtotal, discount, tax, total,
-          paid, change_amount, payment_method, notes, cashier, is_draft,
-          created_at, updated_at
+          paid, change_amount, payment_method, notes, cashier, is_draft
         ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14)
         RETURNING id
       `;
@@ -182,11 +181,14 @@ class Sale {
         console.log('Jakarta time toString:', jakartaTime.toString());
         console.log('Jakarta time toISOString:', jakartaTime.toISOString());
         
-        // Store Jakarta time as string to avoid PostgreSQL UTC conversion
-        // Format: YYYY-MM-DD HH:mm:ss (Jakarta time)
-        const jakartaTimeString = saleData.created_at; // Already in Jakarta time format
-        dbTimestamp = jakartaTimeString;
-        console.log('Storing Jakarta time as string to DB:', dbTimestamp);
+        // Convert Jakarta time to UTC for database storage
+        // Frontend sends: "2025-09-13 20:42:23" (Jakarta time)
+        // Convert to UTC: "2025-09-13T13:42:23.000Z"
+        const jakartaTimeString = saleData.created_at; // "2025-09-13 20:42:23"
+        const utcTime = new Date(jakartaTimeString + '+07:00').toISOString();
+        dbTimestamp = utcTime;
+        console.log('Jakarta time from frontend:', jakartaTimeString);
+        console.log('Converted to UTC for DB:', dbTimestamp);
         console.log('=====================================');
       } else {
         // Fallback to server Jakarta time
@@ -199,8 +201,10 @@ class Sale {
         const [month, day, year] = datePart.split('/');
         const [hour, minute, second] = timePart.split(':');
         const fallbackJakartaTimeString = `${year}-${month}-${day} ${hour}:${minute}:${second}`;
-        dbTimestamp = fallbackJakartaTimeString;
-        console.log('Fallback Jakarta time as string to DB:', dbTimestamp);
+        const fallbackUtcTime = new Date(fallbackJakartaTimeString + '+07:00').toISOString();
+        dbTimestamp = fallbackUtcTime;
+        console.log('Fallback Jakarta time:', fallbackJakartaTimeString);
+        console.log('Fallback converted to UTC for DB:', dbTimestamp);
       }
       
       const saleValues = [
@@ -215,9 +219,7 @@ class Sale {
         saleData.payment_method || 'cash',
         saleData.notes || '',
         saleData.cashier || 'Kasir',
-        saleData.is_draft || false,
-        dbTimestamp,
-        dbTimestamp
+        saleData.is_draft || false
       ];
       
       const result = await db.query(saleQuery, saleValues);
@@ -229,7 +231,7 @@ class Sale {
         const itemQuery = `
           INSERT INTO sale_items (
             sale_id, product_id, product_name, quantity, unit_price, 
-            discount, total, created_at
+            discount, total
           ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
         `;
         
@@ -243,8 +245,7 @@ class Sale {
             parseFloat(item.quantity),
             parseFloat(item.unit_price),
             parseFloat(item.discount) || 0,
-            parseFloat(item.total),
-            dbTimestamp
+            parseFloat(item.total)
           ];
           
           console.log('Inserting item:', itemValues);
@@ -563,8 +564,8 @@ static async initialize() {
         sku TEXT UNIQUE,
         price NUMERIC NOT NULL,
         stock NUMERIC DEFAULT 0,
-        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+        updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
       )
     `;
     await db.query(createProductsTableQuery);
@@ -586,8 +587,8 @@ static async initialize() {
         cashier TEXT DEFAULT 'Kasir',
         is_draft BOOLEAN DEFAULT false,
         is_active BOOLEAN DEFAULT true,
-        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+        updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
       )
     `;
     await db.query(createSalesTableQuery);
@@ -603,7 +604,7 @@ static async initialize() {
         unit_price NUMERIC NOT NULL,
         discount NUMERIC DEFAULT 0,
         total NUMERIC NOT NULL,
-        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
       )
     `;
     await db.query(createSaleItemsTableQuery);
