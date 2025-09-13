@@ -11,7 +11,10 @@ const PaymentModal = ({
   showNotification 
 }) => {
   // Force alert to show component is loaded
-  alert('PAYMENT MODAL LOADED - isOpen: ' + isOpen);
+  console.log('PAYMENT MODAL LOADED - isOpen:', isOpen);
+  if (typeof window !== 'undefined') {
+    window.paymentModalLoaded = true;
+  }
   
   const [paymentAmount, setPaymentAmount] = useState('');
   const [loading, setLoading] = useState(false);
@@ -142,11 +145,17 @@ const PaymentModal = ({
   };
 
   const handlePrintReceipt = () => {
-    alert('PRINT RECEIPT CLICKED - paymentResult: ' + JSON.stringify(paymentResult));
+    console.log('PRINT RECEIPT CLICKED - paymentResult:', paymentResult);
+    if (typeof window !== 'undefined') {
+      window.printReceiptClicked = true;
+    }
     
     if (paymentResult) {
+      console.log('Setting showReceiptModal to true');
       // Open receipt modal instead of new window
       setShowReceiptModal(true);
+    } else {
+      console.log('No paymentResult available');
     }
   };
 
@@ -216,7 +225,10 @@ const PaymentModal = ({
               <div className="grid grid-cols-2 gap-3">
                 <button
                   onClick={() => {
-                    alert('BUTTON CLICKED DIRECTLY!');
+                    console.log('BUTTON CLICKED DIRECTLY!');
+                    if (typeof window !== 'undefined') {
+                      window.buttonClicked = true;
+                    }
                     handlePrintReceipt();
                   }}
                   className="px-6 py-3 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors flex items-center justify-center space-x-2"
