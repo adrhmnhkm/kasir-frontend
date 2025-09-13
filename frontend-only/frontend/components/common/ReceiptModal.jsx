@@ -49,14 +49,15 @@ const ReceiptModal = ({ isOpen, onClose, saleId }) => {
     console.log('Input dateString:', dateString);
     console.log('DateString type:', typeof dateString);
     
+    // Database sudah menyimpan Jakarta time, jadi tidak perlu konversi timezone
     const date = new Date(dateString);
     console.log('Parsed Date object:', date);
     console.log('Date toString:', date.toString());
     console.log('Date toISOString:', date.toISOString());
     console.log('Date toLocaleString:', date.toLocaleString());
     
+    // Format langsung tanpa timezone conversion karena sudah Jakarta time
     const formatted = date.toLocaleString('id-ID', { 
-      timeZone: 'Asia/Jakarta',
       year: 'numeric',
       month: '2-digit',
       day: '2-digit',
@@ -66,7 +67,7 @@ const ReceiptModal = ({ isOpen, onClose, saleId }) => {
       hour12: false
     });
     
-    console.log('Formatted Jakarta time:', formatted);
+    console.log('Formatted Jakarta time (no timezone conversion):', formatted);
     console.log('=====================================');
     
     return formatted;
