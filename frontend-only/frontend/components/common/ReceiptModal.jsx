@@ -1,9 +1,8 @@
 const { useState, useEffect } = React;
 
 const ReceiptModal = ({ isOpen, onClose, saleId }) => {
-  console.log('=== RECEIPT MODAL RENDER ===');
-  console.log('Props:', { isOpen, saleId });
-  console.log('============================');
+  // Force alert to show component is loading
+  alert('RECEIPT MODAL LOADED - Props: ' + JSON.stringify({ isOpen, saleId }));
   
   const [receiptData, setReceiptData] = useState(null);
   const [storeSettings, setStoreSettings] = useState({});
@@ -11,13 +10,10 @@ const ReceiptModal = ({ isOpen, onClose, saleId }) => {
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    console.log('=== RECEIPT MODAL USEEFFECT ===');
-    console.log('isOpen:', isOpen);
-    console.log('saleId:', saleId);
-    console.log('================================');
+    alert('RECEIPT MODAL USEEFFECT - isOpen: ' + isOpen + ', saleId: ' + saleId);
     
     if (isOpen && saleId) {
-      console.log('Loading receipt data...');
+      alert('LOADING RECEIPT DATA...');
       loadReceiptData();
       loadStoreSettings();
     }
