@@ -64,7 +64,11 @@ const PaymentModal = ({
       
       // Get current Jakarta time directly
       const now = new Date();
-      const jakartaTimeString = now.toLocaleString('en-US', { 
+      console.log('=== FRONTEND PAYMENT DEBUG ===');
+      console.log('Device local time:', now.toLocaleString());
+      console.log('Device UTC time:', now.toISOString());
+      
+      const jakartaLocaleString = now.toLocaleString('en-US', { 
         timeZone: 'Asia/Jakarta',
         year: 'numeric',
         month: '2-digit',
@@ -75,13 +79,19 @@ const PaymentModal = ({
         hour12: false
       });
       
-      // Parse Jakarta time string to create proper Date object
-      const [datePart, timePart] = jakartaTimeString.split(', ');
+      console.log('Jakarta locale string:', jakartaLocaleString);
+      
+      // Parse Jakarta time string to create proper Date object in Jakarta timezone
+      const [datePart, timePart] = jakartaLocaleString.split(', ');
       const [month, day, year] = datePart.split('/');
       const [hour, minute, second] = timePart.split(':');
-      const jakartaTime = new Date(`${year}-${month}-${day}T${hour}:${minute}:${second}.000Z`);
       
-      console.log('Jakarta time:', jakartaTime.toISOString());
+      // Send Jakarta time as string (local Indonesia time)
+      const jakartaTimeString = `${year}-${month}-${day} ${hour}:${minute}:${second}`;
+      
+      console.log('Parsed components:', { year, month, day, hour, minute, second });
+      console.log('Final Jakarta time string:', jakartaTimeString);
+      console.log('================================');
       
       const saleData = {
         customer_id: null,
@@ -102,7 +112,7 @@ const PaymentModal = ({
         notes: customer,
         cashier: cashier,
         is_draft: false,
-        created_at: jakartaTime.toISOString()
+        created_at: jakartaTimeString
       };
 
       const result = await onPayment(saleData);

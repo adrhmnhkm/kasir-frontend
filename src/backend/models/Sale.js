@@ -432,8 +432,12 @@ class Sale {
     }
     
     // Debug: Show Jakarta time
-    console.log('=== INVOICE NUMBER GENERATION DEBUG ===');
-    console.log('Jakarta time:', now.toISOString());
+    console.log('=== BACKEND INVOICE GENERATION DEBUG ===');
+    console.log('Input saleData.created_at:', saleData?.created_at);
+    console.log('Now object:', now);
+    console.log('Now toString:', now.toString());
+    console.log('Now toISOString:', now.toISOString());
+    console.log('Now toLocaleString:', now.toLocaleString());
     
     // Extract time components from Jakarta time
     const year = now.getUTCFullYear();
@@ -445,9 +449,11 @@ class Sale {
     
     const invoiceNumber = `INV-${year}${month}${day}-${time}`;
     
-    console.log('Parsed components:');
+    console.log('UTC Components:');
     console.log('Year:', year, 'Month:', month, 'Day:', day);
     console.log('Hour:', now.getUTCHours(), 'Minute:', now.getUTCMinutes(), 'Second:', now.getUTCSeconds());
+    console.log('Local Components:');
+    console.log('Hour:', now.getHours(), 'Minute:', now.getMinutes(), 'Second:', now.getSeconds());
     console.log('Generated invoice:', invoiceNumber);
     console.log('==========================================');
     
