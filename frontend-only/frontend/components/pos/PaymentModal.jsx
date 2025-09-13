@@ -139,6 +139,11 @@ const PaymentModal = ({
   };
 
   const handlePrintReceipt = () => {
+    console.log('=== PRINT RECEIPT CLICKED ===');
+    console.log('paymentResult:', paymentResult);
+    console.log('paymentResult.id:', paymentResult?.id);
+    console.log('============================');
+    
     if (paymentResult) {
       // Open receipt modal instead of new window
       setShowReceiptModal(true);
@@ -350,11 +355,18 @@ const PaymentModal = ({
 
       {/* Receipt Modal */}
       {showReceiptModal && paymentResult && (
-        <ReceiptModal 
-          isOpen={showReceiptModal}
-          onClose={handleReceiptModalClose}
-          saleId={paymentResult.id}
-        />
+        <>
+          {console.log('=== RENDERING RECEIPT MODAL ===')}
+          {console.log('showReceiptModal:', showReceiptModal)}
+          {console.log('paymentResult:', paymentResult)}
+          {console.log('saleId:', paymentResult.id)}
+          {console.log('===============================')}
+          <ReceiptModal 
+            isOpen={showReceiptModal}
+            onClose={handleReceiptModalClose}
+            saleId={paymentResult.id}
+          />
+        </>
       )}
     </>
   );
