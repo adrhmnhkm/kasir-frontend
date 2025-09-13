@@ -129,10 +129,10 @@ const SalesPage = ({ showNotification }) => {
   const getSummary = () => {
     const filteredSales = getFilteredAndSortedSales();
     const completedSales = filteredSales.filter(sale => !sale.is_draft);
-    const totalSales = completedSales.reduce((sum, sale) => sum + sale.total, 0);
+    const totalSales = completedSales.reduce((sum, sale) => sum + parseFloat(sale.total || 0), 0);
     const totalTransactions = completedSales.length;
     const avgTransaction = totalTransactions > 0 ? totalSales / totalTransactions : 0;
-    const totalDiscount = completedSales.reduce((sum, sale) => sum + (sale.discount || 0), 0);
+    const totalDiscount = completedSales.reduce((sum, sale) => sum + (parseFloat(sale.discount) || 0), 0);
 
     return {
       totalSales,
