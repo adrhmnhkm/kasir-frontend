@@ -64,19 +64,16 @@ const ReceiptModal = ({ isOpen, onClose, saleId }) => {
     console.log('Input dateString:', dateString);
     console.log('DateString type:', typeof dateString);
     
-    // Remove Z suffix if present to prevent UTC interpretation
-    const cleanDateString = dateString.replace('Z', '');
-    console.log('Clean dateString (no Z):', cleanDateString);
-    
-    // Database sudah menyimpan Jakarta time, jadi tidak perlu konversi timezone
-    const date = new Date(cleanDateString);
+    // Database menyimpan UTC time, konversi ke Jakarta time untuk tampilan
+    const date = new Date(dateString);
     console.log('Parsed Date object:', date);
     console.log('Date toString:', date.toString());
     console.log('Date toISOString:', date.toISOString());
     console.log('Date toLocaleString:', date.toLocaleString());
     
-    // Format langsung tanpa timezone conversion karena sudah Jakarta time
+    // Konversi UTC time ke Jakarta time untuk tampilan
     const formatted = date.toLocaleString('id-ID', { 
+      timeZone: 'Asia/Jakarta',
       year: 'numeric',
       month: '2-digit',
       day: '2-digit',
@@ -86,11 +83,11 @@ const ReceiptModal = ({ isOpen, onClose, saleId }) => {
       hour12: false
     });
     
-    console.log('Formatted Jakarta time (no timezone conversion):', formatted);
+    console.log('Formatted Jakarta time (with timezone conversion):', formatted);
     console.log('=====================================');
     
     // Also show alert for debugging
-    alert(`DEBUG TIMEZONE:\nInput: ${dateString}\nClean: ${cleanDateString}\nFormatted: ${formatted}`);
+    alert(`DEBUG TIMEZONE:\nInput: ${dateString}\nFormatted Jakarta: ${formatted}`);
     
     return formatted;
   };
@@ -165,10 +162,18 @@ const ReceiptModal = ({ isOpen, onClose, saleId }) => {
         <div class="mb-2 border-b pb-2">
           <div>No. Struk: ${receiptData.invoice_number}</div>
           <div>Tanggal: ${(() => {
-            const cleanDateString = receiptData.created_at.replace('Z', '');
-            const date = new Date(cleanDateString);
-            const formatted = date.toLocaleString('id-ID');
-            alert('DEBUG HTML TEMPLATE:\\nInput: ' + receiptData.created_at + '\\nClean: ' + cleanDateString + '\\nFormatted: ' + formatted);
+            const date = new Date(receiptData.created_at);
+            const formatted = date.toLocaleString('id-ID', { 
+              timeZone: 'Asia/Jakarta',
+              year: 'numeric',
+              month: '2-digit',
+              day: '2-digit',
+              hour: '2-digit',
+              minute: '2-digit',
+              second: '2-digit',
+              hour12: false
+            });
+            alert('DEBUG HTML TEMPLATE:\\nInput: ' + receiptData.created_at + '\\nFormatted Jakarta: ' + formatted);
             return formatted;
           })()}</div>
           <div>Kasir: ${receiptData.cashier || 'Kasir'}</div>
@@ -283,10 +288,18 @@ const ReceiptModal = ({ isOpen, onClose, saleId }) => {
               <div className="mb-2 border-b border-dashed border-gray-400 pb-2">
                 <div>No. Struk: {receiptData.invoice_number}</div>
                 <div>Tanggal: {(() => {
-                  const cleanDateString = receiptData.created_at.replace('Z', '');
-                  const date = new Date(cleanDateString);
-                  const formatted = date.toLocaleString('id-ID');
-                  alert('DEBUG MODAL PREVIEW:\\nInput: ' + receiptData.created_at + '\\nClean: ' + cleanDateString + '\\nFormatted: ' + formatted);
+                  const date = new Date(receiptData.created_at);
+                  const formatted = date.toLocaleString('id-ID', { 
+                    timeZone: 'Asia/Jakarta',
+                    year: 'numeric',
+                    month: '2-digit',
+                    day: '2-digit',
+                    hour: '2-digit',
+                    minute: '2-digit',
+                    second: '2-digit',
+                    hour12: false
+                  });
+                  alert('DEBUG MODAL PREVIEW:\\nInput: ' + receiptData.created_at + '\\nFormatted Jakarta: ' + formatted);
                   return formatted;
                 })()}</div>
                 <div>Kasir: {receiptData.cashier || 'Kasir'}</div>

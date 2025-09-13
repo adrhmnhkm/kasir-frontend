@@ -130,22 +130,29 @@ const ReceiptPage = ({ saleId }) => {
             console.log('Input created_at:', receiptData.created_at);
             console.log('Type:', typeof receiptData.created_at);
             
-            // Remove Z suffix if present to prevent UTC interpretation
-            const cleanDateString = receiptData.created_at.replace('Z', '');
-            console.log('Clean dateString (no Z):', cleanDateString);
-            
-            const date = new Date(cleanDateString);
+            // Database menyimpan UTC time, konversi ke Jakarta time untuk tampilan
+            const date = new Date(receiptData.created_at);
             console.log('Parsed Date:', date);
             console.log('Date toString:', date.toString());
             console.log('Date toISOString:', date.toISOString());
             console.log('Date toLocaleString:', date.toLocaleString());
             
-            const formatted = date.toLocaleString('id-ID');
-            console.log('Formatted (no timezone):', formatted);
+            // Konversi UTC time ke Jakarta time untuk tampilan
+            const formatted = date.toLocaleString('id-ID', { 
+              timeZone: 'Asia/Jakarta',
+              year: 'numeric',
+              month: '2-digit',
+              day: '2-digit',
+              hour: '2-digit',
+              minute: '2-digit',
+              second: '2-digit',
+              hour12: false
+            });
+            console.log('Formatted Jakarta time (with timezone conversion):', formatted);
             console.log('================================');
             
             // Also show alert for debugging
-            alert(`DEBUG RECEIPT PAGE:\nInput: ${receiptData.created_at}\nClean: ${cleanDateString}\nFormatted: ${formatted}`);
+            alert(`DEBUG RECEIPT PAGE:\nInput: ${receiptData.created_at}\nFormatted Jakarta: ${formatted}`);
             
             return formatted;
           })()}</div>
