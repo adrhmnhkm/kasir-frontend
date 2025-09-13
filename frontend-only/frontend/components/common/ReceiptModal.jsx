@@ -18,6 +18,15 @@ const ReceiptModal = ({ isOpen, onClose, saleId }) => {
       setLoading(true);
       setError(null);
       const response = await api.sales.getById(saleId);
+      
+      // Debug data yang diterima
+      console.log('=== RECEIPT DATA LOADED ===');
+      console.log('Sale ID:', saleId);
+      console.log('Response:', response);
+      console.log('Created At:', response.created_at);
+      console.log('Invoice Number:', response.invoice_number);
+      alert(`RECEIPT DATA LOADED:\nSale ID: ${saleId}\nCreated At: ${response.created_at}\nInvoice: ${response.invoice_number}`);
+      
       setReceiptData(response);
     } catch (error) {
       console.error('Error loading receipt data:', error);
