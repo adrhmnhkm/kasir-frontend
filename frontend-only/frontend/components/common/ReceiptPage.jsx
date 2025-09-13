@@ -125,33 +125,7 @@ const ReceiptPage = ({ saleId }) => {
         {/* Transaction Info */}
         <div className="mb-2 border-b border-dashed border-black pb-2">
           <div>No. Struk: {receiptData.invoice_number}</div>
-          <div>Tanggal: {(() => {
-            console.log('=== RECEIPT PAGE TIME DEBUG ===');
-            console.log('Input created_at:', receiptData.created_at);
-            console.log('Type:', typeof receiptData.created_at);
-            
-            // Database menyimpan UTC time, konversi ke Jakarta time untuk tampilan
-            const dateUTC = new Date(receiptData.created_at);
-            const dateJakarta = new Date(dateUTC.getTime() + (7 * 60 * 60 * 1000));
-            
-            // Konversi UTC time ke Jakarta time untuk tampilan
-    const formatted = dateJakarta.toLocaleString('id-ID', {
-      year: 'numeric',
-      month: '2-digit',
-      day: '2-digit',
-      hour: '2-digit',
-      minute: '2-digit',
-      second: '2-digit',
-      hour12: false
-    });
-            console.log('Formatted Jakarta time (with timezone conversion):', formatted);
-            console.log('================================');
-            
-            // Also show alert for debugging
-            alert(`DEBUG RECEIPT PAGE:\nInput: ${receiptData.created_at}\nFormatted Jakarta: ${formatted}`);
-            
-            return formatted;
-          })()}</div>
+          <div>Tanggal: {formatJakartaTime(receiptData.created_at)}</div>
           <div>Kasir: {receiptData.cashier || 'Kasir'}</div>
         </div>
 
