@@ -139,10 +139,7 @@ const PaymentModal = ({
   };
 
   const handlePrintReceipt = () => {
-    console.log('=== PRINT RECEIPT CLICKED ===');
-    console.log('paymentResult:', paymentResult);
-    console.log('paymentResult.id:', paymentResult?.id);
-    console.log('============================');
+    alert('PRINT RECEIPT CLICKED - paymentResult: ' + JSON.stringify(paymentResult));
     
     if (paymentResult) {
       // Open receipt modal instead of new window
