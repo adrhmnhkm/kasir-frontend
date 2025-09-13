@@ -596,6 +596,21 @@ static async initialize() {
     `;
     await db.query(createSalesTableQuery);
 
+    // Migration: Add created_at and updated_at columns if they don't exist
+    try {
+      await db.query(`
+        ALTER TABLE sales 
+        ADD COLUMN IF NOT EXISTS created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+      `);
+      await db.query(`
+        ALTER TABLE sales 
+        ADD COLUMN IF NOT EXISTS updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+      `);
+      console.log('✅ Migration: Added created_at and updated_at columns to sales table');
+    } catch (migrationError) {
+      console.log('Migration info:', migrationError.message);
+    }
+
     // Create sale_items table
     const createSaleItemsTableQuery = `
       CREATE TABLE IF NOT EXISTS sale_items (
