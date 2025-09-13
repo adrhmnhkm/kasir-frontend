@@ -131,7 +131,7 @@ const ReceiptPage = ({ saleId }) => {
             console.log('Type:', typeof receiptData.created_at);
             
             // Database menyimpan UTC time, konversi ke Jakarta time untuk tampilan
-            const date = new Date(receiptData.created_at);
+            const dateUTC = new Date(receiptData.created_at);
             const dateJakarta = new Date(dateUTC.getTime() + (7 * 60 * 60 * 1000));
             
             // Konversi UTC time ke Jakarta time untuk tampilan
