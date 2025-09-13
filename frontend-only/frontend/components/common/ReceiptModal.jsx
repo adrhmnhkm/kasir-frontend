@@ -150,9 +150,10 @@ const ReceiptModal = ({ isOpen, onClose, saleId }) => {
         <div class="mb-2 border-b pb-2">
           <div>No. Struk: ${receiptData.invoice_number}</div>
           <div>Tanggal: ${(() => {
-            const date = new Date(receiptData.created_at);
+            const cleanDateString = receiptData.created_at.replace('Z', '');
+            const date = new Date(cleanDateString);
             const formatted = date.toLocaleString('id-ID');
-            alert('DEBUG HTML TEMPLATE:\\nInput: ' + receiptData.created_at + '\\nFormatted: ' + formatted);
+            alert('DEBUG HTML TEMPLATE:\\nInput: ' + receiptData.created_at + '\\nClean: ' + cleanDateString + '\\nFormatted: ' + formatted);
             return formatted;
           })()}</div>
           <div>Kasir: ${receiptData.cashier || 'Kasir'}</div>
@@ -267,9 +268,10 @@ const ReceiptModal = ({ isOpen, onClose, saleId }) => {
               <div className="mb-2 border-b border-dashed border-gray-400 pb-2">
                 <div>No. Struk: {receiptData.invoice_number}</div>
                 <div>Tanggal: {(() => {
-                  const date = new Date(receiptData.created_at);
+                  const cleanDateString = receiptData.created_at.replace('Z', '');
+                  const date = new Date(cleanDateString);
                   const formatted = date.toLocaleString('id-ID');
-                  alert('DEBUG MODAL PREVIEW:\\nInput: ' + receiptData.created_at + '\\nFormatted: ' + formatted);
+                  alert('DEBUG MODAL PREVIEW:\\nInput: ' + receiptData.created_at + '\\nClean: ' + cleanDateString + '\\nFormatted: ' + formatted);
                   return formatted;
                 })()}</div>
                 <div>Kasir: {receiptData.cashier || 'Kasir'}</div>
