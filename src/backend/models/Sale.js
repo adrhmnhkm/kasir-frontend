@@ -250,7 +250,7 @@ class Sale {
           INSERT INTO sale_items (
             sale_id, product_id, product_name, quantity, unit_price, 
             discount, total
-          ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
+          ) VALUES ($1, $2, $3, $4, $5, $6, $7)
         `;
         
         for (const item of saleData.items) {
