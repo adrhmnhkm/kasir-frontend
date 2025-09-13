@@ -173,9 +173,18 @@ class Sale {
       let dbTimestamp;
       if (saleData.created_at) {
         // Frontend sends Jakarta time string, convert to proper format
+        console.log('=== TIMESTAMP CONVERSION DEBUG ===');
+        console.log('Frontend timestamp:', saleData.created_at);
+        console.log('Frontend timestamp type:', typeof saleData.created_at);
+        
         const jakartaTime = new Date(saleData.created_at);
+        console.log('Jakarta time object:', jakartaTime);
+        console.log('Jakarta time toString:', jakartaTime.toString());
+        console.log('Jakarta time toISOString:', jakartaTime.toISOString());
+        
         dbTimestamp = jakartaTime.toISOString().replace('Z', '');
         console.log('Converted Jakarta time for DB:', dbTimestamp);
+        console.log('=====================================');
       } else {
         // Fallback to server Jakarta time
         const serverTime = new Date();
