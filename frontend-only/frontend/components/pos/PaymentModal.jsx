@@ -12,8 +12,12 @@ const PaymentModal = ({
 }) => {
   // Force alert to show component is loaded
   console.log('PAYMENT MODAL LOADED - isOpen:', isOpen);
+  console.log('PAYMENT MODAL LOADED - cart:', cart);
+  console.log('PAYMENT MODAL LOADED - paymentResult:', paymentResult);
+  console.log('PAYMENT MODAL LOADED - showPrintOptions:', showPrintOptions);
   if (typeof window !== 'undefined') {
     window.paymentModalLoaded = true;
+    window.paymentModalData = { isOpen, cart, paymentResult, showPrintOptions };
   }
   
   const [paymentAmount, setPaymentAmount] = useState('');
@@ -176,6 +180,10 @@ const PaymentModal = ({
 
   const quickAmounts = [50000, 100000, 200000, 500000];
 
+  console.log('PAYMENT MODAL RENDER - showPrintOptions:', showPrintOptions);
+  console.log('PAYMENT MODAL RENDER - paymentResult:', paymentResult);
+  console.log('PAYMENT MODAL RENDER - showReceiptModal:', showReceiptModal);
+  
   return (
     <>
       <Modal
