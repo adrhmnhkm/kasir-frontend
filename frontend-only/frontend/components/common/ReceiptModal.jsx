@@ -60,20 +60,16 @@ const ReceiptModal = ({ isOpen, onClose, saleId }) => {
   };
 
   const formatJakartaTime = (dateString) => {
-    console.log('=== RECEIPT TIME FORMATTING DEBUG ===');
-    console.log('Input dateString:', dateString);
-    console.log('DateString type:', typeof dateString);
-    
-    // Database menyimpan UTC time, konversi ke Jakarta time untuk tampilan
-    const date = new Date(dateString);
-    console.log('Parsed Date object:', date);
-    console.log('Date toString:', date.toString());
-    console.log('Date toISOString:', date.toISOString());
-    console.log('Date toLocaleString:', date.toLocaleString());
-    
-    // Konversi UTC time ke Jakarta time untuk tampilan
-    const formatted = date.toLocaleString('id-ID', { 
-      timeZone: 'Asia/Jakarta',
+    if (!dateString) return '-';
+  
+    // Create Date object from UTC string
+    const dateUTC = new Date(dateString);
+  
+    // Manually add 7 hours offset for Jakarta (UTC+7)
+    const dateJakarta = new Date(dateUTC.getTime() + (7 * 60 * 60 * 1000));
+  
+    // Format the date to display
+    const options = {
       year: 'numeric',
       month: '2-digit',
       day: '2-digit',
@@ -81,15 +77,9 @@ const ReceiptModal = ({ isOpen, onClose, saleId }) => {
       minute: '2-digit',
       second: '2-digit',
       hour12: false
-    });
-    
-    console.log('Formatted Jakarta time (with timezone conversion):', formatted);
-    console.log('=====================================');
-    
-    // Also show alert for debugging
-    alert(`DEBUG TIMEZONE:\nInput: ${dateString}\nFormatted Jakarta: ${formatted}`);
-    
-    return formatted;
+    };
+  
+    return dateJakarta.toLocaleString('id-ID', options);
   };
 
   const handlePrint = () => {
