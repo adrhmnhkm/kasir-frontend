@@ -10,6 +10,9 @@ const PaymentModal = ({
   onPaymentSuccess,
   showNotification 
 }) => {
+  // Force alert to show component is loaded
+  alert('PAYMENT MODAL LOADED - isOpen: ' + isOpen);
+  
   const [paymentAmount, setPaymentAmount] = useState('');
   const [loading, setLoading] = useState(false);
   const [paymentResult, setPaymentResult] = useState(null);
@@ -212,7 +215,10 @@ const PaymentModal = ({
               
               <div className="grid grid-cols-2 gap-3">
                 <button
-                  onClick={handlePrintReceipt}
+                  onClick={() => {
+                    alert('BUTTON CLICKED DIRECTLY!');
+                    handlePrintReceipt();
+                  }}
                   className="px-6 py-3 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors flex items-center justify-center space-x-2"
                 >
                   <i className="fas fa-print"></i>
