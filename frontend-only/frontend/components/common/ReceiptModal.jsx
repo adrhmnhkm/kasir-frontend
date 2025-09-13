@@ -1,13 +1,23 @@
 const { useState, useEffect } = React;
 
 const ReceiptModal = ({ isOpen, onClose, saleId }) => {
+  console.log('=== RECEIPT MODAL RENDER ===');
+  console.log('Props:', { isOpen, saleId });
+  console.log('============================');
+  
   const [receiptData, setReceiptData] = useState(null);
   const [storeSettings, setStoreSettings] = useState({});
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
   useEffect(() => {
+    console.log('=== RECEIPT MODAL USEEFFECT ===');
+    console.log('isOpen:', isOpen);
+    console.log('saleId:', saleId);
+    console.log('================================');
+    
     if (isOpen && saleId) {
+      console.log('Loading receipt data...');
       loadReceiptData();
       loadStoreSettings();
     }
