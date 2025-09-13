@@ -219,7 +219,18 @@
 
                 // Update receipt content
                 document.getElementById('invoiceNumber').textContent = data.invoice_number;
-                document.getElementById('transactionDate').textContent = new Date(data.created_at).toLocaleString('id-ID');
+                const dateUTC = new Date(data.created_at);
+const dateJakarta = new Date(dateUTC.getTime() + (7 * 60 * 60 * 1000));
+const formattedDate = dateJakarta.toLocaleString('id-ID', {
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+    hour: '2-digit',
+    minute: '2-digit',
+    second: '2-digit',
+    hour12: false
+});
+document.getElementById('transactionDate').textContent = formattedDate;
                 document.getElementById('cashierName').textContent = data.cashier || 'Kasir';
                 
                 // Build items list
