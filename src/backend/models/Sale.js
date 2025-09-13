@@ -169,6 +169,28 @@ class Sale {
       console.log('Received timestamp from frontend:', receivedTimestamp);
       console.log('Current server time:', new Date().toISOString());
       
+      // Convert Jakarta time to proper format for database storage
+      let dbTimestamp;
+      if (saleData.created_at) {
+        // Frontend sends Jakarta time string, convert to proper format
+        const jakartaTime = new Date(saleData.created_at);
+        dbTimestamp = jakartaTime.toISOString().replace('Z', '');
+        console.log('Converted Jakarta time for DB:', dbTimestamp);
+      } else {
+        // Fallback to server Jakarta time
+        const serverTime = new Date();
+        const jakartaTimeString = serverTime.toLocaleString('en-US', { 
+          timeZone: 'Asia/Jakarta', year: 'numeric', month: '2-digit', day: '2-digit',
+          hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false
+        });
+        const [datePart, timePart] = jakartaTimeString.split(', ');
+        const [month, day, year] = datePart.split('/');
+        const [hour, minute, second] = timePart.split(':');
+        const jakartaTime = new Date(`${year}-${month}-${day}T${hour}:${minute}:${second}`);
+        dbTimestamp = jakartaTime.toISOString().replace('Z', '');
+        console.log('Fallback Jakarta time for DB:', dbTimestamp);
+      }
+      
       const saleValues = [
         invoiceNumber,
         saleData.customer_id || null,
@@ -182,8 +204,8 @@ class Sale {
         saleData.notes || '',
         saleData.cashier || 'Kasir',
         saleData.is_draft || false,
-        receivedTimestamp,
-        receivedTimestamp
+        dbTimestamp,
+        dbTimestamp
       ];
       
       const result = await db.query(saleQuery, saleValues);
@@ -210,7 +232,7 @@ class Sale {
             parseFloat(item.unit_price),
             parseFloat(item.discount) || 0,
             parseFloat(item.total),
-            saleData.created_at || new Date().toISOString()
+            dbTimestamp
           ];
           
           console.log('Inserting item:', itemValues);
