@@ -125,7 +125,23 @@ const ReceiptPage = ({ saleId }) => {
         {/* Transaction Info */}
         <div className="mb-2 border-b border-dashed border-black pb-2">
           <div>No. Struk: {receiptData.invoice_number}</div>
-          <div>Tanggal: {new Date(receiptData.created_at).toLocaleString('id-ID')}</div>
+          <div>Tanggal: {(() => {
+            console.log('=== RECEIPT PAGE TIME DEBUG ===');
+            console.log('Input created_at:', receiptData.created_at);
+            console.log('Type:', typeof receiptData.created_at);
+            
+            const date = new Date(receiptData.created_at);
+            console.log('Parsed Date:', date);
+            console.log('Date toString:', date.toString());
+            console.log('Date toISOString:', date.toISOString());
+            console.log('Date toLocaleString:', date.toLocaleString());
+            
+            const formatted = date.toLocaleString('id-ID');
+            console.log('Formatted (no timezone):', formatted);
+            console.log('================================');
+            
+            return formatted;
+          })()}</div>
           <div>Kasir: {receiptData.cashier || 'Kasir'}</div>
         </div>
 
