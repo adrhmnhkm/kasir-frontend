@@ -158,7 +158,8 @@ class Sale {
       const saleQuery = `
         INSERT INTO sales (
           invoice_number, customer_id, subtotal, discount, tax, total,
-          paid, change_amount, payment_method, notes, cashier, is_draft
+          paid, change_amount, payment_method, notes, cashier, is_draft,
+          created_at, updated_at
         ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14)
         RETURNING id
       `;
@@ -219,7 +220,9 @@ class Sale {
         saleData.payment_method || 'cash',
         saleData.notes || '',
         saleData.cashier || 'Kasir',
-        saleData.is_draft || false
+        saleData.is_draft || false,
+        dbTimestamp,  // created_at
+        dbTimestamp   // updated_at
       ];
       
       const result = await db.query(saleQuery, saleValues);
