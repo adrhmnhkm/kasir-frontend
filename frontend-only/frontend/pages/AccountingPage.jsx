@@ -328,8 +328,7 @@ const AccountingPage = ({ showNotification }) => {
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
                 <div className="bg-white rounded-lg shadow p-6 flex flex-col justify-between h-full">
                 <h4 className="text-sm font-medium text-gray-600 mb-2">Total Pendapatan</h4>
-                    <p className="text-3xl font-bold text-green-600">
-                      {formatCurrency(dashboardData.thisMonth.revenue)}
+                <p className="text-2xl lg:text-xl font-bold text-green-600 truncate">                      {formatCurrency(dashboardData.thisMonth.revenue)}
                     </p>
                     <p className="text-sm text-gray-500 mt-2">
                       {dashboardData.thisMonth.transactions} transaksi
@@ -338,8 +337,7 @@ const AccountingPage = ({ showNotification }) => {
 
                   <div className="bg-white rounded-lg shadow p-6 flex flex-col justify-between h-full">
                     <h4 className="text-sm font-medium text-gray-600 mb-2">Total HPP</h4>
-                    <p className="text-3xl font-bold text-orange-600">
-                      {formatCurrency(dashboardData.thisMonth.totalHPP)}
+                    <p className="text-2xl lg:text-xl font-bold text-green-600 truncate">                      {formatCurrency(dashboardData.thisMonth.totalHPP)}
                     </p>
                     <p className="text-sm text-gray-500 mt-2">
                       Harga Pokok Penjualan
@@ -348,7 +346,7 @@ const AccountingPage = ({ showNotification }) => {
 
                   <div className="bg-white rounded-lg shadow p-6 flex flex-col justify-between h-full">
                     <h4 className="text-sm font-medium text-gray-600 mb-2">Laba Kotor</h4>
-                    <p className={`text-3xl font-bold ${
+                    <p className={`text-3xl font-bold lg:text-xl font-bold text-green-600 truncate ${
                       dashboardData.thisMonth.grossProfit >= 0 ? 'text-purple-600' : 'text-red-600'
                     }`}>
                       {formatCurrency(dashboardData.thisMonth.grossProfit)}
@@ -360,14 +358,14 @@ const AccountingPage = ({ showNotification }) => {
 
                   <div className="bg-white rounded-lg shadow p-6 flex flex-col justify-between h-full">
                     <h4 className="text-sm font-medium text-gray-600 mb-2">Biaya Operasional</h4>
-                    <p className="text-3xl font-bold text-red-600">
+                    <p className="text-3xl font-bold text-red-600 lg:text-xl font-bold text-green-600 truncate">
                       {formatCurrency(dashboardData.thisMonth.expenses)}
                     </p>
                   </div>
 
                   <div className="bg-white rounded-lg shadow p-6 flex flex-col justify-between h-full">
                     <h4 className="text-sm font-medium text-gray-600 mb-2">Laba Bersih</h4>
-                    <p className={`text-3xl font-bold ${
+                    <p className={`text-3xl font-bold lg:text-xl font-bold text-green-600 truncate ${
                       dashboardData.thisMonth.netProfit >= 0 ? 'text-blue-600' : 'text-red-600'
                     }`}>
                       {formatCurrency(dashboardData.thisMonth.netProfit)}
