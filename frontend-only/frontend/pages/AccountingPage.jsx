@@ -199,8 +199,8 @@ const AccountingPage = ({ showNotification }) => {
               <div>
                 <h3 className="text-lg font-semibold mb-4">Ringkasan Hari Ini</h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
-                  <div className="bg-white rounded-lg shadow p-6">
-                    <div className="flex items-center justify-between">
+                  <div className="bg-white rounded-lg shadow p-6 flex flex-col justify-between h-full">
+                    <div className="flex items-center justify-between mb-2">
                       <div>
                         <p className="text-sm font-medium text-gray-600">Pendapatan</p>
                         <p className="text-2xl font-bold text-green-600">
@@ -218,7 +218,7 @@ const AccountingPage = ({ showNotification }) => {
                     </div>
                   </div>
 
-                  <div className="bg-white rounded-lg shadow p-6">
+                  <div className="bg-white rounded-lg shadow p-6 flex flex-col justify-between h-full">
                     <div className="flex items-center justify-between">
                       <div>
                         <p className="text-sm font-medium text-gray-600">HPP (Cost)</p>
@@ -237,7 +237,7 @@ const AccountingPage = ({ showNotification }) => {
                     </div>
                   </div>
 
-                  <div className="bg-white rounded-lg shadow p-6">
+                  <div className="bg-white rounded-lg shadow p-6 flex flex-col justify-between h-full">
                     <div className="flex items-center justify-between">
                       <div>
                         <p className="text-sm font-medium text-gray-600">Laba Kotor</p>
@@ -262,7 +262,7 @@ const AccountingPage = ({ showNotification }) => {
                     </div>
                   </div>
 
-                  <div className="bg-white rounded-lg shadow p-6">
+                  <div className="bg-white rounded-lg shadow p-6 flex flex-col justify-between h-full">
                     <div className="flex items-center justify-between">
                       <div>
                         <p className="text-sm font-medium text-gray-600">Biaya Operasional</p>
@@ -276,7 +276,7 @@ const AccountingPage = ({ showNotification }) => {
                     </div>
                   </div>
 
-                  <div className="bg-white rounded-lg shadow p-6">
+                  <div className="bg-white rounded-lg shadow p-6 flex flex-col justify-between h-full">
                     <div className="flex items-center justify-between">
                       <div>
                         <p className="text-sm font-medium text-gray-600">Laba Bersih</p>
@@ -301,7 +301,7 @@ const AccountingPage = ({ showNotification }) => {
                     </div>
                   </div>
 
-                  <div className="bg-white rounded-lg shadow p-6">
+                  <div className="bg-white rounded-lg shadow p-6 flex flex-col justify-between h-full">
                     <div className="flex items-center justify-between">
                       <div>
                         <p className="text-sm font-medium text-gray-600">Cash Flow</p>
@@ -326,8 +326,8 @@ const AccountingPage = ({ showNotification }) => {
                   Ringkasan {getPeriodLabel(dateRange)}
                 </h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
-                  <div className="bg-white rounded-lg shadow p-6">
-                    <h4 className="text-sm font-medium text-gray-600 mb-2">Total Pendapatan</h4>
+                <div className="bg-white rounded-lg shadow p-6 flex flex-col justify-between h-full">
+                <h4 className="text-sm font-medium text-gray-600 mb-2">Total Pendapatan</h4>
                     <p className="text-3xl font-bold text-green-600">
                       {formatCurrency(dashboardData.thisMonth.revenue)}
                     </p>
@@ -336,7 +336,7 @@ const AccountingPage = ({ showNotification }) => {
                     </p>
                   </div>
 
-                  <div className="bg-white rounded-lg shadow p-6">
+                  <div className="bg-white rounded-lg shadow p-6 flex flex-col justify-between h-full">
                     <h4 className="text-sm font-medium text-gray-600 mb-2">Total HPP</h4>
                     <p className="text-3xl font-bold text-orange-600">
                       {formatCurrency(dashboardData.thisMonth.totalHPP)}
@@ -346,7 +346,7 @@ const AccountingPage = ({ showNotification }) => {
                     </p>
                   </div>
 
-                  <div className="bg-white rounded-lg shadow p-6">
+                  <div className="bg-white rounded-lg shadow p-6 flex flex-col justify-between h-full">
                     <h4 className="text-sm font-medium text-gray-600 mb-2">Laba Kotor</h4>
                     <p className={`text-3xl font-bold ${
                       dashboardData.thisMonth.grossProfit >= 0 ? 'text-purple-600' : 'text-red-600'
@@ -358,14 +358,14 @@ const AccountingPage = ({ showNotification }) => {
                     </p>
                   </div>
 
-                  <div className="bg-white rounded-lg shadow p-6">
+                  <div className="bg-white rounded-lg shadow p-6 flex flex-col justify-between h-full">
                     <h4 className="text-sm font-medium text-gray-600 mb-2">Biaya Operasional</h4>
                     <p className="text-3xl font-bold text-red-600">
                       {formatCurrency(dashboardData.thisMonth.expenses)}
                     </p>
                   </div>
 
-                  <div className="bg-white rounded-lg shadow p-6">
+                  <div className="bg-white rounded-lg shadow p-6 flex flex-col justify-between h-full">
                     <h4 className="text-sm font-medium text-gray-600 mb-2">Laba Bersih</h4>
                     <p className={`text-3xl font-bold ${
                       dashboardData.thisMonth.netProfit >= 0 ? 'text-blue-600' : 'text-red-600'
@@ -381,7 +381,7 @@ const AccountingPage = ({ showNotification }) => {
 
               {/* Profit & Loss Breakdown */}
               {dashboardData.profitLoss && dashboardData.profitLoss.length > 0 && (
-                <div className="bg-white rounded-lg shadow p-6">
+                  <div className="bg-white rounded-lg shadow p-6 flex flex-col justify-between h-full">
                   <h3 className="text-lg font-semibold mb-4">Laba Rugi {getPeriodLabel(dateRange)}</h3>
                   <div className="space-y-3">
                     {dashboardData.profitLoss.map((item, index) => (
@@ -399,8 +399,8 @@ const AccountingPage = ({ showNotification }) => {
               )}
 
               {/* Quick Actions */}
-              <div className="bg-white rounded-lg shadow p-6">
-                <h3 className="text-lg font-semibold mb-4">Aksi Cepat</h3>
+              <div className="bg-white rounded-lg shadow p-6 flex flex-col justify-between h-full">
+              <h3 className="text-lg font-semibold mb-4">Aksi Cepat</h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                   <button
                     onClick={() => setActiveTab('expenses')}
@@ -444,8 +444,8 @@ const AccountingPage = ({ showNotification }) => {
 
           {activeTab === 'hpp' && (
             <div className="space-y-6">
-              <div className="bg-white rounded-lg shadow p-6">
-                <h3 className="text-lg font-semibold mb-4">Analisis Harga Pokok Penjualan (HPP)</h3>
+                  <div className="bg-white rounded-lg shadow p-6 flex flex-col justify-between h-full">
+                  <h3 className="text-lg font-semibold mb-4">Analisis Harga Pokok Penjualan (HPP)</h3>
                 <p className="text-gray-600 mb-6">
                   Analisis margin per produk untuk periode {getPeriodLabel(dateRange)}
                 </p>
