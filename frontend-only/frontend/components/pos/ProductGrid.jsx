@@ -103,7 +103,7 @@ const ProductGrid = ({
           <select
             value={selectedCategory}
             onChange={(e) => setSelectedCategory(e.target.value)}
-            className="px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="px-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
           >
             <option value="">Semua Kategori</option>
             {categories.map(cat => (
@@ -128,9 +128,9 @@ const ProductGrid = ({
               <div
                 key={product.id}
                 onClick={() => handleAddToCart(product)}
-                className={`p-4 border rounded-lg cursor-pointer transition-colors ${
+                className={`p-4 border border-gray-200 rounded-lg cursor-pointer transition-colors ${
                   product.stock <= 0 
-                    ? 'bg-gray-100 border-gray-300 cursor-not-allowed opacity-50'
+                    ? 'bg-gray-100 border border-gray-300 cursor-not-allowed opacity-50'
                     : 'hover:bg-blue-50 hover:border-blue-300'
                 }`}
               >
