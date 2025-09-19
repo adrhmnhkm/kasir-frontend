@@ -193,3 +193,7 @@ api.settings = settingsApi;
 api.dashboard = dashboardApi;
 api.inventory = inventoryApi;
 api.reports = reportsApi; 
+
+// Export for module imports
+export { api };
+export default api;
