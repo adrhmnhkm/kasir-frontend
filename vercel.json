@@ -22,7 +22,7 @@
     },
     {
       "src": "/(.*)",
-      "dest": "/frontend-only/public/$1"
+      "dest": "/$1"
     }
   ],
   "buildCommand": "cd frontend-only && npm run build",
