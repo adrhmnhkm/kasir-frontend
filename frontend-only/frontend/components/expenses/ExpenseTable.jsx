@@ -1,3 +1,6 @@
+import React from 'react';
+import Loading from '../common/Loading';
+
 const ExpenseTable = ({ 
   expenses, 
   onEdit, 
@@ -199,3 +202,5 @@ Aplikasi Kasir PVC
 
 // Make ExpenseTable available globally
 window.ExpenseTable = ExpenseTable;
+
+export default ExpenseTable;
