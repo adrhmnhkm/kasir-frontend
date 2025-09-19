@@ -36,3 +36,5 @@ const Modal = ({ isOpen, onClose, title, children, size = "md" }) => {
 
 // Make Modal available globally
 window.Modal = Modal; 
+
+export default Modal;

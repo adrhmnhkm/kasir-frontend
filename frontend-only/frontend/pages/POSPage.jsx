@@ -1,6 +1,6 @@
 import React from 'react';
 const { useState } = React;
-import { useCart } from '../hooks/useCart';
+import useCart from '../hooks/useCart';
 import { api } from '../utils/api';
 import ProductGrid from '../components/pos/ProductGrid';
 import Cart from '../components/pos/Cart';

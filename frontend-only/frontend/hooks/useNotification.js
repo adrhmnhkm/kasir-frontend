@@ -2,7 +2,7 @@ import React from 'react';
 
 const { useState } = React;
 
-export default function useNotification() {
+function useNotification() {
   const [notification, setNotification] = useState(null);
 
   const showNotification = (message, type = 'success', duration = 3000) => {
@@ -46,3 +46,4 @@ export default function useNotification() {
   };
 };
 
+export default useNotification;

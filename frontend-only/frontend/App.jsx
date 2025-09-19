@@ -12,7 +12,7 @@ import SalesPage from './pages/SalesPage';
 import ExpensePage from './pages/ExpensePage';
 import AccountingPage from './pages/AccountingPage';
 import SettingsPage from './pages/SettingsPage';
-import { useNotification } from './hooks/useNotification';
+import useNotification from './hooks/useNotification';
 import ReceiptPage from './components/common/ReceiptPage';
 
 

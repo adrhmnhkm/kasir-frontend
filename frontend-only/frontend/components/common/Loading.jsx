@@ -37,3 +37,6 @@ const LoadingButton = ({ children, loading, ...props }) => {
 // Make Loading components available globally
 window.Loading = Loading;
 window.LoadingButton = LoadingButton; 
+
+export default Loading;
+export { LoadingButton };

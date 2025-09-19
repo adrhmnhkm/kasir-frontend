@@ -1,7 +1,7 @@
 import React from 'react';
 
 const { useState, useEffect } = React;
-import { useProducts } from '../hooks/useProducts';
+import useProducts from '../hooks/useProducts';
 import { api } from '../utils/api';
 import ProductTable from '../components/products/ProductTable';
 import CategoryTable from '../components/categories/CategoryTable';

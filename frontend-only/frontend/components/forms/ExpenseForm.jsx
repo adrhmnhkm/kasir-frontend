@@ -309,3 +309,5 @@ const ExpenseForm = ({
 
 // Make ExpenseForm available globally
 window.ExpenseForm = ExpenseForm;
+
+export default ExpenseForm;
