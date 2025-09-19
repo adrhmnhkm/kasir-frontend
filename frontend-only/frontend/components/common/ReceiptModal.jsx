@@ -1,4 +1,5 @@
 import React from 'react';
+import { api } from '../../utils/api';
 
 const { useState, useEffect } = React;
 
@@ -385,3 +386,4 @@ const ReceiptModal = ({ isOpen, onClose, saleId }) => {
 
 // Make ReceiptModal available globally
 window.ReceiptModal = ReceiptModal;
+export default ReceiptModal;

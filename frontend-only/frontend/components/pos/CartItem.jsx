@@ -1,4 +1,5 @@
 import React from 'react';
+import { formatCurrency } from '../../utils/currency';
 
 const CartItem = ({ item, onUpdate, onRemove }) => {
   const handleQuantityChange = (value) => {
@@ -111,3 +112,4 @@ const CartItem = ({ item, onUpdate, onRemove }) => {
 
 // Make CartItem available globally
 window.CartItem = CartItem; 
+export default CartItem;

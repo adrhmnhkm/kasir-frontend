@@ -1,5 +1,9 @@
 import React from 'react';
 const { useState, useEffect } = React;
+import Modal from '../common/Modal';
+import LoadingButton from '../common/LoadingButton';
+import CategoryForm from './CategoryForm';
+import { api } from '../../utils/api';
 
 const ProductForm = ({ 
   isOpen, 
@@ -407,3 +411,4 @@ const ProductForm = ({
 
 // Make ProductForm available globally
 window.ProductForm = ProductForm; 
+export default ProductForm;
