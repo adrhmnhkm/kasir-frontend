@@ -25,6 +25,7 @@ build({
     minify: true,
     sourcemap: true,
     target: ['es2020'],
+    jsx: 'automatic',
     loader: { '.jsx': 'jsx' },
 }).then(() => {
     console.log('   ✅ JavaScript build successful!');

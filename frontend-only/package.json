@@ -8,12 +8,14 @@
     "start": "serve public -p 3000"
   },
   "dependencies": {
+    "react": "^19.1.1",
+    "react-dom": "^19.1.1",
     "serve": "^14.2.1"
   },
   "devDependencies": {
-    "esbuild": "^0.21.4",
     "@tailwindcss/cli": "^4.1.13",
     "autoprefixer": "^10.4.21",
+    "esbuild": "^0.21.4",
     "tailwindcss": "^4.1.13"
   },
   "main": "index.js",
