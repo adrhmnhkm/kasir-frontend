@@ -85,7 +85,7 @@ const ProductGrid = ({
   };
 
   return (
-    <div className={`bg-white rounded-lg shadow ${className}`}>
+    <div className={`bg-white rounded-lg shadow-md ${className}`}>
       {/* Search and Filter Header */}
       <div className="p-4 border-b">
         <div className="flex gap-4 mb-4">
