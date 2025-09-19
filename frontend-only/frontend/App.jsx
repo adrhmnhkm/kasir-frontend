@@ -11,7 +11,6 @@ import { SalesPage } from './pages/SalesPage';
 import { SettingsPage } from './pages/SettingsPage';
 import { AccountingPage } from './pages/AccountingPage';
 import { ExpensePage } from './pages/ExpensePage';
-import './styles.css';
 
 
 const { useState } = React;
