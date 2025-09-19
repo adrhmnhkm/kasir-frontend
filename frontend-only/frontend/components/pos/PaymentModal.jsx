@@ -16,18 +16,17 @@ const PaymentModal = ({
   onPaymentSuccess,
   showNotification 
 }) => {
- 
-  if (typeof window !== 'undefined') {
-    window.paymentModalLoaded = true;
-    window.paymentModalData = { isOpen, cart, showPrintOptions };
-  }
-  
   const [paymentAmount, setPaymentAmount] = useState('');
   const [loading, setLoading] = useState(false);
   const [paymentResult, setPaymentResult] = useState(null);
   const [showPrintOptions, setShowPrintOptions] = useState(false);
   const [showReceiptModal, setShowReceiptModal] = useState(false);
   const paymentRef = useRef(null);
+
+  if (typeof window !== 'undefined') {
+    window.paymentModalLoaded = true;
+    window.paymentModalData = { isOpen, cart, showPrintOptions };
+  }
 
   const getCartSubtotal = () => {
     return cart.reduce((sum, item) => sum + (item.quantity * item.selling_price), 0);
