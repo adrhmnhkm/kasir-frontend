@@ -1,3 +1,19 @@
+import React from 'react';
+import ReactDOM from 'react-dom';
+import { useNotification } from './hooks/useNotification';
+import { Layout } from './components/common/Layout';
+import { Notification } from './components/common/Notification';
+import { ReceiptPage } from './components/common/ReceiptPage';
+import { POSPage } from './pages/POSPage';
+import { ProductsPage } from './pages/ProductsPage';
+import { InventoryPage } from './pages/InventoryPage';
+import { SalesPage } from './pages/SalesPage';
+import { SettingsPage } from './pages/SettingsPage';
+import { AccountingPage } from './pages/AccountingPage';
+import { ExpensePage } from './pages/ExpensePage';
+import './styles.css';
+
+
 const { useState } = React;
 
 // Temporary placeholder components
