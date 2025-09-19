@@ -1,6 +1,8 @@
 import React from 'react';
-
 const { useState, useEffect } = React;
+import { api } from '../utils/api';
+import Loading from '../components/common/Loading';
+import ExpensePage from './ExpensePage';
 
 const AccountingPage = ({ showNotification }) => {
   const [activeTab, setActiveTab] = useState('dashboard');
