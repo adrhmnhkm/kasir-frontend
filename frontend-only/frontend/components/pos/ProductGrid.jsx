@@ -87,7 +87,7 @@ const ProductGrid = ({
   return (
     <div className={`bg-white rounded-lg shadow-md ${className}`}>
       {/* Search and Filter Header */}
-      <div className="p-4 border-b">
+      <div className="p-4 border border-gray-200">
         <div className="flex gap-4 mb-4">
           <div className="flex-1">
             <input
@@ -97,7 +97,7 @@ const ProductGrid = ({
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               onKeyPress={handleKeyPress}
-              className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
           </div>
           <select
