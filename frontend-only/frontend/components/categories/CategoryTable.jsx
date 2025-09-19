@@ -1,3 +1,4 @@
+import React from 'react';
 const CategoryTable = ({ categories, onEdit, onDelete, loading }) => {
   if (loading) {
     return (

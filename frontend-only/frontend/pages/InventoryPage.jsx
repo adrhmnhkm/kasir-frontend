@@ -1,3 +1,4 @@
+import React from 'react';
 const { useState, useEffect } = React;
 
 const InventoryPage = ({ showNotification }) => {

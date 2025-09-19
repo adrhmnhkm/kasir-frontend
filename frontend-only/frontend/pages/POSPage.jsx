@@ -1,3 +1,4 @@
+import React from 'react';
 const { useState } = React;
 
 const POSPage = ({ showNotification }) => {

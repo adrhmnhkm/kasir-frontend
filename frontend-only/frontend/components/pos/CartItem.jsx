@@ -1,3 +1,5 @@
+import React from 'react';
+
 const CartItem = ({ item, onUpdate, onRemove }) => {
   const handleQuantityChange = (value) => {
     const quantity = Math.max(0, parseFloat(value) || 0);
