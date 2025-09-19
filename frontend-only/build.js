@@ -27,6 +27,9 @@ build({
     target: ['es2020'],
     jsx: 'automatic',
     loader: { '.jsx': 'jsx' },
+    external: ['react', 'react-dom'],  // External dependencies loaded from CDN
+    format: 'iife',                    // Immediately Invoked Function Expression for browser
+    globalName: 'App',                 // Global variable name
 }).then(() => {
     console.log('   ✅ JavaScript build successful!');
     

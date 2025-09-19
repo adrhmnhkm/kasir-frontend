@@ -96,99 +96,10 @@
     </script>
 
     <!-- React and ReactDOM - Production -->
-  
-    <!-- Utilities -->
-    <script type="text/babel" src="/frontend/utils/api.js"></script>
-    <script type="text/babel" src="/frontend/utils/currency.js"></script>
-    <script type="text/babel" src="/frontend/utils/date.js"></script>
+    <script crossorigin src="https://unpkg.com/react@19/umd/react.production.min.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@19/umd/react-dom.production.min.js"></script>
     
-    <!-- React Components -->
-    <script type="text/babel" src="/frontend/components/common/Layout.jsx"></script>
-    <script type="text/babel" src="/frontend/components/common/Notification.jsx"></script>
-    <script type="text/babel" src="/frontend/components/common/Loading.jsx"></script>
-    <script type="text/babel" src="/frontend/components/common/Modal.jsx"></script>
-    <script type="text/babel" src="/frontend/components/common/ReceiptPage.jsx"></script>
-    <script type="text/babel" src="/frontend/components/common/ReceiptModal.jsx"></script>
-    
-    <!-- POS Components -->
-    <script type="text/babel" src="/frontend/components/pos/ProductGrid.jsx"></script>
-    <script type="text/babel" src="/frontend/components/pos/Cart.jsx"></script>
-    <script type="text/babel" src="/frontend/components/pos/CartItem.jsx"></script>
-    <script type="text/babel" src="/frontend/components/pos/PaymentModal.jsx"></script>
-    
-    <!-- Product Components -->
-    <script type="text/babel" src="/frontend/components/products/ProductTable.jsx"></script>
-    <script type="text/babel" src="/frontend/components/categories/CategoryTable.jsx"></script>
-    <script type="text/babel" src="/frontend/components/forms/ProductForm.jsx"></script>
-    <script type="text/babel" src="/frontend/components/forms/CategoryForm.jsx"></script>
-    
-    <!-- Expense Components -->
-    <script type="text/babel" src="/frontend/components/forms/ExpenseForm.jsx"></script>
-    <script type="text/babel" src="/frontend/components/expenses/ExpenseTable.jsx"></script>
-    
-    <!-- React Pages -->
-    <script type="text/babel" src="/frontend/pages/POSPage.jsx"></script>
-    <script type="text/babel" src="/frontend/pages/ProductsPage.jsx"></script>
-    <script type="text/babel" src="/frontend/pages/InventoryPage.jsx"></script>
-    <script type="text/babel" src="/frontend/pages/SalesPage.jsx"></script>
-    <script type="text/babel" src="/frontend/pages/SettingsPage.jsx"></script>
-    <script type="text/babel" src="/frontend/pages/ExpensePage.jsx"></script>
-    <script type="text/babel" src="/frontend/pages/AccountingPage.jsx"></script>
-    
-    <!-- React Hooks -->
-    <script type="text/babel" src="/frontend/hooks/useNotification.js"></script>
-    <script type="text/babel" src="/frontend/hooks/useCart.js"></script>
-    <script type="text/babel" src="/frontend/hooks/useProducts.js"></script>
-    
-    <!-- Main App -->
+    <!-- Main App Bundle -->
     <script src="./bundle.js"></script>
-    
-    <!-- Render App -->
-    <script type="text/babel">
-        // Optimized component loading with progress tracking
-        function checkComponents() {
-            const requiredComponents = [
-                'api', 'formatCurrency', 'formatDate',
-                'App', 'Layout', 'Notification', 'Loading', 'Modal', 'ReceiptPage', 'ReceiptModal',
-                'ProductGrid', 'Cart', 'CartItem', 'PaymentModal',
-                'ProductTable', 'CategoryTable', 'ProductForm', 'CategoryForm',
-                'ExpenseForm', 'ExpenseTable',
-                'POSPage', 'ProductsPage', 'InventoryPage', 'SalesPage', 'SettingsPage',
-                'AccountingPage', 'ExpensePage'
-            ];
-            
-            const missing = requiredComponents.filter(comp => !window[comp]);
-            const loaded = requiredComponents.length - missing.length;
-            const progress = Math.round((loaded / requiredComponents.length) * 100);
-            
-            // Update progress in console (optional)
-            if (missing.length > 0) {
-                console.log(`⏳ Loading progress: ${progress}% (${loaded}/${requiredComponents.length})`);
-            }
-            
-            if (missing.length === 0) {
-                console.log('🚀 All components loaded successfully');
-                
-                // Smooth transition
-                const root = ReactDOM.createRoot(document.getElementById('root'));
-                root.render(React.createElement(App));
-                
-                // Add loaded class for smooth fade-in
-                setTimeout(() => {
-                    document.getElementById('root').classList.add('loaded');
-                }, 50);
-            } else {
-                // Faster checking interval
-                setTimeout(checkComponents, 50);
-            }
-        }
-        
-        // Start checking when DOM is ready
-        if (document.readyState === 'loading') {
-            document.addEventListener('DOMContentLoaded', checkComponents);
-        } else {
-            checkComponents();
-        }
-    </script>
 </body>
 </html> 

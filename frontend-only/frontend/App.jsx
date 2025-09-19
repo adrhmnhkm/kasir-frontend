@@ -50,7 +50,26 @@ function App() {
   );
 }
 
-// Render aplikasi Anda (jika ini adalah file entry point utama)
-const container = document.getElementById('root');
-const root = ReactDOM.createRoot(container);
-root.render(<App />);
+// Initialize the app when the bundle loads
+function initializeApp() {
+    const container = document.getElementById('root');
+    if (container) {
+        const root = ReactDOM.createRoot(container);
+        root.render(React.createElement(App));
+        
+        // Add loaded class for smooth fade-in
+        setTimeout(() => {
+            container.classList.add('loaded');
+        }, 50);
+    }
+}
+
+// Auto-initialize when DOM is ready
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initializeApp);
+} else {
+    initializeApp();
+}
+
+// Make App available globally for debugging
+window.App = App;
