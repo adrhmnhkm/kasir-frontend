@@ -597,3 +597,5 @@ const AccountingPage = ({ showNotification }) => {
 
 // Make AccountingPage available globally
 window.AccountingPage = AccountingPage;
+
+export default AccountingPage;

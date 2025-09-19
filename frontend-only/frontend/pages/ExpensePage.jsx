@@ -1,5 +1,8 @@
 import React from 'react';
 const { useState, useEffect } = React;
+import { api } from '../utils/api';
+import ExpenseTable from '../components/expenses/ExpenseTable';
+import ExpenseForm from '../components/forms/ExpenseForm';
 
 const ExpensePage = ({ showNotification }) => {
   const [expenses, setExpenses] = useState([]);
@@ -303,3 +306,5 @@ const ExpensePage = ({ showNotification }) => {
 
 // Make ExpensePage available globally
 window.ExpensePage = ExpensePage;
+
+export default ExpensePage;

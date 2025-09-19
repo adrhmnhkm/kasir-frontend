@@ -1,5 +1,10 @@
 import React from 'react';
 const { useState } = React;
+import { useCart } from '../hooks/useCart';
+import { api } from '../utils/api';
+import ProductGrid from '../components/pos/ProductGrid';
+import Cart from '../components/pos/Cart';
+import PaymentModal from '../components/pos/PaymentModal';
 
 const POSPage = ({ showNotification }) => {
   const [cashier, setCashier] = useState('Kasir');
@@ -191,4 +196,6 @@ const POSPage = ({ showNotification }) => {
 };
 
 // Make POSPage available globally
-window.POSPage = POSPage; 
+window.POSPage = POSPage;
+
+export default POSPage; 

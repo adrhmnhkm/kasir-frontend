@@ -1,4 +1,5 @@
 import React from 'react';
+import ReactDOM from 'react-dom/client';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 
 // Impor komponen dan halaman Anda
@@ -13,8 +14,6 @@ import AccountingPage from './pages/AccountingPage';
 import SettingsPage from './pages/SettingsPage';
 import { useNotification } from './hooks/useNotification';
 import ReceiptPage from './components/common/ReceiptPage';
-// Pastikan ReceiptPage diimpor jika digunakan di rute lain
-// import ReceiptPage from './components/common/ReceiptPage';
 
 
 function App() {
@@ -38,7 +37,7 @@ function App() {
             <Route path="/settings" element={<SettingsPage showNotification={showNotification} />} />
             
             {/* Rute untuk halaman struk jika diakses langsung */}
-            {/* <Route path="/receipt/:saleId" element={<ReceiptPage />} /> */}
+            <Route path="/receipt/:saleId" element={<ReceiptPage />} />
           </Routes>
         </Layout>
 

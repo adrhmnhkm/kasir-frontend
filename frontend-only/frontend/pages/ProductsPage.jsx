@@ -1,6 +1,12 @@
 import React from 'react';
 
 const { useState, useEffect } = React;
+import { useProducts } from '../hooks/useProducts';
+import { api } from '../utils/api';
+import ProductTable from '../components/products/ProductTable';
+import CategoryTable from '../components/categories/CategoryTable';
+import ProductForm from '../components/forms/ProductForm';
+import CategoryForm from '../components/forms/CategoryForm';
 
 const ProductsPage = ({ showNotification }) => {
   const [activeTab, setActiveTab] = useState('products');
@@ -208,4 +214,6 @@ const ProductsPage = ({ showNotification }) => {
 };
 
 // Make ProductsPage available globally
-window.ProductsPage = ProductsPage; 
+window.ProductsPage = ProductsPage;
+
+export default ProductsPage; 

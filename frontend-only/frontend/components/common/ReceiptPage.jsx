@@ -1,5 +1,6 @@
 import React from 'react';
 const { useState, useEffect } = React;
+import { api } from '../../utils/api';
 
 const ReceiptPage = ({ saleId }) => {
   const [receiptData, setReceiptData] = useState(null);
@@ -228,3 +229,5 @@ const ReceiptPage = ({ saleId }) => {
 
 // Make ReceiptPage available globally
 window.ReceiptPage = ReceiptPage;
+
+export default ReceiptPage;

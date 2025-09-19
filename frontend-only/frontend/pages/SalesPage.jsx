@@ -1,5 +1,7 @@
 import React from 'react';
 const { useState, useEffect } = React;
+import { api } from '../utils/api';
+import ReceiptModal from '../components/common/ReceiptModal';
 
 const SalesPage = ({ showNotification }) => {
   const [sales, setSales] = useState([]);
@@ -534,4 +536,6 @@ const SalesPage = ({ showNotification }) => {
 };
 
 // Make SalesPage available globally
-window.SalesPage = SalesPage; 
+window.SalesPage = SalesPage;
+
+export default SalesPage; 

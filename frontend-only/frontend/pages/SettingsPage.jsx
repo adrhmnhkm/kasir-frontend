@@ -235,4 +235,6 @@ const SettingsPage = ({ showNotification }) => {
 };
 
 // Make SettingsPage available globally
-window.SettingsPage = SettingsPage; 
+window.SettingsPage = SettingsPage;
+
+export default SettingsPage; 

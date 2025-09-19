@@ -1,5 +1,8 @@
 import React from 'react';
 const { useState, useEffect } = React;
+import { api } from '../utils/api';
+import Loading from '../components/common/Loading';
+import Modal from '../components/common/Modal';
 
 const InventoryPage = ({ showNotification }) => {
   const [activeTab, setActiveTab] = useState('stock');
@@ -457,3 +460,5 @@ const InventoryPage = ({ showNotification }) => {
 
 // Make InventoryPage available globally
 window.InventoryPage = InventoryPage;
+
+export default InventoryPage;

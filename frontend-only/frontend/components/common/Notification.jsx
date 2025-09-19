@@ -37,5 +37,6 @@ const Notification = ({ notification, onClose }) => {
   );
 };
 
-// Make Notification available globally
-window.Notification = Notification; 
+
+
+export default Notification; 
