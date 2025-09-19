@@ -1,4 +1,9 @@
 import React from 'react';
+import { formatCurrency } from '../../utils/currency';
+import Modal from '../common/Modal';
+import LoadingButton from '../common/LoadingButton';
+import ReceiptModal from '../common/ReceiptModal';
+
 const { useState, useEffect, useRef } = React;
 
 const PaymentModal = ({ 
@@ -393,4 +398,6 @@ const PaymentModal = ({
 };
 
 // Make PaymentModal available globally
-window.PaymentModal = PaymentModal; 
+window.PaymentModal = PaymentModal;
+
+export default PaymentModal; 

@@ -1,4 +1,5 @@
 import React from 'react';
+import Loading from '../common/Loading';
 const CategoryTable = ({ categories, onEdit, onDelete, loading }) => {
   if (loading) {
     return (
@@ -124,4 +125,6 @@ const CategoryTable = ({ categories, onEdit, onDelete, loading }) => {
 };
 
 // Make CategoryTable available globally
-window.CategoryTable = CategoryTable; 
+window.CategoryTable = CategoryTable;
+
+export default CategoryTable; 

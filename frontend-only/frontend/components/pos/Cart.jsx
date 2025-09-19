@@ -1,4 +1,6 @@
 import React from 'react';
+import { formatCurrency } from '../../utils/currency';
+import CartItem from './CartItem';
 const Cart = ({ 
   cart, 
   onUpdateItem, 
@@ -129,4 +131,6 @@ const Cart = ({
 };
 
 // Make Cart available globally
-window.Cart = Cart; 
+window.Cart = Cart;
+
+export default Cart; 

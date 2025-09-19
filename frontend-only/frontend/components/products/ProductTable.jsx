@@ -1,4 +1,5 @@
 import React from 'react';
+import { formatCurrency } from '../../utils/currency';
 const ProductTable = ({ 
   products, 
   onEdit, 
@@ -162,4 +163,6 @@ const ProductTable = ({
 };
 
 // Make ProductTable available globally
-window.ProductTable = ProductTable; 
+window.ProductTable = ProductTable;
+
+export default ProductTable; 

@@ -1,4 +1,7 @@
 import React from 'react';
+import { api } from '../../utils/api';
+import { formatCurrency } from '../../utils/currency';
+import Loading from '../common/Loading';
 
 const { useState, useEffect, useRef } = React;
 
@@ -161,5 +164,6 @@ const ProductGrid = ({
   );
 };
 
-// Make ProductGrid available globally
-window.ProductGrid = ProductGrid; 
+
+
+export default ProductGrid; 
