@@ -12,7 +12,7 @@
     <link rel="preload" href="/styles.css" as="style">
     
     <!-- Tailwind CSS - Built CSS File -->
-    <link rel="stylesheet" href="/styles.css" as="style">
+    <link rel="stylesheet" href="/styles.css">
     
     <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
@@ -96,10 +96,7 @@
     </script>
 
     <!-- React and ReactDOM - Production -->
-    <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
-    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
-    <script src="https://unpkg.com/@babel/standalone@7/babel.min.js"></script>
-
+  
     <!-- Utilities -->
     <script type="text/babel" src="/frontend/utils/api.js"></script>
     <script type="text/babel" src="/frontend/utils/currency.js"></script>
@@ -144,7 +141,7 @@
     <script type="text/babel" src="/frontend/hooks/useProducts.js"></script>
     
     <!-- Main App -->
-    <script type="text/babel" src="/frontend/App.jsx"></script>
+    <script src="./bundle.js"></script>
     
     <!-- Render App -->
     <script type="text/babel">

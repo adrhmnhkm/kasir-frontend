@@ -5,14 +5,8 @@
       "src": "frontend-only/package.json",
       "use": "@vercel/static-build",
       "config": {
-        "distDir": "frontend-only/public"
+        "distDir": "public"
       }
-    }
-  ],
-  "routes": [
-    {
-      "src": "/(.*)",
-      "dest": "/frontend-only/$1"
     }
   ]
 }
