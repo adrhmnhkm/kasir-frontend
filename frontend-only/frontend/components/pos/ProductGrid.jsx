@@ -1,6 +1,6 @@
 import React from 'react';
 import { api } from '../../utils/api';
-import { formatCurrency } from '../../utils/currency';
+import * as currency from '../../utils/currency';
 import Loading from '../common/Loading';
 
 const { useState, useEffect, useRef } = React;
@@ -143,7 +143,7 @@ const ProductGrid = ({
                 <div className="text-xs text-gray-600 mb-2">{product.code}</div>
                 <div className="flex justify-between items-center">
                   <span className="text-lg font-bold text-blue-600">
-                    {formatCurrency(product.selling_price)}
+                    {currency.formatCurrency(product.selling_price)}
                   </span>
                   <span className={`text-xs ${product.stock <= 0 ? 'text-red-500' : 'text-gray-500'}`}>
                     Stok: {product.stock} {product.unit}

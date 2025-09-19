@@ -22,12 +22,15 @@ build({
     entryPoints: ['frontend/App.jsx'], // Titik masuk utama aplikasi Anda
     bundle: true,
     outfile: 'public/bundle.js',       // File hasil output
-    minify: true,
+    minify: false,               // Use dev build to get readable React errors
     sourcemap: true,
     target: ['es2020'],
     jsx: 'automatic',
     loader: { '.jsx': 'jsx' },
     format: 'iife',                    // Bundle for browser
+    define: {
+        'process.env.NODE_ENV': '"development"'
+    }
 }).then(() => {
     console.log('   ✅ JavaScript build successful!');
     
