@@ -1,3 +1,4 @@
+import React from 'react';
 const { useState } = React;
 
 export default function useCart() {

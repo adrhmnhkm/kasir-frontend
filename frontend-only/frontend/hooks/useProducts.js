@@ -1,4 +1,6 @@
+import React from 'react';
 const { useState, useEffect } = React;
+import { api } from '../utils/api';
 
 export default function useProducts(filters = {}) {
   const [products, setProducts] = useState([]);
