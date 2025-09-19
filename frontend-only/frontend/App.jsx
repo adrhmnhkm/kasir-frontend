@@ -1,6 +1,5 @@
 import React from 'react';
-import ReactDOM from 'react-dom';
-import { useNotification } from './hooks/useNotification';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'; // <-- IMPORT WAJIBimport { useNotification } from './hooks/useNotification';
 import { Layout } from './components/common/Layout';
 import { Notification } from './components/common/Notification';
 import { ReceiptPage } from './components/common/ReceiptPage';

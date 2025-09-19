@@ -1,90 +1,53 @@
 import React from 'react';
+// Impor Link untuk navigasi dan useLocation untuk mengetahui halaman aktif
+import { Link, useLocation } from 'react-router-dom';
 
-const { useState } = React;
+export default function Layout({ children }) {
+  // Gunakan hook useLocation untuk mendapatkan path URL saat ini
+  const location = useLocation();
+  const currentPath = location.pathname;
 
-const Layout = ({ children, currentPage, onPageChange }) => {
-  const [sidebarOpen, setSidebarOpen] = useState(true);
-
-  const menuItems = [
-    { id: 'pos', name: 'Point of Sale', icon: 'fas fa-cash-register' },
-    { id: 'products', name: 'Produk', icon: 'fas fa-box' },
-    { id: 'inventory', name: 'Inventory', icon: 'fas fa-warehouse' },
-    { id: 'sales', name: 'Penjualan', icon: 'fas fa-chart-line' },
-    { id: 'expenses', name: 'Pengeluaran', icon: 'fas fa-money-bill-wave' },
-    { id: 'accounting', name: 'Akuntansi', icon: 'fas fa-calculator' },
-    { id: 'settings', name: 'Pengaturan', icon: 'fas fa-cog' }
+  // Definisikan item-item navigasi dalam sebuah array agar mudah dikelola
+  const navItems = [
+    { path: '/', label: 'POS', icon: 'fas fa-cash-register' },
+    { path: '/products', label: 'Produk', icon: 'fas fa-box' },
+    { path: '/inventory', label: 'Inventaris', icon: 'fas fa-warehouse' },
+    { path: '/sales', label: 'Penjualan', icon: 'fas fa-chart-line' },
+    { path: '/expenses', label: 'Pengeluaran', icon: 'fas fa-file-invoice-dollar' },
+    { path: '/accounting', label: 'Akuntansi', icon: 'fas fa-book' },
+    { path: '/settings', label: 'Pengaturan', icon: 'fas fa-cog' },
   ];
 
-  const currentMenuItem = menuItems.find(item => item.id === currentPage);
-
   return (
-    <div className="flex h-screen bg-gray-100">
-      {/* Sidebar */}
-      <div className={`bg-blue-800 text-white transition-all duration-300 ${sidebarOpen ? 'w-64' : 'w-16'}`}>
-        <div className="p-4">
-          <div className="flex items-center justify-between">
-            <h1 className={`font-bold text-xl ${sidebarOpen ? 'block' : 'hidden'}`}>
-              Aplikasi Kasir V1.0
-            </h1>
-            <button 
-              onClick={() => setSidebarOpen(!sidebarOpen)}
-              className="p-2 rounded hover:bg-blue-700 transition-colors"
-            >
-              <i className="fas fa-bars"></i>
-            </button>
-          </div>
-        </div>
-        
-        <nav className="mt-8">
-          {menuItems.map(item => (
-            <button
-              key={item.id}
-              onClick={() => onPageChange(item.id)}
-              className={`w-full flex items-center px-6 py-3 text-left hover:bg-blue-700 transition-colors ${
-                currentPage === item.id ? 'bg-blue-700 border-r-4 border-yellow-400' : ''
-              }`}
-            >
-              <i className={`${item.icon} w-6`}></i>
-              <span className={`ml-3 ${sidebarOpen ? 'block' : 'hidden'}`}>
-                {item.name}
-              </span>
-            </button>
-          ))}
+    <div className="flex min-h-screen bg-gray-100">
+      {/* Sidebar Navigation */}
+      <aside className="w-1/5 bg-white shadow-md p-4 flex flex-col">
+        <h1 className="text-2xl font-bold text-center mb-8 text-blue-600">KasirKu</h1>
+        <nav className="flex flex-col space-y-2">
+          {navItems.map((item) => {
+            // Cek apakah path item saat ini adalah halaman yang aktif
+            const isActive = currentPath === item.path;
+            
+            // Terapkan styling yang berbeda jika link sedang aktif
+            const linkClassName = `flex items-center p-3 rounded-lg transition-colors text-gray-700 hover:bg-gray-200 ${
+              isActive ? 'bg-blue-500 text-white shadow' : ''
+            }`;
+
+            return (
+              <Link key={item.path} to={item.path} className={linkClassName}>
+                <i className={`${item.icon} w-6 text-center`}></i>
+                <span className="ml-4">{item.label}</span>
+              </Link>
+            );
+          })}
         </nav>
-      </div>
+      </aside>
 
-      {/* Main Content */}
-      <div className="flex-1 flex flex-col overflow-hidden">
-        {/* Header */}
-        <header className="bg-white shadow-sm border-b px-6 py-4">
-          <div className="flex items-center justify-between">
-            <h2 className="text-2xl font-semibold text-gray-800">
-              {currentMenuItem?.name || 'Dashboard'}
-            </h2>
-            <div className="flex items-center space-x-4">
-              <span className="text-sm text-gray-600">
-                {new Date().toLocaleDateString('id-ID', { 
-                  weekday: 'long', 
-                  year: 'numeric', 
-                  month: 'long',
-                  day: 'numeric',
-                  timeZone: 'Asia/Jakarta'
-                })}
-              </span>
-            </div>
-          </div>
-        </header>
-
-        {/* Page Content */}
-        <main className="flex-1 overflow-auto">
-          <div className="fade-in">
-            {children}
-          </div>
-        </main>
-      </div>
+      {/* Main Content Area */}
+      <main className="w-4/5 p-6 overflow-y-auto">
+        {/* 'children' di sini adalah halaman yang di-render oleh <Routes> di App.jsx */}
+        {children}
+      </main>
     </div>
   );
-};
-
-// Make Layout available globally
-window.Layout = Layout; 
+}
