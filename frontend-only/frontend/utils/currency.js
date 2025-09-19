@@ -42,3 +42,20 @@ window.parseCurrency = parseCurrency;
 window.formatNumber = formatNumber;
 window.calculatePercentage = calculatePercentage;
 window.formatPercentage = formatPercentage; 
+
+// Export for module-based imports
+export { 
+  formatCurrency, 
+  parseCurrency, 
+  formatNumber, 
+  calculatePercentage, 
+  formatPercentage 
+};
+
+export default {
+  formatCurrency,
+  parseCurrency,
+  formatNumber,
+  calculatePercentage,
+  formatPercentage
+};
