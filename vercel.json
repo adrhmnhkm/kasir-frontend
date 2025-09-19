@@ -1,34 +1,18 @@
-
 {
   "version": 2,
   "builds": [
-    {
-      "src": "frontend-only/public/**/*",
-      "use": "@vercel/static"
-    },
-    {
-      "src": "frontend-only/frontend/**/*",
-      "use": "@vercel/static"
-    }
+    { "src": "frontend-only/public/**/*", "use": "@vercel/static" },
+    { "src": "frontend-only/frontend/**/*", "use": "@vercel/static" }
   ],
   "routes": [
-    {
-      "src": "/receipt/(.*)",
-      "dest": "/frontend-only/public/receipt.html"
-    },
-    {
-      "src": "/frontend/(.*)",
-      "dest": "/frontend-only/frontend/$1"
-    },
-    {
-      "src": "/(.*)",
-      "dest": "/$1"
-    }
+    { "src": "/frontend/(.*)", "dest": "/frontend-only/frontend/$1" },
+    { "src": "/(.*)", "dest": "/$1" }
   ],
   "buildCommand": "cd frontend-only && npm run build",
   "outputDirectory": "frontend-only/public",
-  "installCommand": "cd frontend-only && npm install",
+  "installCommand": "cd frontend-only && npm ci",
   "env": {
-    "NODE_ENV": "production"
+    "NODE_ENV": "production",
+    "NPM_CONFIG_PRODUCTION": "false"
   }
 }
