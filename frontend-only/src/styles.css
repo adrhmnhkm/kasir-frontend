@@ -1,9 +1,5 @@
-@source "./public/**/*.html";
-@source "./frontend/**/*.{js,jsx}";
-@source "./src/**/*.{js,jsx}";
+@config "../tailwind.config.js";
 
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
-
-/* custom stylesmu di bawah ini */
