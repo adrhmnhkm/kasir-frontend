@@ -3,8 +3,8 @@
   "version": "1.0.0",
   "description": "Frontend untuk Aplikasi Kasir - Static deployment",
   "scripts": {
-    "build": "node build.js",
-    "build:css": "npx tailwindcss -c ./tailwind.config.js -i ./src/styles.css -o ./public/styles.css --minify",    "dev": "serve public -p 3000",
+    "build": "npm run build:css && node build.js",
+    "build:css": "npx tailwindcss -c ./tailwind.config.js -i ./src/styles.css -o ./public/styles.css --minify",
     "start": "serve public -p 3000"
   },
   "dependencies": {
