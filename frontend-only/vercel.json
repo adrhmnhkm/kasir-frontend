@@ -2,10 +2,6 @@
   "version": 2,
   "builds": [
     {
-      "src": "receipt.html",
-      "use": "@vercel/static"
-    },
-    {
       "src": "public/**/*",
       "use": "@vercel/static"
     },
@@ -17,7 +13,7 @@
   "rewrites": [
     {
       "source": "/receipt/(.*)",
-      "destination": "/receipt.html"
+      "destination": "/public/receipt.html"
     },
     {
       "source": "/frontend/(.*)",
@@ -27,5 +23,7 @@
       "source": "/(.*)",
       "destination": "/public/$1"
     }
-  ]
+  ],
+  "buildCommand": "npm run build",
+  "outputDirectory": "public"
 }

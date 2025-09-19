@@ -1,0 +1,13 @@
+# Ignore frontend files for Railway deployment
+frontend-only/
+vercel.json
+.vercelignore
+*.log
+.env.local
+
+# Keep only backend files
+!src/backend/
+!src/kasir.db
+!railway.json
+!package.json
+!pnpm-lock.yaml

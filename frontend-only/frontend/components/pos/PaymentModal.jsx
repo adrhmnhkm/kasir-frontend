@@ -10,10 +10,7 @@ const PaymentModal = ({
   onPaymentSuccess,
   showNotification 
 }) => {
-  // Force alert to show component is loaded
-  console.log('PAYMENT MODAL LOADED - isOpen:', isOpen);
-  console.log('PAYMENT MODAL LOADED - cart:', cart);
-  console.log('PAYMENT MODAL LOADED - showPrintOptions:', showPrintOptions);
+ 
   if (typeof window !== 'undefined') {
     window.paymentModalLoaded = true;
     window.paymentModalData = { isOpen, cart, showPrintOptions };

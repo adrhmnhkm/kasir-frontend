@@ -1,19 +1,14 @@
 const { useState, useEffect } = React;
 
 const ReceiptModal = ({ isOpen, onClose, saleId }) => {
-  // Force alert to show component is loading
-  alert('RECEIPT MODAL LOADED - Props: ' + JSON.stringify({ isOpen, saleId }));
   
   const [receiptData, setReceiptData] = useState(null);
   const [storeSettings, setStoreSettings] = useState({});
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
-  useEffect(() => {
-    alert('RECEIPT MODAL USEEFFECT - isOpen: ' + isOpen + ', saleId: ' + saleId);
-    
+  useEffect(() => {    
     if (isOpen && saleId) {
-      alert('LOADING RECEIPT DATA...');
       loadReceiptData();
       loadStoreSettings();
     }
@@ -31,7 +26,6 @@ const ReceiptModal = ({ isOpen, onClose, saleId }) => {
       console.log('Response:', response);
       console.log('Created At:', response.created_at);
       console.log('Invoice Number:', response.invoice_number);
-      alert(`RECEIPT DATA LOADED:\nSale ID: ${saleId}\nCreated At: ${response.created_at}\nInvoice: ${response.invoice_number}`);
       
       setReceiptData(response);
     } catch (error) {
@@ -163,7 +157,6 @@ const ReceiptModal = ({ isOpen, onClose, saleId }) => {
               second: '2-digit',
               hour12: false
             });
-            alert('DEBUG HTML TEMPLATE:\\nInput: ' + receiptData.created_at + '\\nFormatted Jakarta: ' + formatted);
             return formatted;
           })()}</div>
           <div>Kasir: ${receiptData.cashier || 'Kasir'}</div>
@@ -289,7 +282,6 @@ const ReceiptModal = ({ isOpen, onClose, saleId }) => {
                     second: '2-digit',
                     hour12: false
                   });
-                  alert('DEBUG MODAL PREVIEW:\\nInput: ' + receiptData.created_at + '\\nFormatted Jakarta: ' + formatted);
                   return formatted;
                 })()}</div>
                 <div>Kasir: {receiptData.cashier || 'Kasir'}</div>

@@ -22,7 +22,7 @@ const Layout = ({ children, currentPage, onPageChange }) => {
         <div className="p-4">
           <div className="flex items-center justify-between">
             <h1 className={`font-bold text-xl ${sidebarOpen ? 'block' : 'hidden'}`}>
-              Aplikasi Kasir
+              Aplikasi Kasir V1.0
             </h1>
             <button 
               onClick={() => setSidebarOpen(!sidebarOpen)}

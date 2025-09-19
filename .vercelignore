@@ -1,0 +1,13 @@
+# Ignore backend files for Vercel deployment
+src/backend/
+src/kasir.db
+railway.json
+node_modules/
+*.log
+.env
+.env.local
+.env.production
+.env.development
+
+# Keep only frontend-only folder
+!frontend-only/

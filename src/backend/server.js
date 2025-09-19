@@ -146,13 +146,13 @@ app.get('/src/frontend/**/*.js', (req, res) => {
 });
 
 // Serve static files from public directory (excluding index.html)
-app.use(express.static(path.join(__dirname, '../../public'), {
+app.use(express.static(path.join(__dirname, '../../frontend-only'), {
   index: false // Disable default index.html serving
 }));
 
 // Serve React app for all other routes (SPA routing) - MUST BE LAST
 app.get('*', (req, res) => {
-  res.sendFile(path.join(__dirname, '../../public/index.html'));
+  res.sendFile(path.join(__dirname, '../../frontend-only/public/index.html'));
 });
 
 // Global error handler
