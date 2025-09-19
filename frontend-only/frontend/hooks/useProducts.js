@@ -1,6 +1,6 @@
 const { useState, useEffect } = React;
 
-const useProducts = (filters = {}) => {
+export default function useProducts(filters = {}) {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -92,5 +92,3 @@ const useProducts = (filters = {}) => {
   };
 };
 
-// Make useProducts available globally
-window.useProducts = useProducts; 

@@ -1,6 +1,6 @@
 const { useState } = React;
 
-const useCart = () => {
+export default function useCart() {
   const [cart, setCart] = useState([]);
 
   const addToCart = (product) => {
@@ -137,6 +137,3 @@ const useCart = () => {
     getCartSummary
   };
 };
-
-// Make useCart available globally
-window.useCart = useCart; 

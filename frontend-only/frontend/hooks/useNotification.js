@@ -2,7 +2,7 @@ import React from 'react';
 
 const { useState } = React;
 
-const useNotification = () => {
+export default function useNotification() {
   const [notification, setNotification] = useState(null);
 
   const showNotification = (message, type = 'success', duration = 3000) => {
@@ -46,5 +46,3 @@ const useNotification = () => {
   };
 };
 
-// Make useNotification available globally
-window.useNotification = useNotification; 
