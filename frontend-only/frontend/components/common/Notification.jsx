@@ -1,3 +1,5 @@
+import React from 'react';
+
 const Notification = ({ notification, onClose }) => {
   if (!notification) return null;
 

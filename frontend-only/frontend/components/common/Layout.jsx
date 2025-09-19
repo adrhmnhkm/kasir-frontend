@@ -1,3 +1,5 @@
+import React from 'react';
+
 const { useState } = React;
 
 const Layout = ({ children, currentPage, onPageChange }) => {

@@ -1,3 +1,5 @@
+import React from 'react';
+
 const { useState, useEffect } = React;
 
 const ReceiptModal = ({ isOpen, onClose, saleId }) => {
