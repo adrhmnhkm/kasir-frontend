@@ -24,7 +24,7 @@ build({
     outfile: 'public/bundle.js',       // File hasil output
     minify: true,
     sourcemap: true,
-    target: ['chrome58', 'firefox57', 'safari11', 'edge16'],
+    target: ['es2020'],
     loader: { '.jsx': 'jsx' },
 }).then(() => {
     console.log('   ✅ JavaScript build successful!');
